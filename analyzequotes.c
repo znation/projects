@@ -4,15 +4,30 @@
 struct Portfolio
 {
 	int shares;
-	float money;
+	double money;
 	int trades;
-	float commission;
+	double commission;
 };
 
 struct Quote
 {
 	int month,day,year;
-	float open,high,low,close,volume;
+	double open,
+		close,
+		high,
+		low,
+		volume;
+};
+
+struct TradeWeight
+{
+	double open,
+		close,
+		high,
+		low,
+		volume,
+		price,
+		shares;
 };
 
 int buildQuotes(struct Quote * quotes)
@@ -26,11 +41,11 @@ int buildQuotes(struct Quote * quotes)
 	}
 	
 	int month,day,year;
-	float open,high,low,close,volume;
+	double open,high,low,close,volume;
 	int i=0;
 	//				m  d  y open high low close
 	while (fscanf(fp,
-					"%d/%d/%d\t%f %f %f %f %f\n",
+					"%d/%d/%d\t%lf %lf %lf %lf %lf\n",
 					&month,
 					&day,
 					&year,
@@ -53,7 +68,7 @@ int buildQuotes(struct Quote * quotes)
 	return i;
 }
 
-int buy(float price, int shares, struct Portfolio * portfolio)
+int buy(double price, int shares, struct Portfolio *portfolio)
 {
 	if (portfolio->money >= (price * shares) + portfolio->commission)
 	{
@@ -65,13 +80,13 @@ int buy(float price, int shares, struct Portfolio * portfolio)
 	return 0;
 }
 
-int buyMax(float price, struct Portfolio * portfolio)
+int buyMax(double price, struct Portfolio *portfolio)
 {
 	int shares = (portfolio->money - 8.00) / price;
 	return buy(price, shares, portfolio);
 }
 
-int sell(float price, int shares, struct Portfolio * portfolio)
+int sell(double price, int shares, struct Portfolio *portfolio)
 {
 	if (portfolio->shares >= shares)
 	{
@@ -83,7 +98,7 @@ int sell(float price, int shares, struct Portfolio * portfolio)
 	return 0;
 }
 
-int sellMax(float price, struct Portfolio * portfolio)
+int sellMax(double price, struct Portfolio * portfolio)
 {
 	return sell(price, portfolio->shares, portfolio);
 }
@@ -91,7 +106,7 @@ int sellMax(float price, struct Portfolio * portfolio)
 int main(int argc, char ** argv)
 {	
 	struct Portfolio * portfolio = (struct Portfolio *) malloc(sizeof(struct Portfolio));
-	portfolio->money = 100000.00;
+	portfolio->money = 10000.00;
 	portfolio->shares = 0;
 	portfolio->commission = 8.00;
 	portfolio->trades = 0;
@@ -99,16 +114,16 @@ int main(int argc, char ** argv)
 	struct Quote * quotes = (struct Quote *) calloc(2600, sizeof(struct Quote));
 	int size = buildQuotes(quotes);
 	int i;
-	float lastPrice;
+	double lastPrice = 0.0;
 	for (i=2; i<size; i++)
 	{
 		struct Quote dayBefore = quotes[i-2];
 		struct Quote yesterday = quotes[i-1];
 		struct Quote today = quotes[i];
 		
-		float dayBeforeDiffOpenClose = dayBefore.close - dayBefore.open;
-		float yestDiffOpenClose = yesterday.close - yesterday.open;
-		float todayDiffOpenClose = today.close - today.open;
+		double dayBeforeDiffOpenClose = dayBefore.close - dayBefore.open;
+		double yestDiffOpenClose = yesterday.close - yesterday.open;
+		double todayDiffOpenClose = today.close - today.open;
 		
 		if (dayBeforeDiffOpenClose + yestDiffOpenClose + todayDiffOpenClose < 0 && portfolio->money > today.close)
 			buyMax(today.close, portfolio);
@@ -127,6 +142,3 @@ int main(int argc, char ** argv)
 	
 	return 0;
 }
-
-
-
