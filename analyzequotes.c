@@ -42,9 +42,15 @@ typedef struct
 		low,
 		volume;
 	} today;
+	double overall;
 } TradeWeight;
 
-
+typedef struct
+{
+	TradeWeight buyWeight;
+	TradeWeight sellWeight;
+	double result;
+} Strategy;
 
 Quote * buildQuotes(int count)
 {
@@ -110,8 +116,27 @@ int sell(double price, int shares, Portfolio *portfolio)
 	return 0;
 }
 
+double modDouble(double a, double b)
+{
+	double result = (int) (a/b);
+	return a - (result * b);
+}
+
 int maybe(Quote yesterday, Quote today, TradeWeight weight)
 {
+	double x = ((yesterday.open * modDouble(weight.yesterday.open, 1.0))
+		+ (yesterday.close * modDouble(weight.yesterday.close, 1.0))
+		+ (yesterday.high * modDouble(weight.yesterday.high, 1.0))
+		+ (yesterday.low * modDouble(weight.yesterday.low, 1.0))
+		+ (yesterday.volume * modDouble(weight.yesterday.volume, 1.0))
+		+ (today.open * modDouble(weight.today.open, 1.0))
+		+ (today.close * modDouble(weight.today.close, 1.0))
+		+ (today.high * modDouble(weight.today.high, 1.0))
+		+ (today.low * modDouble(weight.today.low, 1.0))
+		+ (today.volume * modDouble(weight.today.volume, 1.0)))
+		* weight.overall;
+	if (x >= 0.5)
+		return 1;
 	return 0;
 }
 
@@ -135,27 +160,43 @@ int maybeSell(Quote yesterday, Quote today, TradeWeight sellWeight, Portfolio *p
 TradeWeight * randomWeights(int count)
 {
 	TradeWeight *weights = calloc(count, sizeof(TradeWeight));
+	uchar *data = (uchar *) weights;
 
 	int i;
-	for (i=0; i<count; i++)
+	int chars = count * sizeof(TradeWeight);
+	for (i=0; i<chars; i++)
 	{
-		
+		data[i] = rand() % (UCHAR_MAX + 1);
 	}
 
 	return weights;
+}
+
+void bubbleSort(Strategy *s, int length)
+{
+	int i, j, flag = 1;    // set flag to 1 to start first pass
+	Strategy temp;             // holding variable
+	for(i = 1; (i <= length) && flag; i++)
+	{
+		flag = 0;
+		for (j=0; j < (length -1); j++)
+		{
+			if (s[j+1].result > s[j].result)      // ascending order simply changes to <
+			{ 
+				temp = s[j];             // swap elements
+				s[j] = s[j+1];
+				s[j+1] = temp;
+				flag = 1;               // indicates that a swap occurred.
+			}
+		}
+	}
+	return;
 }
 
 int main(int argc, char ** argv)
 {	
 	// initialize random number generator
 	srand(time(NULL));
-
-	// initialize portfolio
-	Portfolio *portfolio = (Portfolio *) malloc(sizeof(Portfolio));
-	portfolio->money = 10000.00;
-	portfolio->shares = 0;
-	portfolio->commission = 8.00;
-	portfolio->trades = 0;
 
 	// initialize quotes
 	int size = 2600;
@@ -165,13 +206,23 @@ int main(int argc, char ** argv)
 	int numWeights = 50;
 	TradeWeight *buyWeights = randomWeights(numWeights);
 	TradeWeight *sellWeights = randomWeights(numWeights);
+	Strategy *strategies = calloc(numWeights, sizeof(Strategy));
 
-	double lastPrice = 0.0;
-	int i;
-	for (i=1; i<(size/5); i++)
+	//printf("Days,Money,Trades,Shares,Price/Share,Total\n");
+
+	int j;
+	for (j=0; j<numWeights; j++)
 	{
-		int j;
-		for (j=0; j<numWeights; j++)
+		// initialize portfolio
+		Portfolio *portfolio = (Portfolio *) malloc(sizeof(Portfolio));
+		portfolio->money = 10000.00;
+		portfolio->shares = 0;
+		portfolio->commission = 8.00;
+		portfolio->trades = 0;
+
+		double lastPrice = 0.0;
+		int i;
+		for (i=1; i<(size/5); i++)
 		{
 			Quote yesterday = quotes[i-1];
 			Quote today = quotes[i];
@@ -181,14 +232,23 @@ int main(int argc, char ** argv)
 			
 			lastPrice = today.close;
 		}
+
+		/*
+		printf("%d,$%f,%d,%d,$%f,$%f\n",
+			i,
+			portfolio->money,
+			portfolio->trades,
+			portfolio->shares,
+			lastPrice,
+			portfolio->money + (portfolio->shares * lastPrice));
+		*/
+
+		strategies[j].buyWeight = buyWeights[j];
+		strategies[j].sellWeight = sellWeights[j];
+		strategies[j].result = portfolio->money + (portfolio->shares * lastPrice);
 	}
-	
-	printf("Results:\n");
-	printf("Days: %d\n", i);
-	printf("Money: $%f\n", portfolio->money);
-	printf("Trades: %d\n", portfolio->trades);
-	printf("Shares: %d at $%f/share\n", portfolio->shares, lastPrice);
-	printf("Total: $%f\n", portfolio->money + (portfolio->shares * lastPrice));
+
+	bubbleSort(strategies, numWeights);
 
 	return 0;
 }
