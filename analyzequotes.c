@@ -3,57 +3,13 @@
 #include <limits.h>
 #include <assert.h>
 #include <time.h>
-
-typedef unsigned char uchar;
-
-typedef struct
-{
-	int shares;
-	double money;
-	int trades;
-	double commission;
-} Portfolio;
-
-typedef struct
-{
-	int month,day,year;
-	double open,
-		close,
-		high,
-		low,
-		volume;
-} Quote;
-
-typedef struct
-{
-	struct
-	{
-		double open,
-		close,
-		high,
-		low,
-		volume;
-	} yesterday;
-	struct
-	{
-		double open,
-		close,
-		high,
-		low,
-		volume;
-	} today;
-	double overall;
-} TradeWeight;
-
-typedef struct
-{
-	TradeWeight buyWeight;
-	TradeWeight sellWeight;
-	double result;
-} Strategy;
+#include "analyzequotes.h"
 
 Quote * buildQuotes(int count)
 {
+	int month,day,year;
+	double open,high,low,close,volume;
+	int i=0;
 	Quote *quotes = (Quote *) calloc(count, sizeof(Quote));
 
 	FILE *fp;
@@ -64,9 +20,6 @@ Quote * buildQuotes(int count)
 		fprintf(stderr, "Can't open input file!\n");
 	}
 	
-	int month,day,year;
-	double open,high,low,close,volume;
-	int i=0;
 	//				m  d  y open high low close
 	while (fscanf(fp,
 					"%d/%d/%d\t%lf %lf %lf %lf %lf\n",
@@ -91,7 +44,6 @@ Quote * buildQuotes(int count)
 	
 	return quotes;
 }
-
 int buy(double price, int shares, Portfolio *portfolio)
 {
 	if (portfolio->money >= (price * shares) + portfolio->commission)
@@ -103,7 +55,6 @@ int buy(double price, int shares, Portfolio *portfolio)
 	}
 	return 0;
 }
-
 int sell(double price, int shares, Portfolio *portfolio)
 {
 	if (portfolio->shares >= shares)
@@ -115,32 +66,28 @@ int sell(double price, int shares, Portfolio *portfolio)
 	}
 	return 0;
 }
-
-double modDouble(double a, double b)
+double dblRemainder(double a)
 {
-	double result = (int) (a/b);
-	return a - (result * b);
+	return a - ((int) a);
 }
-
-int maybe(Quote yesterday, Quote today, TradeWeight weight)
+int maybe(Quote yesterday, Quote today, TradeWeight *weight)
 {
-	double x = ((yesterday.open * modDouble(weight.yesterday.open, 1.0))
-		+ (yesterday.close * modDouble(weight.yesterday.close, 1.0))
-		+ (yesterday.high * modDouble(weight.yesterday.high, 1.0))
-		+ (yesterday.low * modDouble(weight.yesterday.low, 1.0))
-		+ (yesterday.volume * modDouble(weight.yesterday.volume, 1.0))
-		+ (today.open * modDouble(weight.today.open, 1.0))
-		+ (today.close * modDouble(weight.today.close, 1.0))
-		+ (today.high * modDouble(weight.today.high, 1.0))
-		+ (today.low * modDouble(weight.today.low, 1.0))
-		+ (today.volume * modDouble(weight.today.volume, 1.0)))
-		* weight.overall;
+	double x = ((yesterday.open * weight->yesterday.open)
+		+ (yesterday.close * weight->yesterday.close)
+		+ (yesterday.high * weight->yesterday.high)
+		+ (yesterday.low * weight->yesterday.low)
+		+ (yesterday.volume * weight->yesterday.volume)
+		+ (today.open * weight->today.open)
+		+ (today.close * weight->today.close)
+		+ (today.high * weight->today.high)
+		+ (today.low * weight->today.low)
+		+ (today.volume * weight->today.volume))
+		* weight->overall;
 	if (x >= 0.5)
 		return 1;
 	return 0;
 }
-
-int maybeBuy(Quote yesterday, Quote today, TradeWeight buyWeight, Portfolio *portfolio)
+int maybeBuy(Quote yesterday, Quote today, TradeWeight *buyWeight, Portfolio *portfolio)
 {
 	if (!maybe(yesterday, today, buyWeight))
 		return 0;
@@ -148,30 +95,27 @@ int maybeBuy(Quote yesterday, Quote today, TradeWeight buyWeight, Portfolio *por
 	int shares = (portfolio->money - 8.00) / today.close;
 	return buy(today.close, shares, portfolio);
 }
-
-int maybeSell(Quote yesterday, Quote today, TradeWeight sellWeight, Portfolio *portfolio)
+int maybeSell(Quote yesterday, Quote today, TradeWeight *sellWeight, Portfolio *portfolio)
 {
 	if (!maybe(yesterday, today, sellWeight))
 		return 0;
 
 	return sell(today.close, portfolio->shares, portfolio);
 }
-
-TradeWeight * randomWeights(int count)
+TradeWeight * randomWeight()
 {
-	TradeWeight *weights = calloc(count, sizeof(TradeWeight));
-	uchar *data = (uchar *) weights;
+	TradeWeight *weight = malloc(sizeof(TradeWeight));
+	uchar *data = (uchar *) weight;
 
 	int i;
-	int chars = count * sizeof(TradeWeight);
+	int chars = sizeof(TradeWeight);
 	for (i=0; i<chars; i++)
 	{
 		data[i] = rand() % (UCHAR_MAX + 1);
 	}
 
-	return weights;
+	return weight;
 }
-
 void bubbleSort(Strategy *s, int length)
 {
 	int i, j, flag = 1;    // set flag to 1 to start first pass
@@ -181,7 +125,7 @@ void bubbleSort(Strategy *s, int length)
 		flag = 0;
 		for (j=0; j < (length -1); j++)
 		{
-			if (s[j+1].result > s[j].result)      // ascending order simply changes to <
+			if (s[j+1].result > s[j].result && s[j+1].trades > 0)      // ascending order simply changes to <
 			{ 
 				temp = s[j];             // swap elements
 				s[j] = s[j+1];
@@ -192,26 +136,12 @@ void bubbleSort(Strategy *s, int length)
 	}
 	return;
 }
-
-int main(int argc, char ** argv)
-{	
-	// initialize random number generator
-	srand(time(NULL));
-
-	// initialize quotes
-	int size = 2600;
-	Quote *quotes = buildQuotes(size);
-
-	// initialize trade weights (start with 50 each buy/sell)
-	int numWeights = 50;
-	TradeWeight *buyWeights = randomWeights(numWeights);
-	TradeWeight *sellWeights = randomWeights(numWeights);
-	Strategy *strategies = calloc(numWeights, sizeof(Strategy));
-
+void generation(Strategy *s, int sCount, Quote *q, int qCount)
+{
 	//printf("Days,Money,Trades,Shares,Price/Share,Total\n");
 
 	int j;
-	for (j=0; j<numWeights; j++)
+	for (j=0; j<sCount; j++)
 	{
 		// initialize portfolio
 		Portfolio *portfolio = (Portfolio *) malloc(sizeof(Portfolio));
@@ -222,13 +152,13 @@ int main(int argc, char ** argv)
 
 		double lastPrice = 0.0;
 		int i;
-		for (i=1; i<(size/5); i++)
+		for (i=1; i<(qCount/5); i++)
 		{
-			Quote yesterday = quotes[i-1];
-			Quote today = quotes[i];
+			Quote yesterday = q[i-1];
+			Quote today = q[i];
 		
-			maybeBuy(yesterday, today, buyWeights[j], portfolio) ||
-			maybeSell(yesterday, today, sellWeights[j], portfolio);
+			maybeBuy(yesterday, today, s[j].buyWeight, portfolio) ||
+			maybeSell(yesterday, today, s[j].sellWeight, portfolio);
 			
 			lastPrice = today.close;
 		}
@@ -243,12 +173,132 @@ int main(int argc, char ** argv)
 			portfolio->money + (portfolio->shares * lastPrice));
 		*/
 
-		strategies[j].buyWeight = buyWeights[j];
-		strategies[j].sellWeight = sellWeights[j];
-		strategies[j].result = portfolio->money + (portfolio->shares * lastPrice);
+		s[j].result = portfolio->money + (portfolio->shares * lastPrice);
+		s[j].trades = portfolio->trades;
+
+		free(portfolio);
+	}
+}
+void copyBytes(TradeWeight *twSource, TradeWeight *twDest)
+{
+	uchar *source = (uchar *) twSource;
+	uchar *dest = (uchar *) twDest;
+
+	unsigned int i;
+	for (i=0; i<sizeof(TradeWeight); i++)
+	{
+		dest[i] = source[i];
+	}
+}
+void mutate(Strategy *s, int sCount)
+{
+	// leave the top 25 alone -- mutate the bottom 25 based on the top 25
+	// (#26 is a spawn of #1, #27 of #2, etc.)
+
+	int i;
+	for (i=0; i<sCount/2; i++)
+	{
+		Strategy *source = &(s[i]);
+		Strategy *dest = &(s[i+(sCount/2)]);
+
+		// reset the result and trades
+		source->result = 0.0;
+		source->trades = 0;
+		dest->result = 0.0;
+		dest->trades = 0;
+		
+		// copy source to dest
+		copyBytes(source->buyWeight, dest->buyWeight);
+		copyBytes(source->sellWeight, dest->sellWeight);
+
+		// mutate destination
+		{
+			// pick either buy or sell weight randomly
+			uchar *weight = NULL;
+			if (rand() % 2)
+				weight = (uchar *) dest->buyWeight;
+			else
+				weight = (uchar *) dest->sellWeight;
+
+			// pick a bit index randomly
+			unsigned int idx = rand() % sizeof(TradeWeight);
+			while (idx >= 8)
+			{
+				weight++;
+				idx -= 8;
+			}
+			uchar mask = 1 << idx;
+			weight[0] ^= mask;
+		}
+
+		normalizeWeight(dest->buyWeight);
+		normalizeWeight(dest->sellWeight);
+	}
+}
+void printResults(Strategy *s, int sCount, int gCount)
+{
+	double median = s[sCount/2].result;
+	double mean = 0.0;
+	int i;
+	for (i=0; i<sCount; i++)
+	{
+		mean += s[i].result;
+	}
+	mean /= sCount;
+
+	printf("%d,%lf,%lf\n",
+		gCount,
+		median,
+		mean);
+}
+int main()
+{	
+	int gCount = 50, // generations
+		qCount = 2600, // quotes
+		sCount = 50; // strategies
+
+	// initialize random number generator
+	srand(time(NULL));
+
+	// initialize quotes
+	Quote *quotes = buildQuotes(qCount);
+
+	// initialize trade weights / strategies
+	Strategy *strategies = calloc(sCount, sizeof(Strategy));
+	int i;
+	for (i=0; i<sCount; i++)
+	{
+		strategies[i].buyWeight = randomWeight();
+		strategies[i].sellWeight = randomWeight();
+		strategies[i].result = 0.0;
+		strategies[i].trades = 0;
+
+		normalizeWeight(strategies[i].buyWeight);
+		normalizeWeight(strategies[i].sellWeight);
 	}
 
-	bubbleSort(strategies, numWeights);
+	printf("Generation,Median,Mean\n");
 
+	for (i=0; i<gCount; i++)
+	{
+		generation(strategies, sCount, quotes, qCount);
+		bubbleSort(strategies, sCount);
+		printResults(strategies, sCount, i);
+		mutate(strategies, sCount);
+	}
+	
 	return 0;
+}
+void normalizeWeight(TradeWeight *w)
+{
+	w->yesterday.open = dblRemainder(w->yesterday.open);
+	w->yesterday.close = dblRemainder(w->yesterday.close);
+	w->yesterday.high = dblRemainder(w->yesterday.high);
+	w->yesterday.low = dblRemainder(w->yesterday.low);
+	w->yesterday.volume = dblRemainder(w->yesterday.volume);
+	w->today.open = dblRemainder(w->today.open);
+	w->today.close = dblRemainder(w->today.close);
+	w->today.high = dblRemainder(w->today.high);
+	w->today.low = dblRemainder(w->today.low);
+	w->today.volume = dblRemainder(w->today.volume);
 }
