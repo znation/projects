@@ -1,15 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
+#include <assert.h>
+#include <time.h>
 
-struct Portfolio
+typedef unsigned char uchar;
+
+typedef struct
 {
 	int shares;
 	double money;
 	int trades;
 	double commission;
-};
+} Portfolio;
 
-struct Quote
+typedef struct
 {
 	int month,day,year;
 	double open,
@@ -17,21 +22,34 @@ struct Quote
 		high,
 		low,
 		volume;
-};
+} Quote;
 
-struct TradeWeight
+typedef struct
 {
-	double open,
+	struct
+	{
+		double open,
 		close,
 		high,
 		low,
-		volume,
-		price,
-		shares;
-};
+		volume;
+	} yesterday;
+	struct
+	{
+		double open,
+		close,
+		high,
+		low,
+		volume;
+	} today;
+} TradeWeight;
 
-int buildQuotes(struct Quote * quotes)
+
+
+Quote * buildQuotes(int count)
 {
+	Quote *quotes = (Quote *) calloc(count, sizeof(Quote));
+
 	FILE *fp;
 	fp = fopen("charts.tsv", "r");
 	
@@ -65,10 +83,10 @@ int buildQuotes(struct Quote * quotes)
 		i++;
 	}
 	
-	return i;
+	return quotes;
 }
 
-int buy(double price, int shares, struct Portfolio *portfolio)
+int buy(double price, int shares, Portfolio *portfolio)
 {
 	if (portfolio->money >= (price * shares) + portfolio->commission)
 	{
@@ -80,13 +98,7 @@ int buy(double price, int shares, struct Portfolio *portfolio)
 	return 0;
 }
 
-int buyMax(double price, struct Portfolio *portfolio)
-{
-	int shares = (portfolio->money - 8.00) / price;
-	return buy(price, shares, portfolio);
-}
-
-int sell(double price, int shares, struct Portfolio *portfolio)
+int sell(double price, int shares, Portfolio *portfolio)
 {
 	if (portfolio->shares >= shares)
 	{
@@ -98,39 +110,77 @@ int sell(double price, int shares, struct Portfolio *portfolio)
 	return 0;
 }
 
-int sellMax(double price, struct Portfolio * portfolio)
+int maybe(Quote yesterday, Quote today, TradeWeight weight)
 {
-	return sell(price, portfolio->shares, portfolio);
+	return 0;
+}
+
+int maybeBuy(Quote yesterday, Quote today, TradeWeight buyWeight, Portfolio *portfolio)
+{
+	if (!maybe(yesterday, today, buyWeight))
+		return 0;
+
+	int shares = (portfolio->money - 8.00) / today.close;
+	return buy(today.close, shares, portfolio);
+}
+
+int maybeSell(Quote yesterday, Quote today, TradeWeight sellWeight, Portfolio *portfolio)
+{
+	if (!maybe(yesterday, today, sellWeight))
+		return 0;
+
+	return sell(today.close, portfolio->shares, portfolio);
+}
+
+TradeWeight * randomWeights(int count)
+{
+	TradeWeight *weights = calloc(count, sizeof(TradeWeight));
+
+	int i;
+	for (i=0; i<count; i++)
+	{
+		
+	}
+
+	return weights;
 }
 
 int main(int argc, char ** argv)
 {	
-	struct Portfolio * portfolio = (struct Portfolio *) malloc(sizeof(struct Portfolio));
+	// initialize random number generator
+	srand(time(NULL));
+
+	// initialize portfolio
+	Portfolio *portfolio = (Portfolio *) malloc(sizeof(Portfolio));
 	portfolio->money = 10000.00;
 	portfolio->shares = 0;
 	portfolio->commission = 8.00;
 	portfolio->trades = 0;
 
-	struct Quote * quotes = (struct Quote *) calloc(2600, sizeof(struct Quote));
-	int size = buildQuotes(quotes);
-	int i;
+	// initialize quotes
+	int size = 2600;
+	Quote *quotes = buildQuotes(size);
+
+	// initialize trade weights (start with 50 each buy/sell)
+	int numWeights = 50;
+	TradeWeight *buyWeights = randomWeights(numWeights);
+	TradeWeight *sellWeights = randomWeights(numWeights);
+
 	double lastPrice = 0.0;
-	for (i=2; i<size; i++)
+	int i;
+	for (i=1; i<(size/5); i++)
 	{
-		struct Quote dayBefore = quotes[i-2];
-		struct Quote yesterday = quotes[i-1];
-		struct Quote today = quotes[i];
+		int j;
+		for (j=0; j<numWeights; j++)
+		{
+			Quote yesterday = quotes[i-1];
+			Quote today = quotes[i];
 		
-		double dayBeforeDiffOpenClose = dayBefore.close - dayBefore.open;
-		double yestDiffOpenClose = yesterday.close - yesterday.open;
-		double todayDiffOpenClose = today.close - today.open;
-		
-		if (dayBeforeDiffOpenClose + yestDiffOpenClose + todayDiffOpenClose < 0 && portfolio->money > today.close)
-			buyMax(today.close, portfolio);
-		else if (dayBeforeDiffOpenClose + yestDiffOpenClose + todayDiffOpenClose > 0 && portfolio->shares > 0)
-			sellMax(today.close, portfolio);
+			maybeBuy(yesterday, today, buyWeights[j], portfolio) ||
+			maybeSell(yesterday, today, sellWeights[j], portfolio);
 			
-		lastPrice = today.close;
+			lastPrice = today.close;
+		}
 	}
 	
 	printf("Results:\n");
@@ -139,6 +189,6 @@ int main(int argc, char ** argv)
 	printf("Trades: %d\n", portfolio->trades);
 	printf("Shares: %d at $%f/share\n", portfolio->shares, lastPrice);
 	printf("Total: $%f\n", portfolio->money + (portfolio->shares * lastPrice));
-	
+
 	return 0;
 }
