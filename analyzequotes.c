@@ -123,11 +123,11 @@ void randomizeWeight(TradeWeight *w)
 
 	normalizeWeight(w);
 }
-double score(Strategy s)
+int score(Strategy s)
 {
 	if (s.trades == 0)
 		return INT_MIN; // the worst possible strategy is one that didn't trade at all
-	return ((s.result - STARTING_MONEY) / s.trades);
+	return s.result;
 }
 void bubbleSort(Strategy *s, int length)
 {
@@ -230,27 +230,25 @@ void spawn(Strategy *source, Strategy *dest)
 }
 void mutate(Strategy *s, int sCount)
 {
-	// make the top quarter generate the next half by mutation
-	// if there are 100, #1 generates #25, #26,
-	// #2 generates #27, #28, etc.
-	// the last quarter are generated randomly
+	// For the ones that traded, drop the bottom half,
+	// and spawn new ones out of the top half.
+	// For the ones that didn't trade, drop them and randomize
 
 	int i;
-	for (i=0; i<sCount/4; i++)
+	int tCount = 0; // traded count
+
+	for (i=0; i<sCount && s[i].trades == 0; i++)
+		tCount++;
+
+	for (i=0; i<tCount/2; i++)
 	{
 		Strategy *source = &(s[i]);
-
-		// dest 1 -- 2nd quarter
-		Strategy *dest = &(s[i+(sCount/4)]);
-		spawn(source, dest);
-
-		// dest 2 - 3rd quarter
-		dest = &(s[i+(sCount/2)]);
+		Strategy *dest = &(s[i+(tCount/2)]);
 		spawn(source, dest);
 	}
 
-	// last quarter -- totally randomize
-	for (i=(3*sCount)/4; i<sCount; i++)
+	// didn't trade -- randomize
+	for (i=tCount; i<sCount; i++)
 	{
 		randomizeWeight(s[i].buyWeight);
 		randomizeWeight(s[i].sellWeight);
@@ -291,9 +289,9 @@ void printResults(Strategy *s, int sCount, int gIdx)
 }
 int main()
 {	
-	int gCount = 2000, // generations
+	int gCount = 20, // generations
 		qCount = 2600, // quotes
-		sCount = 100; // strategies
+		sCount = 1000; // strategies
 
 	// initialize random number generator
 	srand(time(NULL));
