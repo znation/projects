@@ -5,6 +5,8 @@
 #include <time.h>
 #include "analyzequotes.h"
 
+#define STARTING_MONEY 10000.0
+
 Quote * buildQuotes(int count)
 {
 	int month,day,year;
@@ -105,7 +107,12 @@ int maybeSell(Quote yesterday, Quote today, TradeWeight *sellWeight, Portfolio *
 TradeWeight * randomWeight()
 {
 	TradeWeight *weight = malloc(sizeof(TradeWeight));
-	uchar *data = (uchar *) weight;
+	randomizeWeight(weight);
+	return weight;
+}
+void randomizeWeight(TradeWeight *w)
+{
+	uchar *data = (uchar *) w;
 
 	int i;
 	int chars = sizeof(TradeWeight);
@@ -114,7 +121,13 @@ TradeWeight * randomWeight()
 		data[i] = rand() % (UCHAR_MAX + 1);
 	}
 
-	return weight;
+	normalizeWeight(w);
+}
+double score(Strategy s)
+{
+	if (s.trades == 0)
+		return INT_MIN; // the worst possible strategy is one that didn't trade at all
+	return ((s.result - STARTING_MONEY) / s.trades);
 }
 void bubbleSort(Strategy *s, int length)
 {
@@ -125,7 +138,7 @@ void bubbleSort(Strategy *s, int length)
 		flag = 0;
 		for (j=0; j < (length -1); j++)
 		{
-			if (s[j+1].result > s[j].result && s[j+1].trades > 0)      // ascending order simply changes to <
+			if (score(s[j+1]) > score(s[j]))     // ascending order simply changes to <
 			{ 
 				temp = s[j];             // swap elements
 				s[j] = s[j+1];
@@ -139,11 +152,11 @@ void bubbleSort(Strategy *s, int length)
 void generation(Strategy *s, int sCount, Quote *q, int qCount)
 {
 	int j;
+	Portfolio portfolio;
 	for (j=0; j<sCount; j++)
 	{
 		// initialize portfolio
-		Portfolio portfolio;
-		portfolio.money = 10000.00;
+		portfolio.money = STARTING_MONEY;
 		portfolio.shares = 0;
 		portfolio.commission = 8.00;
 		portfolio.trades = 0;
@@ -177,74 +190,108 @@ void copyBytes(TradeWeight *twSource, TradeWeight *twDest)
 		dest[i] = source[i];
 	}
 }
-void mutate(Strategy *s, int sCount)
+void spawn(Strategy *source, Strategy *dest)
 {
-	// leave the top 25 alone -- mutate the bottom 25 based on the top 25
-	// (#26 is a spawn of #1, #27 of #2, etc.)
-
-	int i;
-	for (i=0; i<sCount/2; i++)
-	{
-		Strategy *source = &(s[i]);
-		Strategy *dest = &(s[i+(sCount/2)]);
-
-		// reset the result and trades
-		source->result = 0.0;
-		source->trades = 0;
-		dest->result = 0.0;
-		dest->trades = 0;
+	// reset the result and trades
+	source->result = 0.0;
+	source->trades = 0;
+	dest->result = 0.0;
+	dest->trades = 0;
 		
-		// copy source to dest
-		copyBytes(source->buyWeight, dest->buyWeight);
-		copyBytes(source->sellWeight, dest->sellWeight);
+	// copy source to dest
+	copyBytes(source->buyWeight, dest->buyWeight);
+	copyBytes(source->sellWeight, dest->sellWeight);
 
-		// mutate destination
+	// mutate destination
+	int j;
+	for (j=0; j<10; j++)
+	{
+		// pick either buy or sell weight randomly
+		uchar *weight = NULL;
+		if (rand() % 2)
+			weight = (uchar *) dest->buyWeight;
+		else
+			weight = (uchar *) dest->sellWeight;
+
+		// pick a bit index randomly
+		unsigned int idx = rand() % sizeof(TradeWeight);
+		while (idx >= 8)
 		{
-			// pick either buy or sell weight randomly
-			uchar *weight = NULL;
-			if (rand() % 2)
-				weight = (uchar *) dest->buyWeight;
-			else
-				weight = (uchar *) dest->sellWeight;
-
-			// pick a bit index randomly
-			unsigned int idx = rand() % sizeof(TradeWeight);
-			while (idx >= 8)
-			{
-				weight++;
-				idx -= 8;
-			}
-			uchar mask = 1 << idx;
-			weight[0] ^= mask;
+			weight++;
+			idx -= 8;
 		}
 
-		normalizeWeight(dest->buyWeight);
-		normalizeWeight(dest->sellWeight);
+		uchar mask = 1 << idx;
+		weight[0] ^= mask;
+	}
+
+	normalizeWeight(dest->buyWeight);
+	normalizeWeight(dest->sellWeight);
+}
+void mutate(Strategy *s, int sCount)
+{
+	// make the top quarter generate the next half by mutation
+	// if there are 100, #1 generates #25, #26,
+	// #2 generates #27, #28, etc.
+	// the last quarter are generated randomly
+
+	int i;
+	for (i=0; i<sCount/4; i++)
+	{
+		Strategy *source = &(s[i]);
+
+		// dest 1 -- 2nd quarter
+		Strategy *dest = &(s[i+(sCount/4)]);
+		spawn(source, dest);
+
+		// dest 2 - 3rd quarter
+		dest = &(s[i+(sCount/2)]);
+		spawn(source, dest);
+	}
+
+	// last quarter -- totally randomize
+	for (i=(3*sCount)/4; i<sCount; i++)
+	{
+		randomizeWeight(s[i].buyWeight);
+		randomizeWeight(s[i].sellWeight);
 	}
 }
-void printResults(Strategy *s, int sCount, int gCount)
+void printResults(Strategy *s, int sCount, int gIdx)
 {
 	double median = s[sCount/2].result;
+	int medianTrades = s[sCount/2].trades;
+
 	double mean = 0.0;
+	int meanTrades = 0;
 	int i;
 	for (i=0; i<sCount; i++)
 	{
 		mean += s[i].result;
+		meanTrades += s[i].trades;
 	}
 	mean /= sCount;
+	meanTrades /= sCount;
+	
 	double worst = s[sCount-1].result;
-	double best = s[0].result;
+	int worstTrades = s[sCount-1].trades;
 
-	printf("%d,%lf,%lf,%lf,%lf\n",
-		gCount,
+	double best = s[0].result;
+	int bestTrades = s[0].trades;
+
+	printf("%d,%lf,%d,%lf,%d,%lf,%d,%lf,%d\n",
+		gIdx,
 		median,
+		medianTrades,
 		mean,
+		meanTrades,
 		worst,
-		best);
+		worstTrades,
+		best,
+		bestTrades);
 }
 int main()
 {	
-	int gCount = 200, // generations
+	int gCount = 2000, // generations
 		qCount = 2600, // quotes
 		sCount = 100; // strategies
 
@@ -263,12 +310,9 @@ int main()
 		strategies[i].sellWeight = randomWeight();
 		strategies[i].result = 0.0;
 		strategies[i].trades = 0;
-
-		normalizeWeight(strategies[i].buyWeight);
-		normalizeWeight(strategies[i].sellWeight);
 	}
 
-	printf("Generation,Median,Mean,Worst,Best\n");
+	printf("Generation,Median,Median Trades,Mean,Mean Trades,Worst,Worst Trades,Best, Best Trades\n");
 
 	for (i=0; i<gCount; i++)
 	{
