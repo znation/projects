@@ -138,17 +138,15 @@ void bubbleSort(Strategy *s, int length)
 }
 void generation(Strategy *s, int sCount, Quote *q, int qCount)
 {
-	//printf("Days,Money,Trades,Shares,Price/Share,Total\n");
-
 	int j;
 	for (j=0; j<sCount; j++)
 	{
 		// initialize portfolio
-		Portfolio *portfolio = (Portfolio *) malloc(sizeof(Portfolio));
-		portfolio->money = 10000.00;
-		portfolio->shares = 0;
-		portfolio->commission = 8.00;
-		portfolio->trades = 0;
+		Portfolio portfolio;
+		portfolio.money = 10000.00;
+		portfolio.shares = 0;
+		portfolio.commission = 8.00;
+		portfolio.trades = 0;
 
 		double lastPrice = 0.0;
 		int i;
@@ -157,26 +155,15 @@ void generation(Strategy *s, int sCount, Quote *q, int qCount)
 			Quote yesterday = q[i-1];
 			Quote today = q[i];
 		
-			maybeBuy(yesterday, today, s[j].buyWeight, portfolio) ||
-			maybeSell(yesterday, today, s[j].sellWeight, portfolio);
+			maybeBuy(yesterday, today, s[j].buyWeight, &portfolio) ||
+			maybeSell(yesterday, today, s[j].sellWeight, &portfolio);
 			
 			lastPrice = today.close;
 		}
 
-		/*
-		printf("%d,$%f,%d,%d,$%f,$%f\n",
-			i,
-			portfolio->money,
-			portfolio->trades,
-			portfolio->shares,
-			lastPrice,
-			portfolio->money + (portfolio->shares * lastPrice));
-		*/
+		s[j].result = portfolio.money + (portfolio.shares * lastPrice);
+		s[j].trades = portfolio.trades;
 
-		s[j].result = portfolio->money + (portfolio->shares * lastPrice);
-		s[j].trades = portfolio->trades;
-
-		free(portfolio);
 	}
 }
 void copyBytes(TradeWeight *twSource, TradeWeight *twDest)
@@ -245,17 +232,21 @@ void printResults(Strategy *s, int sCount, int gCount)
 		mean += s[i].result;
 	}
 	mean /= sCount;
+	double worst = s[sCount-1].result;
+	double best = s[0].result;
 
-	printf("%d,%lf,%lf\n",
+	printf("%d,%lf,%lf,%lf,%lf\n",
 		gCount,
 		median,
-		mean);
+		mean,
+		worst,
+		best);
 }
 int main()
 {	
-	int gCount = 50, // generations
+	int gCount = 200, // generations
 		qCount = 2600, // quotes
-		sCount = 50; // strategies
+		sCount = 100; // strategies
 
 	// initialize random number generator
 	srand(time(NULL));
@@ -277,7 +268,7 @@ int main()
 		normalizeWeight(strategies[i].sellWeight);
 	}
 
-	printf("Generation,Median,Mean\n");
+	printf("Generation,Median,Mean,Worst,Best\n");
 
 	for (i=0; i<gCount; i++)
 	{
