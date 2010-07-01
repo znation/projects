@@ -163,7 +163,7 @@ void generation(Strategy *s, int sCount, Quote *q, int qCount)
 
 		double lastPrice = 0.0;
 		int i;
-		for (i=1; i<(qCount/5); i++)
+		for (i=1; i<(qCount/3); i++)
 		{
 			Quote yesterday = q[i-1];
 			Quote today = q[i];
