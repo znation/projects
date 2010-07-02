@@ -237,7 +237,7 @@ void mutate(Strategy *s, int sCount)
 	int i;
 	int tCount = 0; // traded count
 
-	for (i=0; i<sCount && s[i].trades == 0; i++)
+	for (i=0; i<sCount && s[i].trades != 0; i++)
 		tCount++;
 
 	for (i=0; i<tCount/2; i++)
