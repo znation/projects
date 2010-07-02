@@ -3,6 +3,7 @@
 #include <limits.h>
 #include <assert.h>
 #include <time.h>
+#include <math.h>
 #include "analyzequotes.h"
 
 #define STARTING_MONEY 10000.0
@@ -127,7 +128,7 @@ int score(Strategy s)
 {
 	if (s.trades == 0)
 		return INT_MIN; // the worst possible strategy is one that didn't trade at all
-	return s.result;
+	return s.result * log10(s.trades);
 }
 void bubbleSort(Strategy *s, int length)
 {
@@ -289,9 +290,9 @@ void printResults(Strategy *s, int sCount, int gIdx)
 }
 int main()
 {	
-	int gCount = 20, // generations
+	int gCount = 40, // generations
 		qCount = 2600, // quotes
-		sCount = 1000; // strategies
+		sCount = 500; // strategies
 
 	// initialize random number generator
 	srand(time(NULL));
