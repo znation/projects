@@ -317,8 +317,14 @@ int main()
 		generation(strategies, sCount, quotes, qCount);
 		bubbleSort(strategies, sCount);
 		printResults(strategies, sCount, i);
-		mutate(strategies, sCount);
+		if (i != gCount-1)
+			mutate(strategies, sCount);
 	}
+	
+	// Pick the best strategy and run with it
+	double profit = strategies[0].result - STARTING_MONEY;
+	double percentProfit = (profit / STARTING_MONEY) * 100;
+	printf("Profitability: %lf%%\n", percentProfit);
 	
 	return 0;
 }
