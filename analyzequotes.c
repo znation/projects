@@ -72,7 +72,11 @@ int sell(double price, int shares, Portfolio *portfolio)
 }
 double dblRemainder(double a)
 {
-	return a - ((int) a);
+	double throwaway;
+	double retVal = modf(a, &throwaway);
+	assert(retVal >= -1.0);
+	assert(retVal <= 1.0);
+	return retVal;
 }
 int maybe(Quote yesterday, Quote today, TradeWeight *weight)
 {
@@ -114,11 +118,13 @@ TradeWeight * randomWeight()
 }
 void randomizeWeight(TradeWeight *w)
 {
+	assert(sizeof(TradeWeight) % sizeof(uchar) == 0);
+
 	uchar *data = (uchar *) w;
 
 	int i;
 	int chars = sizeof(TradeWeight);
-	for (i=0; i<chars; i++)
+	for (i=0; i<chars; i+=sizeof(uchar))
 	{
 		data[i] = rand() % (UCHAR_MAX + 1);
 	}
@@ -165,7 +171,7 @@ void generation(Strategy *s, int sCount, Quote *q, int qCount)
 
 		double lastPrice = 0.0;
 		int i;
-		for (i=1; i<(qCount/3); i++)
+		for (i=1; i<(qCount - (qCount/5)); i++)
 		{
 			Quote yesterday = q[i-1];
 			Quote today = q[i];
@@ -183,11 +189,13 @@ void generation(Strategy *s, int sCount, Quote *q, int qCount)
 }
 void copyBytes(TradeWeight *twSource, TradeWeight *twDest)
 {
+	assert(sizeof(TradeWeight) % sizeof(uchar) == 0);
+	
 	uchar *source = (uchar *) twSource;
 	uchar *dest = (uchar *) twDest;
 
 	unsigned int i;
-	for (i=0; i<sizeof(TradeWeight); i++)
+	for (i=0; i<sizeof(TradeWeight); i+=sizeof(uchar))
 	{
 		dest[i] = source[i];
 	}
@@ -206,22 +214,18 @@ void spawn(Strategy *source, Strategy *dest)
 
 	// mutate destination
 	// pick either buy or sell weight randomly
-	uchar *weight = NULL;
+	double *weight;
 	if (rand() % 2)
-		weight = (uchar *) dest->buyWeight;
+		weight = (double *) dest->buyWeight;
 	else
-		weight = (uchar *) dest->sellWeight;
+		weight = (double *) dest->sellWeight;
 
-	// pick a bit index randomly
-	unsigned int idx = rand() % sizeof(TradeWeight);
-	while (idx >= 8)
-	{
-		weight++;
-		idx -= 8;
-	}
-
-	uchar mask = 1 << idx;
-	weight[0] ^= mask;
+	// pick a double index randomly
+	unsigned int idx = rand() % (sizeof(TradeWeight)/sizeof(double));
+	if (rand() % 2)
+		weight[idx] += 0.001;
+	else
+		weight[idx] -= 0.001;
 	
 	normalizeWeight(dest->buyWeight);
 	normalizeWeight(dest->sellWeight);
@@ -300,26 +304,31 @@ void printResults(Strategy *s, int sCount, int gIdx)
 	double percentProfit = (profit / STARTING_MONEY) * 100;
 	mvprintw(9, 0, "Profitability: %lf%%\n", percentProfit);
 	
-	// show a bit representation of the trade weight
-	mvprintw(11, 0, "buyWeight");
-	mvprintw(11, 36, "sellWeight");
-	uchar *buyWeight = (uchar *) s[0].buyWeight;
-	uchar *sellWeight = (uchar *) s[0].sellWeight;
-	for (i=0; i<(int)sizeof(TradeWeight); i++)
+	// show a representation of the trade weight
+	mvprintw(11, 20, "buyWeight");
+	mvprintw(11, 50, "sellWeight");
+	mvprintw(12, 0, "y:");
+	mvprintw(12, 4, "open");
+	mvprintw(13, 4, "close");
+	mvprintw(14, 4, "high");
+	mvprintw(15, 4, "low");
+	mvprintw(16, 4, "volume");
+	mvprintw(17, 0, "t:");
+	mvprintw(17, 4, "open");
+	mvprintw(18, 4, "close");
+	mvprintw(19, 4, "high");
+	mvprintw(20, 4, "low");
+	mvprintw(21, 4, "volume");
+	mvprintw(22, 0, "overall");
+	TradeWeight *buyWeight = s[0].buyWeight;
+	TradeWeight *sellWeight = s[0].sellWeight;
+	for (i=0; i<(int)sizeof(TradeWeight); i+=sizeof(double))
 	{
-		int j;
-		for (j=0; j<8; j++)
-		{
-			int row = i / 4;
-			int col = (i % 4)*9;
-			uchar mask = 1 << j;
-			uchar buy = (mask & buyWeight[i]) >> j;
-			uchar sell = (mask & sellWeight[i]) >> j;
-			mvprintw(13+row, j+col, "%u", buy);
-			mvprintw(13+row, 36+j+col, "%u", sell);
-		}
+		int row = i / sizeof(double);
+		mvprintw(12+row, 20, "%lf", ((double *)buyWeight)[i]);
+		mvprintw(12+row, 50, "%lf", ((double *)sellWeight)[i]);
 	}
-
+	
 	refresh();
 }
 int main()
