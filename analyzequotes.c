@@ -222,10 +222,8 @@ void spawn(Strategy *source, Strategy *dest)
 
 	// pick a double index randomly
 	unsigned int idx = rand() % (sizeof(TradeWeight)/sizeof(double));
-	if (rand() % 2)
-		weight[idx] += 0.001;
-	else
-		weight[idx] -= 0.001;
+	double increment = (((double)(rand() % 1000)) - 500.0) / 1000.0;
+	weight[idx] += increment;
 	
 	normalizeWeight(dest->buyWeight);
 	normalizeWeight(dest->sellWeight);
