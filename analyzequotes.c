@@ -129,7 +129,7 @@ int score(Strategy s)
 {
 	if (s.trades == 0)
 		return INT_MIN; // the worst possible strategy is one that didn't trade at all
-	return s.result * log10(s.trades);
+	return s.result * ((log10(s.trades)/10.0)+1);
 }
 void bubbleSort(Strategy *s, int length)
 {
@@ -205,28 +205,24 @@ void spawn(Strategy *source, Strategy *dest)
 	copyBytes(source->sellWeight, dest->sellWeight);
 
 	// mutate destination
-	int j;
-	for (j=0; j<10; j++)
+	// pick either buy or sell weight randomly
+	uchar *weight = NULL;
+	if (rand() % 2)
+		weight = (uchar *) dest->buyWeight;
+	else
+		weight = (uchar *) dest->sellWeight;
+
+	// pick a bit index randomly
+	unsigned int idx = rand() % sizeof(TradeWeight);
+	while (idx >= 8)
 	{
-		// pick either buy or sell weight randomly
-		uchar *weight = NULL;
-		if (rand() % 2)
-			weight = (uchar *) dest->buyWeight;
-		else
-			weight = (uchar *) dest->sellWeight;
-
-		// pick a bit index randomly
-		unsigned int idx = rand() % sizeof(TradeWeight);
-		while (idx >= 8)
-		{
-			weight++;
-			idx -= 8;
-		}
-
-		uchar mask = 1 << idx;
-		weight[0] ^= mask;
+		weight++;
+		idx -= 8;
 	}
 
+	uchar mask = 1 << idx;
+	weight[0] ^= mask;
+	
 	normalizeWeight(dest->buyWeight);
 	normalizeWeight(dest->sellWeight);
 }
@@ -330,7 +326,7 @@ int main()
 {	
 	long gCount = LONG_MAX; // generations
 	int	qCount = 2600, // quotes
-		sCount = 100; // strategies
+		sCount = 20; // strategies
 
 	// initialize random number generator
 	srand(time(NULL));
