@@ -157,34 +157,36 @@ void bubbleSort(Strategy *s, int length)
 	}
 	return;
 }
+void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
+{
+	// initialize portfolio
+	Portfolio portfolio;
+	portfolio.money = STARTING_MONEY;
+	portfolio.shares = 0;
+	portfolio.commission = 8.00;
+	portfolio.trades = 0;
+	
+	double lastPrice = 0.0;
+	int i;
+	for (i=qFirst; i<qLast; i++)
+	{
+		Quote yesterday = q[i-1];
+		Quote today = q[i];
+	
+		maybeBuy(yesterday, today, s->buyWeight, &portfolio) ||
+		maybeSell(yesterday, today, s->sellWeight, &portfolio);
+		
+		lastPrice = today.close;
+	}
+	s->result = portfolio.money + (portfolio.shares * lastPrice);
+	s->trades = portfolio.trades;
+}
 void generation(Strategy *s, int sCount, Quote *q, int qCount)
 {
 	int j;
-	Portfolio portfolio;
 	for (j=0; j<sCount; j++)
 	{
-		// initialize portfolio
-		portfolio.money = STARTING_MONEY;
-		portfolio.shares = 0;
-		portfolio.commission = 8.00;
-		portfolio.trades = 0;
-
-		double lastPrice = 0.0;
-		int i;
-		for (i=1; i<(qCount - (qCount/5)); i++)
-		{
-			Quote yesterday = q[i-1];
-			Quote today = q[i];
-		
-			maybeBuy(yesterday, today, s[j].buyWeight, &portfolio) ||
-			maybeSell(yesterday, today, s[j].sellWeight, &portfolio);
-			
-			lastPrice = today.close;
-		}
-
-		s[j].result = portfolio.money + (portfolio.shares * lastPrice);
-		s[j].trades = portfolio.trades;
-
+		runStrategy(&(s[j]), q, 1, (qCount-(qCount/5)));
 	}
 }
 void copyBytes(TradeWeight *twSource, TradeWeight *twDest)
@@ -254,7 +256,12 @@ void mutate(Strategy *s, int sCount)
 		randomizeWeight(s[i].sellWeight);
 	}
 }
-void printResults(Strategy *s, int sCount, int gIdx)
+double percentProfit(Strategy s)
+{
+	double profit = s.result - STARTING_MONEY;
+	return (profit / STARTING_MONEY) * 100;
+}
+void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 {
 	double median = s[sCount/2].result;
 	int medianTrades = s[sCount/2].trades;
@@ -298,9 +305,10 @@ void printResults(Strategy *s, int sCount, int gIdx)
 	mvprintw(8, 15, "%d", bestTrades);
 		
 	// show profitability
-	double profit = s[0].result - STARTING_MONEY;
-	double percentProfit = (profit / STARTING_MONEY) * 100;
-	mvprintw(9, 0, "Profitability: %lf%%\n", percentProfit);
+	mvprintw(9, 0, "Profitability: %lf%%\n", percentProfit(s[0]));
+	double proof = proofStrategy(s[0], q, qCount);
+	mvprintw(10, 0, "Fitness: %lf%%\n", proof);
+
 	
 	// show a representation of the trade weight
 	mvprintw(11, 20, "buyWeight");
@@ -328,6 +336,11 @@ void printResults(Strategy *s, int sCount, int gIdx)
 	}
 	
 	refresh();
+}
+double proofStrategy(Strategy s, Quote *q, int qCount)
+{
+	runStrategy(&s, q, (qCount-(qCount/5)), qCount);
+	return percentProfit(s);
 }
 int main()
 {	
@@ -359,7 +372,7 @@ int main()
 	{
 		generation(strategies, sCount, quotes, qCount);
 		bubbleSort(strategies, sCount);
-		printResults(strategies, sCount, i);
+		printResults(strategies, sCount, i, quotes, qCount);
 		if (i != gCount-1)
 			mutate(strategies, sCount);
 	}
