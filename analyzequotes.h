@@ -6,7 +6,8 @@ typedef struct
 	double money;
 	int trades;
 	double commission;
-} Portfolio;
+}
+Portfolio;
 
 typedef struct
 {
@@ -16,7 +17,8 @@ typedef struct
 		high,
 		low,
 		volume;
-} Quote;
+}
+Quote;
 
 typedef struct
 {
@@ -37,7 +39,8 @@ typedef struct
 		volume;
 	} today;
 	double overall;
-} TradeWeight;
+}
+TradeWeight;
 
 typedef struct
 {
@@ -45,7 +48,8 @@ typedef struct
 	TradeWeight *sellWeight;
 	double result;
 	uint trades;
-} Strategy;
+}
+Strategy;
 
 Quote * buildQuotes(int count);
 int buy(double price, int shares, Portfolio *portfolio);
