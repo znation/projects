@@ -328,9 +328,9 @@ void printResults(Strategy *s, int sCount, int gIdx)
 }
 int main()
 {	
-	int gCount = 40, // generations
-		qCount = 2600, // quotes
-		sCount = 500; // strategies
+	long gCount = LONG_MAX; // generations
+	int	qCount = 2600, // quotes
+		sCount = 100; // strategies
 
 	// initialize random number generator
 	srand(time(NULL));
@@ -343,7 +343,7 @@ int main()
 
 	// initialize trade weights / strategies
 	Strategy *strategies = calloc(sCount, sizeof(Strategy));
-	int i;
+	long i;
 	for (i=0; i<sCount; i++)
 	{
 		strategies[i].buyWeight = randomWeight();
