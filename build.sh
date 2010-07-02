@@ -8,4 +8,5 @@ gcc \
 -Wmissing-declarations \
 -pg \
 -o analyzequotes.exe \
-analyzequotes.c
+analyzequotes.c \
+-lncurses

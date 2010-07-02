@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <time.h>
 #include <math.h>
+#include <ncurses/ncurses.h>
 #include "analyzequotes.h"
 
 #define STARTING_MONEY 10000.0
@@ -277,16 +278,53 @@ void printResults(Strategy *s, int sCount, int gIdx)
 	double best = s[0].result;
 	int bestTrades = s[0].trades;
 
-	printf("%d,%lf,%d,%lf,%d,%lf,%d,%lf,%d\n",
-		gIdx,
-		median,
-		medianTrades,
-		mean,
-		meanTrades,
-		worst,
-		worstTrades,
-		best,
-		bestTrades);
+	
+	mvprintw(0, 0, "Generation:");
+	mvprintw(1, 0, "Median:");
+	mvprintw(2, 0, "Median Trades:");
+	mvprintw(3, 0, "Mean:");
+	mvprintw(4, 0, "Mean Trades:");
+	mvprintw(5, 0, "Worst:");
+	mvprintw(6, 0, "Worst Trades:");
+	mvprintw(7, 0, "Best:");
+	mvprintw(8, 0, "Best Trades:");
+	
+	mvprintw(0, 15, "%d", gIdx);
+	mvprintw(1, 15, "%lf", median);
+	mvprintw(2, 15, "%d", medianTrades);
+	mvprintw(3, 15, "%lf", mean);
+	mvprintw(4, 15, "%d", meanTrades);
+	mvprintw(5, 15, "%lf", worst);
+	mvprintw(6, 15, "%d", worstTrades);
+	mvprintw(7, 15, "%lf", best);
+	mvprintw(8, 15, "%d", bestTrades);
+		
+	// show profitability
+	double profit = s[0].result - STARTING_MONEY;
+	double percentProfit = (profit / STARTING_MONEY) * 100;
+	mvprintw(9, 0, "Profitability: %lf%%\n", percentProfit);
+	
+	// show a bit representation of the trade weight
+	mvprintw(11, 0, "buyWeight");
+	mvprintw(11, 36, "sellWeight");
+	uchar *buyWeight = (uchar *) s[0].buyWeight;
+	uchar *sellWeight = (uchar *) s[0].sellWeight;
+	for (i=0; i<(int)sizeof(TradeWeight); i++)
+	{
+		int j;
+		for (j=0; j<8; j++)
+		{
+			int row = i / 4;
+			int col = (i % 4)*9;
+			uchar mask = 1 << j;
+			uchar buy = (mask & buyWeight[i]) >> j;
+			uchar sell = (mask & sellWeight[i]) >> j;
+			mvprintw(13+row, j+col, "%u", buy);
+			mvprintw(13+row, 36+j+col, "%u", sell);
+		}
+	}
+
+	refresh();
 }
 int main()
 {	
@@ -299,6 +337,9 @@ int main()
 
 	// initialize quotes
 	Quote *quotes = buildQuotes(qCount);
+	
+	// initialize ncurses screen
+	initscr();
 
 	// initialize trade weights / strategies
 	Strategy *strategies = calloc(sCount, sizeof(Strategy));
@@ -310,9 +351,7 @@ int main()
 		strategies[i].result = 0.0;
 		strategies[i].trades = 0;
 	}
-
-	printf("Generation,Median,Median Trades,Mean,Mean Trades,Worst,Worst Trades,Best, Best Trades\n");
-
+	
 	for (i=0; i<gCount; i++)
 	{
 		generation(strategies, sCount, quotes, qCount);
@@ -322,10 +361,9 @@ int main()
 			mutate(strategies, sCount);
 	}
 	
-	// Pick the best strategy and run with it
-	double profit = strategies[0].result - STARTING_MONEY;
-	double percentProfit = (profit / STARTING_MONEY) * 100;
-	printf("Profitability: %lf%%\n", percentProfit);
+	// teardown ncurses screen
+	getch();
+	endwin();
 	
 	return 0;
 }
