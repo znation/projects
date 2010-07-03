@@ -251,8 +251,12 @@ void spawn(Strategy *source, Strategy *dest)
 	// reset the result and trades
 	source->result = 0.0;
 	source->trades = 0;
+	source->firstTrade = NULL;
+	source->lastTrade = NULL;
 	dest->result = 0.0;
 	dest->trades = 0;
+	dest->firstTrade = NULL;
+	dest->lastTrade = NULL;
 		
 	// copy source to dest
 	copyBytes(source->buyWeight, dest->buyWeight);
@@ -307,6 +311,8 @@ double percentProfit(Strategy s)
 }
 void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 {
+	clear();
+
 	double median = s[sCount/2].result;
 	int medianTrades = s[sCount/2].trades;
 
