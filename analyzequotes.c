@@ -388,15 +388,14 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 	mvprintw(22, 0, "overall");
 	TradeWeight *buyWeight = s[0].buyWeight;
 	TradeWeight *sellWeight = s[0].sellWeight;
-	for (i=0; i<(int)sizeof(TradeWeight); i+=sizeof(double))
+	for (i=0; i<(int)sizeof(TradeWeight)/(int)sizeof(double); i++)
 	{
-		int row = i / sizeof(double);
-		mvprintw(12+row, 20, "%lf", ((double *)buyWeight)[i]);
-		mvprintw(12+row, 50, "%lf", ((double *)sellWeight)[i]);
+		mvprintw(12+i, 20, "%lf", ((double *)buyWeight)[i]);
+		mvprintw(12+i, 50, "%lf", ((double *)sellWeight)[i]);
 		
 		// bounds for the TradeWeight
-		assert(row >= 0);
-		assert(row <= 10);
+		assert(i >= 0);
+		assert(i <= 10);
 	}
 	
 	mvprintw(24, 0, "--- Trade History ---");
@@ -489,14 +488,15 @@ int main()
 }
 void normalizeWeight(TradeWeight *w)
 {
-	w->yesterday.open = dblRemainder(w->yesterday.open);
-	w->yesterday.close = dblRemainder(w->yesterday.close);
-	w->yesterday.high = dblRemainder(w->yesterday.high);
-	w->yesterday.low = dblRemainder(w->yesterday.low);
-	w->yesterday.volume = dblRemainder(w->yesterday.volume);
-	w->today.open = dblRemainder(w->today.open);
-	w->today.close = dblRemainder(w->today.close);
-	w->today.high = dblRemainder(w->today.high);
-	w->today.low = dblRemainder(w->today.low);
-	w->today.volume = dblRemainder(w->today.volume);
+	assert(sizeof(TradeWeight) % sizeof(double) == 0);
+	assert(sizeof(TradeWeight) == sizeof(double) * 11);
+	
+	double *d = (double *)w;
+	int i;
+	for (i=0; i<(int)sizeof(TradeWeight)/(int)sizeof(double); i++)
+	{
+		d[i] = dblRemainder(d[i]);
+		assert(d[i] >= -1.0);
+		assert(d[i] <= 1.0);
+	}
 }
