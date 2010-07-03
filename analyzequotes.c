@@ -62,6 +62,7 @@ int buy(double price, int shares, Portfolio *portfolio)
 }
 int sell(double price, int shares, Portfolio *portfolio)
 {
+	assert(shares > 0);
 	if (portfolio->shares >= shares)
 	{
 		portfolio->shares -= shares;
@@ -98,24 +99,27 @@ int maybe(Quote yesterday, Quote today, TradeWeight *weight)
 }
 int maybeBuy(Quote yesterday, Quote today, TradeWeight *buyWeight, Portfolio *portfolio)
 {
-	if (!maybe(yesterday, today, buyWeight))
-		return 0;
-
 	if (portfolio->money <= 8.00)
 		return 0;
 	
 	int shares = (portfolio->money - 8.00) / today.close;
 	if (shares <= 0)
 		return 0;
-	
-	return buy(today.close, shares, portfolio);
+		
+	if (maybe(yesterday, today, buyWeight))
+		return buy(today.close, shares, portfolio);
+
+	return 0;
 }
 int maybeSell(Quote yesterday, Quote today, TradeWeight *sellWeight, Portfolio *portfolio)
 {
-	if (!maybe(yesterday, today, sellWeight))
+	if (portfolio->shares < 1)
 		return 0;
 
-	return sell(today.close, portfolio->shares, portfolio);
+	if (maybe(yesterday, today, sellWeight))
+		return sell(today.close, portfolio->shares, portfolio);
+		
+	return 0;
 }
 TradeWeight * randomWeight()
 {
@@ -199,6 +203,7 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
 			trade->month = today.month;
 			trade->day = today.day;
 			trade->year = today.year;
+			trade->money = s->portfolio->money;
 			trade->prev = NULL;
 			trade->next = NULL;
 			
@@ -212,10 +217,9 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
 			{
 				assert(s->firstTrade != NULL);
 				assert(s->lastTrade != NULL);
-				TradeRecord *oldLast = s->lastTrade;
-				oldLast->next = trade;
+				s->lastTrade->next = trade;
+				trade->prev = s->lastTrade;
 				s->lastTrade = trade;
-				trade->prev = oldLast;
 			}
 		}
 		
@@ -410,7 +414,7 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 		mvprintw(row, 12, (trade->type & BOUGHT) ? "Buy" : "Sell");
 		mvprintw(row, 17, "%lf", trade->price);
 		mvprintw(row, 40, "%d", trade->shares);
-		mvprintw(row, 47, "%lf", s[0].portfolio->money);
+		mvprintw(row, 47, "%lf", trade->money);
 		row++;
 		trade = trade->next;
 	}

@@ -47,6 +47,7 @@ typedef struct TradeRecord
 	int month,day,year;
 	double price;
 	int shares;
+	double money;
 	struct TradeRecord *next;
 	struct TradeRecord *prev;
 } TradeRecord;
