@@ -7,7 +7,7 @@
 #include <ncurses/ncurses.h>
 #include "analyzequotes.h"
 
-#define STARTING_MONEY 10000.0
+#define STARTING_MONEY 100000.0
 
 Quote * buildQuotes(int count)
 {
@@ -50,6 +50,7 @@ Quote * buildQuotes(int count)
 }
 int buy(double price, int shares, Portfolio *portfolio)
 {
+	assert(shares > 0);
 	if (portfolio->money >= (price * shares) + portfolio->commission)
 	{
 		portfolio->shares += shares;
@@ -100,7 +101,13 @@ int maybeBuy(Quote yesterday, Quote today, TradeWeight *buyWeight, Portfolio *po
 	if (!maybe(yesterday, today, buyWeight))
 		return 0;
 
+	if (portfolio->money <= 8.00)
+		return 0;
+	
 	int shares = (portfolio->money - 8.00) / today.close;
+	if (shares <= 0)
+		return 0;
+	
 	return buy(today.close, shares, portfolio);
 }
 int maybeSell(Quote yesterday, Quote today, TradeWeight *sellWeight, Portfolio *portfolio)
@@ -173,8 +180,45 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
 		Quote yesterday = q[i-1];
 		Quote today = q[i];
 	
-		maybeBuy(yesterday, today, s->buyWeight, &portfolio) ||
-		maybeSell(yesterday, today, s->sellWeight, &portfolio);
+		int shares = maybeBuy(yesterday, today, s->buyWeight, &portfolio);
+		uchar type = 0;
+		if (shares)
+			type = BOUGHT;
+		else
+		{
+			shares = maybeSell(yesterday, today, s->sellWeight, &portfolio);
+			if (shares)
+				type = SOLD;
+		}
+		if (type)
+		{
+			TradeRecord *trade = (TradeRecord *) malloc(sizeof(TradeRecord));
+			
+			trade->shares = shares;
+			trade->type = type;
+			trade->price = today.close;
+			trade->month = today.month;
+			trade->day = today.day;
+			trade->year = today.year;
+			trade->prev = NULL;
+			trade->next = NULL;
+			
+			if (s->lastTrade == NULL)
+			{
+				assert(s->firstTrade == NULL);
+				s->firstTrade = trade;
+				s->lastTrade = trade;
+			}
+			else
+			{
+				assert(s->firstTrade != NULL);
+				assert(s->lastTrade != NULL);
+				TradeRecord *oldLast = s->lastTrade;
+				oldLast->next = trade;
+				s->lastTrade = trade;
+				trade->prev = oldLast;
+			}
+		}
 		
 		lastPrice = today.close;
 	}
@@ -333,14 +377,45 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 		int row = i / sizeof(double);
 		mvprintw(12+row, 20, "%lf", ((double *)buyWeight)[i]);
 		mvprintw(12+row, 50, "%lf", ((double *)sellWeight)[i]);
+		
+		// bounds for the TradeWeight
+		assert(row >= 0);
+		assert(row <= 10);
 	}
 	
+	mvprintw(24, 0, "--- Trade History ---");
+	mvprintw(25, 0, "YYYY/MM/DD");
+	mvprintw(25, 12, "Type");
+	mvprintw(25, 17, "Price");
+	mvprintw(25, 40, "Shares");
+	int row = 26;
+	TradeRecord *trade = s[0].firstTrade;
+	while (trade != NULL)
+	{
+		mvprintw(row, 0, "%04d/%02d/%02d",
+			trade->year, trade->month, trade->day);
+		mvprintw(row, 12, (trade->type & BOUGHT) ? "Buy" : "Sell");
+		mvprintw(row, 17, "%lf", trade->price);
+		mvprintw(row, 40, "%d", trade->shares);
+		row++;
+		trade = trade->next;
+	}
 	refresh();
 }
 double proofStrategy(Strategy s, Quote *q, int qCount)
 {
 	runStrategy(&s, q, (qCount-(qCount/5)), qCount);
 	return percentProfit(s);
+}
+void freeTradeHistory(TradeRecord *rec)
+{
+	if (rec == NULL)
+		return;
+	
+	if (rec->next != NULL)
+		freeTradeHistory(rec->next);
+	
+	free(rec);
 }
 int main()
 {	
@@ -366,6 +441,8 @@ int main()
 		strategies[i].sellWeight = randomWeight();
 		strategies[i].result = 0.0;
 		strategies[i].trades = 0;
+		strategies[i].firstTrade = NULL;
+		strategies[i].lastTrade = NULL;
 	}
 	
 	for (i=0; i<gCount; i++)
@@ -373,6 +450,15 @@ int main()
 		generation(strategies, sCount, quotes, qCount);
 		bubbleSort(strategies, sCount);
 		printResults(strategies, sCount, i, quotes, qCount);
+		
+		int j;
+		for (j=0; j<sCount; j++)
+		{
+			freeTradeHistory(strategies[j].firstTrade);
+			strategies[j].firstTrade = NULL;
+			strategies[j].lastTrade = NULL;
+		}
+		
 		if (i != gCount-1)
 			mutate(strategies, sCount);
 	}

@@ -1,15 +1,14 @@
 typedef unsigned char uchar;
 
-typedef struct
+typedef struct Portfolio
 {
 	int shares;
 	double money;
 	int trades;
 	double commission;
-}
-Portfolio;
+} Portfolio;
 
-typedef struct
+typedef struct Quote
 {
 	int month,day,year;
 	double open,
@@ -17,10 +16,9 @@ typedef struct
 		high,
 		low,
 		volume;
-}
-Quote;
+} Quote;
 
-typedef struct
+typedef struct TradeWeight
 {
 	struct
 	{
@@ -39,17 +37,29 @@ typedef struct
 		volume;
 	} today;
 	double overall;
-}
-TradeWeight;
+} TradeWeight;
 
-typedef struct
+#define BOUGHT 0x01
+#define SOLD 0x02
+typedef struct TradeRecord
+{
+	uchar type; // BOUGHT or SOLD
+	int month,day,year;
+	double price;
+	int shares;
+	struct TradeRecord *next;
+	struct TradeRecord *prev;
+} TradeRecord;
+
+typedef struct Strategy
 {
 	TradeWeight *buyWeight;
 	TradeWeight *sellWeight;
 	double result;
 	uint trades;
-}
-Strategy;
+	TradeRecord *firstTrade;
+	TradeRecord *lastTrade;
+} Strategy;
 
 Quote * buildQuotes(int count);
 int buy(double price, int shares, Portfolio *portfolio);
@@ -70,5 +80,6 @@ void mutate(Strategy *s, int sCount);
 double percentProfit(Strategy s);
 void printResults(Strategy *s, int sCount, int gCount, Quote *q, int qCount);
 double proofStrategy(Strategy s, Quote *q, int qCount);
+void freeTradeHistory(TradeRecord *rec);
 int main(void);
 void normalizeWeight(TradeWeight *w);
