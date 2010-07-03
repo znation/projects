@@ -56,9 +56,9 @@ typedef struct Strategy
 	TradeWeight *buyWeight;
 	TradeWeight *sellWeight;
 	double result;
-	uint trades;
 	TradeRecord *firstTrade;
 	TradeRecord *lastTrade;
+	Portfolio *portfolio;
 } Strategy;
 
 Quote * buildQuotes(int count);
@@ -75,6 +75,7 @@ void bubbleSort(Strategy *s, int length);
 void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast);
 void generation(Strategy *s, int sCount, Quote *q, int qCount);
 void copyBytes(TradeWeight *twSource, TradeWeight *twDest);
+Portfolio * initializePortfolio(void);
 void spawn(Strategy *source, Strategy *dest);
 void mutate(Strategy *s, int sCount);
 double percentProfit(Strategy s);

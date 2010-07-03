@@ -140,9 +140,9 @@ void randomizeWeight(TradeWeight *w)
 }
 int score(Strategy s)
 {
-	if (s.trades == 0)
+	if (s.portfolio->trades == 0)
 		return INT_MIN; // the worst possible strategy is one that didn't trade at all
-	return s.result * ((log10(s.trades)/10.0)+1);
+	return s.result * ((log10(s.portfolio->trades)/10.0)+1);
 }
 void bubbleSort(Strategy *s, int length)
 {
@@ -167,11 +167,10 @@ void bubbleSort(Strategy *s, int length)
 void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
 {
 	// initialize portfolio
-	Portfolio portfolio;
-	portfolio.money = STARTING_MONEY;
-	portfolio.shares = 0;
-	portfolio.commission = 8.00;
-	portfolio.trades = 0;
+	s->portfolio->money = STARTING_MONEY;
+	s->portfolio->shares = 0;
+	s->portfolio->commission = 8.00;
+	s->portfolio->trades = 0;
 	
 	double lastPrice = 0.0;
 	int i;
@@ -180,13 +179,13 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
 		Quote yesterday = q[i-1];
 		Quote today = q[i];
 	
-		int shares = maybeBuy(yesterday, today, s->buyWeight, &portfolio);
+		int shares = maybeBuy(yesterday, today, s->buyWeight, s->portfolio);
 		uchar type = 0;
 		if (shares)
 			type = BOUGHT;
 		else
 		{
-			shares = maybeSell(yesterday, today, s->sellWeight, &portfolio);
+			shares = maybeSell(yesterday, today, s->sellWeight, s->portfolio);
 			if (shares)
 				type = SOLD;
 		}
@@ -222,8 +221,7 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
 		
 		lastPrice = today.close;
 	}
-	s->result = portfolio.money + (portfolio.shares * lastPrice);
-	s->trades = portfolio.trades;
+	s->result = s->portfolio->money + (s->portfolio->shares * lastPrice);
 }
 void generation(Strategy *s, int sCount, Quote *q, int qCount)
 {
@@ -246,17 +244,25 @@ void copyBytes(TradeWeight *twSource, TradeWeight *twDest)
 		dest[i] = source[i];
 	}
 }
+Portfolio * initializePortfolio()
+{
+	Portfolio *p = (Portfolio *) malloc(sizeof(Portfolio));
+	
+	return p;
+}
 void spawn(Strategy *source, Strategy *dest)
 {
-	// reset the result and trades
+	// reset the Strategy members
 	source->result = 0.0;
-	source->trades = 0;
 	source->firstTrade = NULL;
 	source->lastTrade = NULL;
+	free(source->portfolio);
+	source->portfolio = initializePortfolio();
 	dest->result = 0.0;
-	dest->trades = 0;
 	dest->firstTrade = NULL;
 	dest->lastTrade = NULL;
+	free(dest->portfolio);
+	dest->portfolio = initializePortfolio();
 		
 	// copy source to dest
 	copyBytes(source->buyWeight, dest->buyWeight);
@@ -287,7 +293,7 @@ void mutate(Strategy *s, int sCount)
 	int i;
 	int tCount = 0; // traded count
 
-	for (i=0; i<sCount && s[i].trades != 0; i++)
+	for (i=0; i<sCount && s[i].portfolio->trades != 0; i++)
 		tCount++;
 
 	for (i=0; i<tCount/2; i++)
@@ -314,7 +320,7 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 	clear();
 
 	double median = s[sCount/2].result;
-	int medianTrades = s[sCount/2].trades;
+	int medianTrades = s[sCount/2].portfolio->trades;
 
 	double mean = 0.0;
 	int meanTrades = 0;
@@ -322,16 +328,16 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 	for (i=0; i<sCount; i++)
 	{
 		mean += s[i].result;
-		meanTrades += s[i].trades;
+		meanTrades += s[i].portfolio->trades;
 	}
 	mean /= sCount;
 	meanTrades /= sCount;
 	
 	double worst = s[sCount-1].result;
-	int worstTrades = s[sCount-1].trades;
+	int worstTrades = s[sCount-1].portfolio->trades;
 
 	double best = s[0].result;
-	int bestTrades = s[0].trades;
+	int bestTrades = s[0].portfolio->trades;
 
 	
 	mvprintw(0, 0, "Generation:");
@@ -394,6 +400,7 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 	mvprintw(25, 12, "Type");
 	mvprintw(25, 17, "Price");
 	mvprintw(25, 40, "Shares");
+	mvprintw(25, 47, "Money");
 	int row = 26;
 	TradeRecord *trade = s[0].firstTrade;
 	while (trade != NULL)
@@ -403,6 +410,7 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 		mvprintw(row, 12, (trade->type & BOUGHT) ? "Buy" : "Sell");
 		mvprintw(row, 17, "%lf", trade->price);
 		mvprintw(row, 40, "%d", trade->shares);
+		mvprintw(row, 47, "%lf", s[0].portfolio->money);
 		row++;
 		trade = trade->next;
 	}
@@ -446,7 +454,7 @@ int main()
 		strategies[i].buyWeight = randomWeight();
 		strategies[i].sellWeight = randomWeight();
 		strategies[i].result = 0.0;
-		strategies[i].trades = 0;
+		strategies[i].portfolio = initializePortfolio();
 		strategies[i].firstTrade = NULL;
 		strategies[i].lastTrade = NULL;
 	}
