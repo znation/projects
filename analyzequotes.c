@@ -12,12 +12,13 @@
 Quote * buildQuotes(int count)
 {
 	int month,day,year;
-	double open,high,low,close,volume;
+	double open,high,low,close;
+	long volume;
 	int i=0;
 	Quote *quotes = (Quote *) calloc(count, sizeof(Quote));
 
 	FILE *fp;
-	fp = fopen("charts.tsv", "r");
+	fp = fopen("data.csv", "r");
 	
 	if (fp == NULL)
 	{
@@ -26,7 +27,7 @@ Quote * buildQuotes(int count)
 	
 	//				m  d  y open high low close
 	while (fscanf(fp,
-					"%d/%d/%d\t%lf %lf %lf %lf %lf\n",
+					"%d/%d/%d,%lf,%lf,%lf,%lf,%ld\n",
 					&month,
 					&day,
 					&year,
@@ -43,6 +44,7 @@ Quote * buildQuotes(int count)
 		quotes[i].high = high;
 		quotes[i].low = low;
 		quotes[i].close = close;
+		quotes[i].volume = volume;
 		i++;
 	}
 	
@@ -437,7 +439,7 @@ void freeTradeHistory(TradeRecord *rec)
 int main()
 {	
 	long gCount = LONG_MAX; // generations
-	int	qCount = 2600, // quotes
+	int	qCount = 2858, // quotes
 		sCount = 20; // strategies
 
 	// initialize random number generator

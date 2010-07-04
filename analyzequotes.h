@@ -14,8 +14,8 @@ typedef struct Quote
 	double open,
 		close,
 		high,
-		low,
-		volume;
+		low;
+	long volume;
 } Quote;
 
 typedef struct TradeWeight
