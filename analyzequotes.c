@@ -354,23 +354,27 @@ int countTrades(Strategy s)
 	int i;
 	int buyTrades = 0;
 	int sellTrades = 0;
+	int shares = 0;
 	double shareAmt = 0;
+	double threshold = 0.00000001;
 	TradeRecord *trade = s.firstTrade;
 	for (i=0; trade != NULL; i++)
 	{
 		if (trade->type == BOUGHT)
 		{
 			buyTrades++;
+			shares += trade->shares;
 			shareAmt += (trade->shares * trade->price);
 		}
 		else if (trade->type == SOLD)
 		{
 			sellTrades++;
-			shareAmt -= (trade->shares * trade->price);
-			if (!(shareAmt >= 0))
+			shares -= trade->shares;
+			shareAmt = 0.0;
+			if (shares != 0)
 			{
 				debugPrintTradeHistory(s, shareAmt, i);
-				assert(shareAmt >= 0);
+				assert(shares == 0);
 			}
 		}
 		else
@@ -380,7 +384,6 @@ int countTrades(Strategy s)
 		trade = trade->next;
 	}
 	
-	double threshold = 0.00000001;
 	double total = shareAmt + s.lastTrade->money + (i * 8);
 	if (total - threshold > STARTING_MONEY
 		|| total + threshold < STARTING_MONEY)
