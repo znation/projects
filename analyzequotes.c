@@ -322,24 +322,29 @@ double percentProfit(Strategy s)
 }
 void debugPrintTradeHistory(Strategy s, double shareAmt, int tCount)
 {
+	clear();
 	TradeRecord *trade = s.firstTrade;
 		
-	fprintf(stderr, "DEBUG: starting money is %lf\n", STARTING_MONEY);
-	fprintf(stderr, "DEBUG: shareAmt is %lf\n", shareAmt);
-	fprintf(stderr, "DEBUG: lastTrade is %lf\n", s.lastTrade->money);
-	fprintf(stderr, "DEBUG: total is %lf\n", shareAmt + s.lastTrade->money + (tCount * 8));
+	mvprintw(0, 0, "DEBUG: starting money is %lf", STARTING_MONEY);
+	mvprintw(1, 0, "DEBUG: shareAmt is %lf", shareAmt);
+	mvprintw(2, 0, "DEBUG: lastTrade is %lf", s.lastTrade->money);
+	mvprintw(3, 0, "DEBUG: total is %lf", shareAmt + s.lastTrade->money + (tCount * 8));
 	
+	int i = 4;
 	while (trade != NULL)
 	{
-		fprintf(stderr, "DEBUG: %04d/%02d/%02d\t",
-			trade->year, trade->month, trade->day);
-		fprintf(stderr, (trade->type & BOUGHT) ? "Buy" : "Sell");
-		fprintf(stderr, "\t%lf\t", trade->price);
-		fprintf(stderr, "%d\t", trade->shares);
-		fprintf(stderr, "%lf\n", trade->money);
+		mvprintw(i, 0, "DEBUG: %04d/%02d/%02d\t%s\t%lf\t%d\t%lf",
+			trade->year, trade->month, trade->day,
+			(trade->type & BOUGHT) ? "Buy" : "Sell",
+			trade->price,
+			trade->shares,
+			trade->money);
 		assert(trade->next != trade);
 		trade = trade->next;
+		i++;
 	}
+	
+	refresh();
 }
 int countTrades(Strategy s)
 {
@@ -362,7 +367,7 @@ int countTrades(Strategy s)
 		{
 			sellTrades++;
 			shareAmt -= (trade->shares * trade->price);
-			if (shareAmt >= 0)
+			if (!(shareAmt >= 0))
 			{
 				debugPrintTradeHistory(s, shareAmt, i);
 				assert(shareAmt >= 0);
