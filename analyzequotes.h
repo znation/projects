@@ -5,7 +5,6 @@ typedef struct Portfolio
 	int shares;
 	double money;
 	int trades;
-	double commission;
 } Portfolio;
 
 typedef struct Quote

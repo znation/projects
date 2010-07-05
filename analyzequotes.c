@@ -8,6 +8,7 @@
 #include "analyzequotes.h"
 
 #define STARTING_MONEY 100000.0
+#define COMMISSION 8.0
 
 Quote * buildQuotes(int count)
 {
@@ -53,10 +54,10 @@ Quote * buildQuotes(int count)
 int buy(double price, int shares, Portfolio *portfolio)
 {
 	assert(shares > 0);
-	if (portfolio->money >= (price * shares) + portfolio->commission)
+	if (portfolio->money >= (price * shares) + COMMISSION)
 	{
 		portfolio->shares += shares;
-		portfolio->money -= (price * shares) + portfolio->commission;
+		portfolio->money -= (price * shares) + COMMISSION;
 		portfolio->trades += 1;
 		return shares;
 	}
@@ -68,7 +69,7 @@ int sell(double price, int shares, Portfolio *portfolio)
 	if (portfolio->shares >= shares)
 	{
 		portfolio->shares -= shares;
-		portfolio->money += (price * shares) - portfolio->commission;
+		portfolio->money += (price * shares) - COMMISSION;
 		portfolio->trades += 1;
 		return shares;
 	}
@@ -175,7 +176,6 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
 	// initialize portfolio
 	s->portfolio->money = STARTING_MONEY;
 	s->portfolio->shares = 0;
-	s->portfolio->commission = 8.00;
 	s->portfolio->trades = 0;
 	
 	double lastPrice = 0.0;
