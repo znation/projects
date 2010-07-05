@@ -57,7 +57,7 @@ int buy(double price, int shares, Portfolio *portfolio)
 	{
 		portfolio->shares += shares;
 		portfolio->money -= (price * shares) + portfolio->commission;
-		portfolio->trades++;
+		portfolio->trades += 1;
 		return shares;
 	}
 	return 0;
@@ -69,7 +69,7 @@ int sell(double price, int shares, Portfolio *portfolio)
 	{
 		portfolio->shares -= shares;
 		portfolio->money += (price * shares) - portfolio->commission;
-		portfolio->trades++;
+		portfolio->trades += 1;
 		return shares;
 	}
 	return 0;
@@ -260,6 +260,7 @@ void spawn(Strategy *source, Strategy *dest)
 {
 	// reset the Strategy members
 	source->result = 0.0;
+	freeTradeHistory(source->firstTrade);
 	source->firstTrade = NULL;
 	source->lastTrade = NULL;
 	free(source->portfolio);
@@ -321,6 +322,72 @@ double percentProfit(Strategy s)
 	double profit = s.result - STARTING_MONEY;
 	return (profit / STARTING_MONEY) * 100;
 }
+void debugPrintTradeHistory(Strategy s, double shareAmt, int tCount)
+{
+	TradeRecord *trade = s.firstTrade;
+		
+	fprintf(stderr, "DEBUG: starting money is %lf\n", STARTING_MONEY);
+	fprintf(stderr, "DEBUG: shareAmt is %lf\n", shareAmt);
+	fprintf(stderr, "DEBUG: lastTrade is %lf\n", s.lastTrade->money);
+	fprintf(stderr, "DEBUG: total is %lf\n", shareAmt + s.lastTrade->money + (tCount * 8));
+	
+	while (trade != NULL)
+	{
+		fprintf(stderr, "DEBUG: %04d/%02d/%02d\t",
+			trade->year, trade->month, trade->day);
+		fprintf(stderr, (trade->type & BOUGHT) ? "Buy" : "Sell");
+		fprintf(stderr, "\t%lf\t", trade->price);
+		fprintf(stderr, "%d\t", trade->shares);
+		fprintf(stderr, "%lf\n", trade->money);
+		assert(trade->next != trade);
+		trade = trade->next;
+	}
+}
+int countTrades(Strategy s)
+{
+	if (s.firstTrade == NULL)
+		return 0;
+	
+	int i;
+	int buyTrades = 0;
+	int sellTrades = 0;
+	double shareAmt = 0;
+	TradeRecord *trade = s.firstTrade;
+	for (i=0; trade != NULL; i++)
+	{
+		if (trade->type == BOUGHT)
+		{
+			buyTrades++;
+			shareAmt += (trade->shares * trade->price);
+		}
+		else if (trade->type == SOLD)
+		{
+			sellTrades++;
+			shareAmt -= (trade->shares * trade->price);
+			if (shareAmt >= 0)
+			{
+				debugPrintTradeHistory(s, shareAmt, i);
+				assert(shareAmt >= 0);
+			}
+		}
+		else
+			assert(FALSE);
+		
+		assert(trade->next != trade);
+		trade = trade->next;
+	}
+	
+	double threshold = 0.00000001;
+	double total = shareAmt + s.lastTrade->money + (i * 8);
+	if (total - threshold > STARTING_MONEY
+		|| total + threshold < STARTING_MONEY)
+	{
+		debugPrintTradeHistory(s, shareAmt, i);
+		assert(total == STARTING_MONEY);
+	}
+	
+	return i;
+}
 void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 {
 	clear();
@@ -345,6 +412,7 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 	double best = s[0].result;
 	int bestTrades = s[0].portfolio->trades;
 
+	assert(countTrades(s[0]) == s[0].portfolio->trades);
 	
 	mvprintw(0, 0, "Generation:");
 	mvprintw(1, 0, "Median:");
@@ -417,6 +485,7 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 		mvprintw(row, 40, "%d", trade->shares);
 		mvprintw(row, 47, "%lf", trade->money);
 		row++;
+		assert(trade->next != trade);
 		trade = trade->next;
 	}
 	refresh();
@@ -432,7 +501,9 @@ void freeTradeHistory(TradeRecord *rec)
 		return;
 	
 	if (rec->next != NULL)
+	{
 		freeTradeHistory(rec->next);
+	}
 	
 	free(rec);
 }

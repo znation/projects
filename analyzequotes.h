@@ -80,6 +80,8 @@ Portfolio * initializePortfolio(void);
 void spawn(Strategy *source, Strategy *dest);
 void mutate(Strategy *s, int sCount);
 double percentProfit(Strategy s);
+void debugPrintTradeHistory(Strategy s, double shareAmt, int tCount);
+int countTrades(Strategy s);
 void printResults(Strategy *s, int sCount, int gCount, Quote *q, int qCount);
 double proofStrategy(Strategy s, Quote *q, int qCount);
 void freeTradeHistory(TradeRecord *rec);
