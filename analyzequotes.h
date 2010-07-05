@@ -1,3 +1,5 @@
+#define MAX_TRADES 1000
+
 typedef unsigned char uchar;
 
 typedef struct Portfolio
@@ -47,7 +49,6 @@ typedef struct TradeRecord
 	double price;
 	int shares;
 	double money;
-	struct TradeRecord *next;
 } TradeRecord;
 
 typedef struct Strategy
@@ -55,8 +56,7 @@ typedef struct Strategy
 	TradeWeight *buyWeight;
 	TradeWeight *sellWeight;
 	double result;
-	TradeRecord *firstTrade;
-	TradeRecord *lastTrade;
+	TradeRecord *trades;
 	Portfolio *portfolio;
 } Strategy;
 
@@ -79,9 +79,9 @@ void spawn(Strategy *source, Strategy *dest);
 void mutate(Strategy *s, int sCount);
 double percentProfit(Strategy s);
 void debugPrintTradeHistory(Strategy s, double shareAmt, int tCount);
+int getLastTradeIndex(TradeRecord *trades);
 int countTrades(Strategy s);
 void printResults(Strategy *s, int sCount, int gCount, Quote *q, int qCount);
 double proofStrategy(Strategy s, Quote *q, int qCount);
-void freeTradeHistory(TradeRecord *rec);
 int main(void);
 void normalizeWeight(TradeWeight *w);

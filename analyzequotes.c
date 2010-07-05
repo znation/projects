@@ -197,8 +197,8 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
 		}
 		if (type)
 		{
-			TradeRecord *trade = (TradeRecord *) malloc(sizeof(TradeRecord));
-			
+			int idx = getLastTradeIndex(s->trades);
+			TradeRecord *trade = &(s->trades[idx]);
 			trade->shares = shares;
 			trade->type = type;
 			trade->price = today.close;
@@ -206,21 +206,6 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
 			trade->day = today.day;
 			trade->year = today.year;
 			trade->money = s->portfolio->money;
-			trade->next = NULL;
-			
-			if (s->lastTrade == NULL)
-			{
-				assert(s->firstTrade == NULL);
-				s->firstTrade = trade;
-				s->lastTrade = trade;
-			}
-			else
-			{
-				assert(s->firstTrade != NULL);
-				assert(s->lastTrade != NULL);
-				s->lastTrade->next = trade;
-				s->lastTrade = trade;
-			}
 		}
 		
 		lastPrice = today.close;
@@ -258,14 +243,9 @@ void spawn(Strategy *source, Strategy *dest)
 {
 	// reset the Strategy members
 	source->result = 0.0;
-	freeTradeHistory(source->firstTrade);
-	source->firstTrade = NULL;
-	source->lastTrade = NULL;
 	free(source->portfolio);
 	source->portfolio = initializePortfolio();
 	dest->result = 0.0;
-	dest->firstTrade = NULL;
-	dest->lastTrade = NULL;
 	free(dest->portfolio);
 	dest->portfolio = initializePortfolio();
 		
@@ -320,56 +300,61 @@ double percentProfit(Strategy s)
 	double profit = s.result - STARTING_MONEY;
 	return (profit / STARTING_MONEY) * 100;
 }
+int getLastTradeIndex(TradeRecord *trades)
+{
+	int i;
+	for (i=0; i<MAX_TRADES && trades[i].type; i++);
+	return i-1;
+}
 void debugPrintTradeHistory(Strategy s, double shareAmt, int tCount)
 {
 	clear();
-	TradeRecord *trade = s.firstTrade;
-		
+	TradeRecord *trades = s.trades;
+	
 	mvprintw(0, 0, "DEBUG: starting money is %lf", STARTING_MONEY);
 	mvprintw(1, 0, "DEBUG: shareAmt is %lf", shareAmt);
-	mvprintw(2, 0, "DEBUG: lastTrade is %lf", s.lastTrade->money);
-	mvprintw(3, 0, "DEBUG: total is %lf", shareAmt + s.lastTrade->money + (tCount * 8));
+	mvprintw(2, 0, "DEBUG: lastTrade is %lf", trades[getLastTradeIndex(trades)].money);
+	mvprintw(3, 0, "DEBUG: total is %lf", shareAmt + trades[getLastTradeIndex(trades)].money + (tCount * COMMISSION));
 	
-	int i = 4;
-	while (trade != NULL)
+	int i;
+	for (i=0; i<MAX_TRADES && trades[i].type; i++)
 	{
-		mvprintw(i, 0, "DEBUG: %04d/%02d/%02d\t%s\t%lf\t%d\t%lf",
-			trade->year, trade->month, trade->day,
-			(trade->type & BOUGHT) ? "Buy" : "Sell",
-			trade->price,
-			trade->shares,
-			trade->money);
-		assert(trade->next != trade);
-		trade = trade->next;
-		i++;
+		TradeRecord trade = trades[i];
+		mvprintw(i+4, 0, "DEBUG: %04d/%02d/%02d\t%s\t%lf\t%d\t%lf",
+			trade.year, trade.month, trade.day,
+			(trade.type & BOUGHT) ? "Buy" : "Sell",
+			trade.price,
+			trade.shares,
+			trade.money);
 	}
 	
 	refresh();
 }
 int countTrades(Strategy s)
 {
-	if (s.firstTrade == NULL)
-		return 0;
-	
 	int i;
 	int buyTrades = 0;
 	int sellTrades = 0;
 	int shares = 0;
 	double shareAmt = 0;
 	double threshold = 0.00000001;
-	TradeRecord *trade = s.firstTrade;
-	for (i=0; trade != NULL; i++)
+	TradeRecord *trades = s.trades;
+	for (i=0; i<MAX_TRADES && trades[i].type; i++)
 	{
-		if (trade->type == BOUGHT)
+		TradeRecord trade = trades[i];
+		assert(!((trade.type & BOUGHT) && (trade.type & SOLD)));
+		
+		if (trade.type & BOUGHT)
 		{
 			buyTrades++;
-			shares += trade->shares;
-			shareAmt += (trade->shares * trade->price);
+			shares += trade.shares;
+			shareAmt += (trade.shares * trade.price);
 		}
-		else if (trade->type == SOLD)
+		else
 		{
+			assert(trade.type & SOLD);
 			sellTrades++;
-			shares -= trade->shares;
+			shares -= trade.shares;
 			shareAmt = 0.0;
 			if (shares != 0)
 			{
@@ -377,14 +362,12 @@ int countTrades(Strategy s)
 				assert(shares == 0);
 			}
 		}
-		else
-			assert(FALSE);
-		
-		assert(trade->next != trade);
-		trade = trade->next;
 	}
 	
-	double total = shareAmt + s.lastTrade->money + (i * 8);
+	if (i == 0)
+		return i;
+	
+	double total = shareAmt + trades[i-1].money + (i * 8);
 	if (total - threshold > STARTING_MONEY
 		|| total + threshold < STARTING_MONEY)
 	{
@@ -418,7 +401,15 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 	double best = s[0].result;
 	int bestTrades = s[0].portfolio->trades;
 
-	assert(countTrades(s[0]) == s[0].portfolio->trades);
+	if (!(countTrades(s[0]) == s[0].portfolio->trades))
+	{
+		fprintf(stderr,
+			"\n\nDEBUG: counted %d trades, stored %d\n\n",
+			countTrades(s[0]),
+			s[0].portfolio->trades);
+		assert(countTrades(s[0]) == s[0].portfolio->trades);
+	}
+	
 	
 	mvprintw(0, 0, "Generation:");
 	mvprintw(1, 0, "Median:");
@@ -481,18 +472,17 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 	mvprintw(25, 40, "Shares");
 	mvprintw(25, 47, "Money");
 	int row = 26;
-	TradeRecord *trade = s[0].firstTrade;
-	while (trade != NULL)
+	TradeRecord *trades = s[0].trades;
+	for (i=0; i<MAX_TRADES && trades[i].type; i++)
 	{
+		TradeRecord trade = trades[i];
 		mvprintw(row, 0, "%04d/%02d/%02d",
-			trade->year, trade->month, trade->day);
-		mvprintw(row, 12, (trade->type & BOUGHT) ? "Buy" : "Sell");
-		mvprintw(row, 17, "%lf", trade->price);
-		mvprintw(row, 40, "%d", trade->shares);
-		mvprintw(row, 47, "%lf", trade->money);
+			trade.year, trade.month, trade.day);
+		mvprintw(row, 12, (trade.type & BOUGHT) ? "Buy" : "Sell");
+		mvprintw(row, 17, "%lf", trade.price);
+		mvprintw(row, 40, "%d", trade.shares);
+		mvprintw(row, 47, "%lf", trade.money);
 		row++;
-		assert(trade->next != trade);
-		trade = trade->next;
 	}
 	refresh();
 }
@@ -500,18 +490,6 @@ double proofStrategy(Strategy s, Quote *q, int qCount)
 {
 	runStrategy(&s, q, (qCount-(qCount/5)), qCount);
 	return percentProfit(s);
-}
-void freeTradeHistory(TradeRecord *rec)
-{
-	if (rec == NULL)
-		return;
-	
-	if (rec->next != NULL)
-	{
-		freeTradeHistory(rec->next);
-	}
-	
-	free(rec);
 }
 int main()
 {	
@@ -537,8 +515,7 @@ int main()
 		strategies[i].sellWeight = randomWeight();
 		strategies[i].result = 0.0;
 		strategies[i].portfolio = initializePortfolio();
-		strategies[i].firstTrade = NULL;
-		strategies[i].lastTrade = NULL;
+		strategies[i].trades = calloc(MAX_TRADES, sizeof(TradeRecord));
 	}
 	
 	for (i=0; i<gCount; i++)
@@ -546,14 +523,6 @@ int main()
 		generation(strategies, sCount, quotes, qCount);
 		bubbleSort(strategies, sCount);
 		printResults(strategies, sCount, i, quotes, qCount);
-		
-		int j;
-		for (j=0; j<sCount; j++)
-		{
-			freeTradeHistory(strategies[j].firstTrade);
-			strategies[j].firstTrade = NULL;
-			strategies[j].lastTrade = NULL;
-		}
 		
 		if (i != gCount-1)
 			mutate(strategies, sCount);
