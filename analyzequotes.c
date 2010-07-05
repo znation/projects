@@ -206,7 +206,6 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
 			trade->day = today.day;
 			trade->year = today.year;
 			trade->money = s->portfolio->money;
-			trade->prev = NULL;
 			trade->next = NULL;
 			
 			if (s->lastTrade == NULL)
@@ -220,7 +219,6 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
 				assert(s->firstTrade != NULL);
 				assert(s->lastTrade != NULL);
 				s->lastTrade->next = trade;
-				trade->prev = s->lastTrade;
 				s->lastTrade = trade;
 			}
 		}

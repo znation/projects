@@ -49,7 +49,6 @@ typedef struct TradeRecord
 	int shares;
 	double money;
 	struct TradeRecord *next;
-	struct TradeRecord *prev;
 } TradeRecord;
 
 typedef struct Strategy
