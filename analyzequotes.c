@@ -102,10 +102,10 @@ int maybe(Quote yesterday, Quote today, TradeWeight *weight)
 }
 int maybeBuy(Quote yesterday, Quote today, TradeWeight *buyWeight, Portfolio *portfolio)
 {
-	if (portfolio->money <= 8.00)
+	if (portfolio->money <= COMMISSION)
 		return 0;
 	
-	int shares = (portfolio->money - 8.00) / today.close;
+	int shares = (portfolio->money - COMMISSION) / today.close;
 	if (shares <= 0)
 		return 0;
 		
@@ -384,7 +384,7 @@ int countTrades(Strategy s)
 	if (i == 0)
 		return i;
 	
-	double total = shareAmt + trades[i-1].money + (i * 8);
+	double total = shareAmt + trades[i-1].money + (i * COMMISSION);
 	if (total - threshold > STARTING_MONEY
 		|| total + threshold < STARTING_MONEY)
 	{
