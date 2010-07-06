@@ -1,4 +1,7 @@
-#define MAX_TRADES 1000
+#define STARTING_MONEY 100000.0
+#define COMMISSION 8.0
+#define MAX_QUOTES 2858
+#define MAX_TRADES MAX_QUOTES
 
 typedef unsigned char uchar;
 

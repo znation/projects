@@ -7,9 +7,6 @@
 #include <ncurses/ncurses.h>
 #include "analyzequotes.h"
 
-#define STARTING_MONEY 100000.0
-#define COMMISSION 8.0
-
 Quote * buildQuotes(int count)
 {
 	int month,day,year;
@@ -430,9 +427,10 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 	mvprintw(25, 47, "Money");
 	int row = 26;
 	TradeRecord *trades = s[0].trades;
-	for (i=0; i<MAX_TRADES && trades[i].type; i++)
+	for (i=0; i<bestTrades; i++)
 	{
 		TradeRecord trade = trades[i];
+		assert(trade.type);
 		mvprintw(row, 0, "%04d/%02d/%02d",
 			trade.year, trade.month, trade.day);
 		mvprintw(row, 12, (trade.type & BOUGHT) ? "Buy" : "Sell");
@@ -451,7 +449,7 @@ double proofStrategy(Strategy s, Quote *q, int qCount)
 int main()
 {	
 	long gCount = LONG_MAX; // generations
-	int	qCount = 2858, // quotes
+	int	qCount = MAX_QUOTES, // quotes
 		sCount = 100; // strategies
 
 	// initialize random number generator
