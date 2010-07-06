@@ -178,6 +178,9 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
 	s->portfolio->shares = 0;
 	s->portfolio->trades = 0;
 	
+	// initialize trade history
+	initializeTradeHistory(s->trades);
+	
 	double lastPrice = 0.0;
 	int i;
 	for (i=qFirst; i<qLast; i++)
@@ -238,6 +241,20 @@ Portfolio * initializePortfolio()
 	Portfolio *p = (Portfolio *) malloc(sizeof(Portfolio));
 	
 	return p;
+}
+void initializeTradeHistory(TradeRecord *trades)
+{
+	int i;
+	for (i=0; i<MAX_TRADES && trades[i].type; i++)
+	{
+		trades[i].type = 0;
+		trades[i].month = 0;
+		trades[i].day = 0;
+		trades[i].year = 0;
+		trades[i].price = 0;
+		trades[i].shares = 0;
+		trades[i].money = 0;
+	}
 }
 void spawn(Strategy *source, Strategy *dest)
 {
@@ -516,6 +533,7 @@ int main()
 		strategies[i].result = 0.0;
 		strategies[i].portfolio = initializePortfolio();
 		strategies[i].trades = calloc(MAX_TRADES, sizeof(TradeRecord));
+		initializeTradeHistory(strategies[i].trades);
 	}
 	
 	for (i=0; i<gCount; i++)

@@ -75,6 +75,7 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast);
 void generation(Strategy *s, int sCount, Quote *q, int qCount);
 void copyBytes(TradeWeight *twSource, TradeWeight *twDest);
 Portfolio * initializePortfolio(void);
+void initializeTradeHistory(TradeRecord *trades);
 void spawn(Strategy *source, Strategy *dest);
 void mutate(Strategy *s, int sCount);
 double percentProfit(Strategy s);
