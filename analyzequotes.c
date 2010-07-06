@@ -452,7 +452,7 @@ int main()
 {	
 	long gCount = LONG_MAX; // generations
 	int	qCount = 2858, // quotes
-		sCount = 20; // strategies
+		sCount = 100; // strategies
 
 	// initialize random number generator
 	srand(time(NULL));
