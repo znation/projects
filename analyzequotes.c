@@ -161,7 +161,7 @@ void bubbleSort(Strategy *s, int length)
 		for (j=0; j < (length -1); j++)
 		{
 			if (score(s[j+1]) > score(s[j]))     // ascending order simply changes to <
-			{ 
+			{
 				temp = s[j];             // swap elements
 				s[j] = s[j+1];
 				s[j+1] = temp;
@@ -200,7 +200,7 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
 		}
 		if (type)
 		{
-			int idx = getLastTradeIndex(s->trades);
+			int idx = s->portfolio->trades - 1;
 			TradeRecord *trade = &(s->trades[idx]);
 			trade->shares = shares;
 			trade->type = type;
@@ -317,12 +317,6 @@ double percentProfit(Strategy s)
 	double profit = s.result - STARTING_MONEY;
 	return (profit / STARTING_MONEY) * 100;
 }
-int getLastTradeIndex(TradeRecord *trades)
-{
-	int i;
-	for (i=0; i<MAX_TRADES && trades[i].type; i++);
-	return i-1;
-}
 void debugPrintTradeHistory(Strategy s, double shareAmt, int tCount)
 {
 	clear();
@@ -330,8 +324,11 @@ void debugPrintTradeHistory(Strategy s, double shareAmt, int tCount)
 	
 	mvprintw(0, 0, "DEBUG: starting money is %lf", STARTING_MONEY);
 	mvprintw(1, 0, "DEBUG: shareAmt is %lf", shareAmt);
-	mvprintw(2, 0, "DEBUG: lastTrade is %lf", trades[getLastTradeIndex(trades)].money);
-	mvprintw(3, 0, "DEBUG: total is %lf", shareAmt + trades[getLastTradeIndex(trades)].money + (tCount * COMMISSION));
+	if (s.portfolio->trades > 0)
+	{
+		mvprintw(2, 0, "DEBUG: lastTrade is %lf", trades[s.portfolio->trades - 1].money);
+		mvprintw(3, 0, "DEBUG: total is %lf", shareAmt + trades[s.portfolio->trades - 1].money + (tCount * COMMISSION));
+	}
 	
 	int i;
 	for (i=0; i<MAX_TRADES && trades[i].type; i++)
@@ -346,53 +343,6 @@ void debugPrintTradeHistory(Strategy s, double shareAmt, int tCount)
 	}
 	
 	refresh();
-}
-int countTrades(Strategy s)
-{
-	int i;
-	int buyTrades = 0;
-	int sellTrades = 0;
-	int shares = 0;
-	double shareAmt = 0;
-	double threshold = 0.00000001;
-	TradeRecord *trades = s.trades;
-	for (i=0; i<MAX_TRADES && trades[i].type; i++)
-	{
-		TradeRecord trade = trades[i];
-		assert(!((trade.type & BOUGHT) && (trade.type & SOLD)));
-		
-		if (trade.type & BOUGHT)
-		{
-			buyTrades++;
-			shares += trade.shares;
-			shareAmt += (trade.shares * trade.price);
-		}
-		else
-		{
-			assert(trade.type & SOLD);
-			sellTrades++;
-			shares -= trade.shares;
-			shareAmt = 0.0;
-			if (shares != 0)
-			{
-				debugPrintTradeHistory(s, shareAmt, i);
-				assert(shares == 0);
-			}
-		}
-	}
-	
-	if (i == 0)
-		return i;
-	
-	double total = shareAmt + trades[i-1].money + (i * COMMISSION);
-	if (total - threshold > STARTING_MONEY
-		|| total + threshold < STARTING_MONEY)
-	{
-		debugPrintTradeHistory(s, shareAmt, i);
-		assert(total == STARTING_MONEY);
-	}
-	
-	return i;
 }
 void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 {
@@ -417,16 +367,6 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 
 	double best = s[0].result;
 	int bestTrades = s[0].portfolio->trades;
-
-	if (!(countTrades(s[0]) == s[0].portfolio->trades))
-	{
-		fprintf(stderr,
-			"\n\nDEBUG: counted %d trades, stored %d\n\n",
-			countTrades(s[0]),
-			s[0].portfolio->trades);
-		assert(countTrades(s[0]) == s[0].portfolio->trades);
-	}
-	
 	
 	mvprintw(0, 0, "Generation:");
 	mvprintw(1, 0, "Median:");
