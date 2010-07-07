@@ -197,6 +197,7 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
 		}
 		if (type)
 		{
+			assert(s->portfolio->trades >= 1);
 			int idx = s->portfolio->trades - 1;
 			TradeRecord *trade = &(s->trades[idx]);
 			trade->shares = shares;
@@ -242,7 +243,7 @@ Portfolio * initializePortfolio()
 void initializeTradeHistory(TradeRecord *trades)
 {
 	int i;
-	for (i=0; i<MAX_TRADES && trades[i].type; i++)
+	for (i=0; i<MAX_TRADES; i++)
 	{
 		trades[i].type = 0;
 		trades[i].month = 0;
@@ -430,7 +431,13 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 	for (i=0; i<bestTrades; i++)
 	{
 		TradeRecord trade = trades[i];
-		assert(trade.type);
+		if (!trade.type)
+		{
+			refresh();
+			fprintf(stderr, "\n\nDEBUG: type is %d\n\n", trade.type);
+			fprintf(stderr, "\n\nDEBUG: index is %d\n\n", i);
+			assert(trade.type);
+		}
 		mvprintw(row, 0, "%04d/%02d/%02d",
 			trade.year, trade.month, trade.day);
 		mvprintw(row, 12, (trade.type & BOUGHT) ? "Buy" : "Sell");
