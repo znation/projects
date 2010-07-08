@@ -102,7 +102,7 @@ int maybeBuy(Quote yesterday, Quote today, TradeWeight *buyWeight, Portfolio *po
 	if (portfolio->money <= COMMISSION)
 		return 0;
 	
-	int shares = (portfolio->money - COMMISSION) / today.close;
+	int shares = (int) ((portfolio->money - COMMISSION) / today.close);
 	if (shares <= 0)
 		return 0;
 		
@@ -142,7 +142,7 @@ void randomizeWeight(TradeWeight *w)
 
 	normalizeWeight(w);
 }
-int score(Strategy s)
+double score(Strategy s)
 {
 	if (s.portfolio->trades == 0)
 		return INT_MIN; // the worst possible strategy is one that didn't trade at all
@@ -237,7 +237,9 @@ void copyBytes(TradeWeight *twSource, TradeWeight *twDest)
 Portfolio * initializePortfolio()
 {
 	Portfolio *p = (Portfolio *) malloc(sizeof(Portfolio));
-	
+	p->money = STARTING_MONEY;
+	p->shares = 0;
+	p->trades = 0;
 	return p;
 }
 void initializeTradeHistory(TradeRecord *trades)

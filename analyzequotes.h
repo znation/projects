@@ -72,7 +72,7 @@ int maybeBuy(Quote yesterday, Quote today, TradeWeight *buyWeight, Portfolio *po
 int maybeSell(Quote yesterday, Quote today, TradeWeight *sellWeight, Portfolio *portfolio);
 TradeWeight * randomWeight(void);
 void randomizeWeight(TradeWeight *w);
-int score(Strategy s);
+double score(Strategy s);
 void bubbleSort(Strategy *s, int length);
 void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast);
 void generation(Strategy *s, int sCount, Quote *q, int qCount);
