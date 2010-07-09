@@ -474,8 +474,25 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 }
 double proofStrategy(Strategy s, Quote *q, int qCount)
 {
-	runStrategy(&s, q, (qCount-(qCount/5)), qCount);
-	return percentProfit(s);
+	// Set up a copy with the same weights
+	// but a new portfolio and history
+	Strategy *copy = (Strategy *) malloc(sizeof(Strategy));
+	copy->portfolio = initializePortfolio();
+	copy->buyWeight = s.buyWeight;
+	copy->sellWeight = s.sellWeight;
+	copy->result = 0.0;
+	copy->trades = (TradeRecord *) calloc(MAX_TRADES, sizeof(TradeRecord));
+	
+	// Run the strategy and get the percent profit
+	runStrategy(copy, q, (qCount-(qCount/5)), qCount);
+	double profit = percentProfit(*copy);
+	
+	// Teardown copy
+	free(copy->portfolio);
+	free(copy->trades);
+	free(copy);
+	
+	return profit;
 }
 int main()
 {	
