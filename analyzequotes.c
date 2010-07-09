@@ -344,6 +344,11 @@ void debugPrintTradeHistory(Strategy s, double shareAmt, int tCount)
 	
 	refresh();
 }
+void printTwoColumns(int line, int start, int offset, char *text)
+{
+	mvprintw(line, start, text);
+	mvprintw(line, start+offset, text);
+}
 void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 {
 	clear();
@@ -395,31 +400,36 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 
 	
 	// show a representation of the trade weight
-	mvprintw(11, 20, "buyWeight");
-	mvprintw(11, 50, "sellWeight");
-	mvprintw(12, 0, "y:");
-	mvprintw(12, 4, "open");
-	mvprintw(13, 4, "close");
-	mvprintw(14, 4, "high");
-	mvprintw(15, 4, "low");
-	mvprintw(16, 4, "volume");
-	mvprintw(17, 0, "t:");
-	mvprintw(17, 4, "open");
-	mvprintw(18, 4, "close");
-	mvprintw(19, 4, "high");
-	mvprintw(20, 4, "low");
-	mvprintw(21, 4, "volume");
-	mvprintw(22, 0, "overall");
+	mvprintw(11, 11, "buyWeight");
+	mvprintw(11, 44, "sellWeight");
+	printTwoColumns(12, 0, 44, "y:open");
+	printTwoColumns(12, 22, 44, "y:close");
+	printTwoColumns(13, 0, 44, "y:high");
+	printTwoColumns(13, 22, 44, "y:low");
+	printTwoColumns(14, 0, 44, "y:volume");
+	printTwoColumns(14, 22, 44, "t:open");
+	printTwoColumns(15, 0, 44, "t:close");
+	printTwoColumns(15, 22, 44, "t:high");
+	printTwoColumns(16, 0, 44, "t:low");
+	printTwoColumns(16, 22, 44, "t:volume");
+	printTwoColumns(17, 0, 44, "overall");
 	TradeWeight *buyWeight = s[0].buyWeight;
 	TradeWeight *sellWeight = s[0].sellWeight;
-	for (i=0; i<(int)sizeof(TradeWeight)/(int)sizeof(double); i++)
+	for (i=0; i<(int)sizeof(TradeWeight)/(int)sizeof(double); i+=2)
 	{
-		mvprintw(12+i, 20, "%lf", ((double *)buyWeight)[i]);
-		mvprintw(12+i, 50, "%lf", ((double *)sellWeight)[i]);
-		
 		// bounds for the TradeWeight
 		assert(i >= 0);
 		assert(i <= 10);
+		
+		int row = 12+(i/2);
+		mvprintw(row, 11, "%lf", ((double *)buyWeight)[i]);
+		mvprintw(row, 11+44, "%lf", ((double *)sellWeight)[i]);
+		
+		if (i <10)
+		{
+			mvprintw(row, 33, "%lf", ((double *)buyWeight)[i+1]);
+			mvprintw(row, 33+44, "%lf", ((double *)sellWeight)[i+1]);
+		}
 	}
 	
 	mvprintw(24, 0, "--- Trade History ---");
