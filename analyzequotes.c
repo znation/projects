@@ -432,13 +432,14 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 		}
 	}
 	
-	mvprintw(24, 0, "--- Trade History ---");
-	mvprintw(25, 0, "YYYY/MM/DD");
-	mvprintw(25, 12, "Type");
-	mvprintw(25, 17, "Price");
-	mvprintw(25, 40, "Shares");
-	mvprintw(25, 47, "Money");
-	int row = 26;
+	printTwoColumns(19, 0, 43, "--- Trade History ---");
+	printTwoColumns(20, 0, 43, "YYYY/MM/DD");
+	printTwoColumns(20, 11, 43, "Type");
+	printTwoColumns(20, 17, 43, "Price");
+	printTwoColumns(20, 24, 43, "Shares");
+	printTwoColumns(20, 31, 43, "Money");
+	int row = 21;
+	int offset = 0;
 	TradeRecord *trades = s[0].trades;
 	for (i=0; i<bestTrades; i++)
 	{
@@ -450,13 +451,24 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 			fprintf(stderr, "\n\nDEBUG: index is %d\n\n", i);
 			assert(trade.type);
 		}
-		mvprintw(row, 0, "%04d/%02d/%02d",
+		mvprintw(row, 0+offset, "%04d/%02d/%02d",
 			trade.year, trade.month, trade.day);
-		mvprintw(row, 12, (trade.type & BOUGHT) ? "Buy" : "Sell");
-		mvprintw(row, 17, "%lf", trade.price);
-		mvprintw(row, 40, "%d", trade.shares);
-		mvprintw(row, 47, "%lf", trade.money);
-		row++;
+		mvprintw(row, 11+offset, (trade.type & BOUGHT) ? "Buy" : "Sell");
+		mvprintw(row, 16+offset, "%7.2lf", trade.price);
+		mvprintw(row, 24+offset, "%d", trade.shares);
+		mvprintw(row, 31+offset, "%9.2lf", trade.money);
+		
+		
+		if (offset == 0)
+		{
+			mvprintw(row, 41+offset, "|");
+			offset = 43;
+		}
+		else
+		{
+			offset = 0;
+			row++;
+		}
 	}
 	refresh();
 }
