@@ -108,6 +108,10 @@ int maybeBuy(Quote yesterday, Quote today, Strategy *s) {
 int maybeSell(Quote yesterday, Quote today, Strategy *s) {
 	if (s->portfolio->shares < 1)
 		return 0;
+		
+	// don't sell if we'd lose money
+	if ((s->trades)[s->portfolio->trades-1].price > today.close)
+		return 0;
 
 	if (maybe(yesterday, today, s->sellWeight))
 		return sell(today.close, s->portfolio->shares, s->portfolio);
