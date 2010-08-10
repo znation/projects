@@ -7,8 +7,7 @@
 #include <ncurses/ncurses.h>
 #include "analyzequotes.h"
 
-Quote * buildQuotes(int count)
-{
+Quote * buildQuotes(int count) {
 	int month,day,year;
 	double open,high,low,close;
 	long volume;
@@ -48,8 +47,7 @@ Quote * buildQuotes(int count)
 	
 	return quotes;
 }
-int buy(double price, int shares, Portfolio *portfolio)
-{
+int buy(double price, int shares, Portfolio *portfolio) {
 	assert(shares > 0);
 	if (portfolio->money >= (price * shares) + COMMISSION)
 	{
@@ -60,8 +58,7 @@ int buy(double price, int shares, Portfolio *portfolio)
 	}
 	return 0;
 }
-int sell(double price, int shares, Portfolio *portfolio)
-{
+int sell(double price, int shares, Portfolio *portfolio) {
 	assert(shares > 0);
 	if (portfolio->shares >= shares)
 	{
@@ -72,16 +69,14 @@ int sell(double price, int shares, Portfolio *portfolio)
 	}
 	return 0;
 }
-double dblRemainder(double a)
-{
+double dblRemainder(double a) {
 	double throwaway;
 	double retVal = modf(a, &throwaway);
 	assert(retVal >= -1.0);
 	assert(retVal <= 1.0);
 	return retVal;
 }
-int maybe(Quote yesterday, Quote today, TradeWeight *weight)
-{
+int maybe(Quote yesterday, Quote today, TradeWeight *weight) {
 	double x = ((yesterday.open * weight->yesterday.open)
 		+ (yesterday.close * weight->yesterday.close)
 		+ (yesterday.high * weight->yesterday.high)
@@ -97,8 +92,7 @@ int maybe(Quote yesterday, Quote today, TradeWeight *weight)
 		return 1;
 	return 0;
 }
-int maybeBuy(Quote yesterday, Quote today, TradeWeight *buyWeight, Portfolio *portfolio)
-{
+int maybeBuy(Quote yesterday, Quote today, TradeWeight *buyWeight, Portfolio *portfolio) {
 	if (portfolio->money <= COMMISSION)
 		return 0;
 	
@@ -111,8 +105,7 @@ int maybeBuy(Quote yesterday, Quote today, TradeWeight *buyWeight, Portfolio *po
 
 	return 0;
 }
-int maybeSell(Quote yesterday, Quote today, TradeWeight *sellWeight, Portfolio *portfolio)
-{
+int maybeSell(Quote yesterday, Quote today, TradeWeight *sellWeight, Portfolio *portfolio) {
 	if (portfolio->shares < 1)
 		return 0;
 
@@ -121,14 +114,12 @@ int maybeSell(Quote yesterday, Quote today, TradeWeight *sellWeight, Portfolio *
 		
 	return 0;
 }
-TradeWeight * randomWeight()
-{
+TradeWeight * randomWeight() {
 	TradeWeight *weight = malloc(sizeof(TradeWeight));
 	randomizeWeight(weight);
 	return weight;
 }
-void randomizeWeight(TradeWeight *w)
-{
+void randomizeWeight(TradeWeight *w) {
 	assert(sizeof(TradeWeight) % sizeof(uchar) == 0);
 
 	uchar *data = (uchar *) w;
@@ -142,14 +133,12 @@ void randomizeWeight(TradeWeight *w)
 
 	normalizeWeight(w);
 }
-double score(Strategy s)
-{
+double score(Strategy s) {
 	if (s.portfolio->trades == 0)
 		return INT_MIN; // the worst possible strategy is one that didn't trade at all
 	return s.result * ((log10(s.portfolio->trades)/10.0)+1);
 }
-void bubbleSort(Strategy *s, int length)
-{
+void bubbleSort(Strategy *s, int length) {
 	int i, j, flag = 1;    // set flag to 1 to start first pass
 	Strategy temp;             // holding variable
 	for(i = 1; (i <= length) && flag; i++)
@@ -168,8 +157,7 @@ void bubbleSort(Strategy *s, int length)
 	}
 	return;
 }
-void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
-{
+void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast) {
 	// initialize portfolio
 	s->portfolio->money = STARTING_MONEY;
 	s->portfolio->shares = 0;
@@ -213,16 +201,14 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast)
 	}
 	s->result = s->portfolio->money + (s->portfolio->shares * lastPrice);
 }
-void generation(Strategy *s, int sCount, Quote *q, int qCount)
-{
+void generation(Strategy *s, int sCount, Quote *q, int qCount) {
 	int j;
 	for (j=0; j<sCount; j++)
 	{
 		runStrategy(&(s[j]), q, 1, (qCount-(qCount/5)));
 	}
 }
-void copyBytes(TradeWeight *twSource, TradeWeight *twDest)
-{
+void copyBytes(TradeWeight *twSource, TradeWeight *twDest) {
 	assert(sizeof(TradeWeight) % sizeof(uchar) == 0);
 	
 	uchar *source = (uchar *) twSource;
@@ -234,16 +220,14 @@ void copyBytes(TradeWeight *twSource, TradeWeight *twDest)
 		dest[i] = source[i];
 	}
 }
-Portfolio * initializePortfolio()
-{
+Portfolio * initializePortfolio() {
 	Portfolio *p = (Portfolio *) malloc(sizeof(Portfolio));
 	p->money = STARTING_MONEY;
 	p->shares = 0;
 	p->trades = 0;
 	return p;
 }
-void initializeTradeHistory(TradeRecord *trades)
-{
+void initializeTradeHistory(TradeRecord *trades) {
 	int i;
 	for (i=0; i<MAX_TRADES; i++)
 	{
@@ -256,8 +240,7 @@ void initializeTradeHistory(TradeRecord *trades)
 		trades[i].money = 0;
 	}
 }
-void spawn(Strategy *source, Strategy *dest)
-{
+void spawn(Strategy *source, Strategy *dest) {
 	// reset the Strategy members
 	source->result = 0.0;
 	free(source->portfolio);
@@ -286,8 +269,7 @@ void spawn(Strategy *source, Strategy *dest)
 	normalizeWeight(dest->buyWeight);
 	normalizeWeight(dest->sellWeight);
 }
-void mutate(Strategy *s, int sCount)
-{
+void mutate(Strategy *s, int sCount) {
 	// For the ones that traded, drop the bottom half,
 	// and spawn new ones out of the top half.
 	// For the ones that didn't trade, drop them and randomize
@@ -312,13 +294,11 @@ void mutate(Strategy *s, int sCount)
 		randomizeWeight(s[i].sellWeight);
 	}
 }
-double percentProfit(Strategy s)
-{
+double percentProfit(Strategy s) {
 	double profit = s.result - STARTING_MONEY;
 	return (profit / STARTING_MONEY) * 100;
 }
-void debugPrintTradeHistory(Strategy s, double shareAmt, int tCount)
-{
+void debugPrintTradeHistory(Strategy s, double shareAmt, int tCount) {
 	clear();
 	TradeRecord *trades = s.trades;
 	
@@ -344,13 +324,11 @@ void debugPrintTradeHistory(Strategy s, double shareAmt, int tCount)
 	
 	refresh();
 }
-void printTwoColumns(int line, int start, int offset, char *text)
-{
+void printTwoColumns(int line, int start, int offset, char *text) {
 	mvprintw(line, start, text);
 	mvprintw(line, start+offset, text);
 }
-void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
-{
+void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount) {
 	clear();
 
 	double median = s[sCount/2].result;
@@ -472,8 +450,7 @@ void printResults(Strategy *s, int sCount, int gIdx, Quote *q, int qCount)
 	}
 	refresh();
 }
-double proofStrategy(Strategy s, Quote *q, int qCount)
-{
+double proofStrategy(Strategy s, Quote *q, int qCount) {
 	// Set up a copy with the same weights
 	// but a new portfolio and history
 	Strategy *copy = (Strategy *) malloc(sizeof(Strategy));
@@ -494,8 +471,7 @@ double proofStrategy(Strategy s, Quote *q, int qCount)
 	
 	return profit;
 }
-int main()
-{	
+int main() {	
 	long gCount = LONG_MAX; // generations
 	int	qCount = MAX_QUOTES, // quotes
 		sCount = 100; // strategies
@@ -538,8 +514,7 @@ int main()
 	
 	return 0;
 }
-void normalizeWeight(TradeWeight *w)
-{
+void normalizeWeight(TradeWeight *w) {
 	assert(sizeof(TradeWeight) % sizeof(double) == 0);
 	assert(sizeof(TradeWeight) == sizeof(double) * 11);
 	
