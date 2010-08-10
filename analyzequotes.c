@@ -92,25 +92,25 @@ int maybe(Quote yesterday, Quote today, TradeWeight *weight) {
 		return 1;
 	return 0;
 }
-int maybeBuy(Quote yesterday, Quote today, TradeWeight *buyWeight, Portfolio *portfolio) {
-	if (portfolio->money <= COMMISSION)
+int maybeBuy(Quote yesterday, Quote today, Strategy *s) {
+	if (s->portfolio->money <= COMMISSION)
 		return 0;
 	
-	int shares = (int) ((portfolio->money - COMMISSION) / today.close);
+	int shares = (int) ((s->portfolio->money - COMMISSION) / today.close);
 	if (shares <= 0)
 		return 0;
 		
-	if (maybe(yesterday, today, buyWeight))
-		return buy(today.close, shares, portfolio);
+	if (maybe(yesterday, today, s->buyWeight))
+		return buy(today.close, shares, s->portfolio);
 
 	return 0;
 }
-int maybeSell(Quote yesterday, Quote today, TradeWeight *sellWeight, Portfolio *portfolio) {
-	if (portfolio->shares < 1)
+int maybeSell(Quote yesterday, Quote today, Strategy *s) {
+	if (s->portfolio->shares < 1)
 		return 0;
 
-	if (maybe(yesterday, today, sellWeight))
-		return sell(today.close, portfolio->shares, portfolio);
+	if (maybe(yesterday, today, s->sellWeight))
+		return sell(today.close, s->portfolio->shares, s->portfolio);
 		
 	return 0;
 }
@@ -173,13 +173,13 @@ void runStrategy(Strategy *s, Quote *q, int qFirst, int qLast) {
 		Quote yesterday = q[i-1];
 		Quote today = q[i];
 	
-		int shares = maybeBuy(yesterday, today, s->buyWeight, s->portfolio);
+		int shares = maybeBuy(yesterday, today, s);
 		uchar type = 0;
 		if (shares)
 			type = BOUGHT;
 		else
 		{
-			shares = maybeSell(yesterday, today, s->sellWeight, s->portfolio);
+			shares = maybeSell(yesterday, today, s);
 			if (shares)
 				type = SOLD;
 		}
