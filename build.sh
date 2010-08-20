@@ -8,7 +8,6 @@ gcc \
 -Wmissing-declarations \
 -pg \
 -g \
--O2 \
 -o analyzequotes.exe \
 analyzequotes.c \
 -lncurses
