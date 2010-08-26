@@ -32,10 +32,10 @@ namespace stockmarket
             threads.Add(new Thread(Stockmarket.main));
 
             this.Closing += new CancelEventHandler(MainWindow_Closing);
-            CompositionTarget.Rendering += new EventHandler(CompositionTarget_Rendering);
+            CompositionTarget.Rendering += new EventHandler(Render);
         }
 
-        void CompositionTarget_Rendering(object sender, EventArgs e)
+        void Render(object sender, EventArgs e)
         {
             UpdateResults();
         }

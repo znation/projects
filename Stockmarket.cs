@@ -425,7 +425,30 @@ namespace stockmarket
         }
         private static void printResults(List<Strategy> s, int sCount, long gIdx, List<Quote> q, int qCount)
         {
-            MainWindow.resultText = String.Format("best is {0}", s[0].result);
+            StringBuilder sb = new StringBuilder();
+
+            double mean = 0.0;
+            int meanTrades = 0;
+            int i;
+            for (i = 0; i < sCount; i++)
+            {
+                mean += s[i].result;
+                meanTrades += s[i].portfolio.trades;
+            }
+            mean /= sCount;
+            meanTrades /= sCount;
+
+            sb.AppendFormat("Generation:    {0}\n", gIdx);
+            sb.AppendFormat("Median:        {0}\n", s[sCount / 2].result);
+            sb.AppendFormat("Median Trades: {0}\n", s[sCount / 2].portfolio.trades);
+            sb.AppendFormat("Mean:          {0}\n", mean);
+            sb.AppendFormat("Mean Trades:   {0}\n", meanTrades);
+            sb.AppendFormat("Worst:         {0}\n", s[s.Count - 1].result);
+            sb.AppendFormat("Worst Trades:  {0}\n", s[s.Count - 1].portfolio.trades);
+            sb.AppendFormat("Best:          {0}\n", s[0].result);
+            sb.AppendFormat("Best Trades:   {0}\n", s[0].portfolio.trades);
+
+            MainWindow.resultText = sb.ToString();
         }
         private static double proofStrategy(Strategy s, List<Quote> q, int qCount)
         {
