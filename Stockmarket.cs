@@ -8,276 +8,11 @@ using System.Diagnostics;
 
 namespace stockmarket
 {
-    internal class Portfolio
-    {
-        internal int shares;
-        internal double money;
-        internal int trades;
-
-        internal Portfolio()
-        {
-            shares = 0;
-            money = Stockmarket.STARTING_MONEY;
-            trades = 0;
-        }
-
-        internal Portfolio copy()
-        {
-            Portfolio p = new Portfolio();
-            p.shares = shares;
-            p.money = money;
-            p.trades = trades;
-            return p;
-        }
-
-        internal void Clear()
-        {
-            shares = 0;
-            money = Stockmarket.STARTING_MONEY;
-            trades = 0;
-        }
-    }
-
-    internal class Quote
-    {
-        internal int month, day, year;
-        internal double open,
-            close,
-            high,
-            low;
-        internal long volume;
-    }
-
-    internal class TradeWeight
-    {
-        internal class Day
-        {
-            internal double open,
-            close,
-            high,
-            low,
-            volume;
-
-            internal Day copy()
-            {
-                Day d = new Day();
-                d.open = open;
-                d.close = close;
-                d.high = high;
-                d.low = low;
-                d.volume = volume;
-                return d;
-            }
-
-            internal void Normalize()
-            {
-                close = normalizeWeight(close);
-                high = normalizeWeight(high);
-                low = normalizeWeight(low);
-                open = normalizeWeight(open);
-                volume = normalizeWeight(volume);
-            }
-
-            internal void Randomize()
-            {
-                close = Stockmarket.rand.NextDouble();
-                high = Stockmarket.rand.NextDouble();
-                low = Stockmarket.rand.NextDouble();
-                open = Stockmarket.rand.NextDouble();
-                volume = Stockmarket.rand.NextDouble();
-            }
-        }
-
-        internal TradeWeight()
-        {
-            this.overall = 0.0;
-            this.today = new Day();
-            this.yesterday = new Day();
-        }
-
-        internal TradeWeight copy()
-        {
-            TradeWeight w = new TradeWeight();
-            w.overall = overall;
-            w.yesterday = yesterday.copy();
-            w.today = today.copy();
-            return w;
-        }
-
-        internal Day yesterday;
-        internal Day today;
-        internal double overall;
-
-        internal void Mutate()
-        {
-            double increment = (((double)(Stockmarket.rand.Next() % 1000)) - 500.0) / 1000.0;
-
-            // pick a double index randomly
-            int idx = Stockmarket.rand.Next(11);
-            switch (idx)
-            {
-                case 0:
-                    overall += increment;
-                    break;
-                case 1:
-                    yesterday.close += increment;
-                    break;
-                case 2:
-                    yesterday.high += increment;
-                    break;
-                case 3:
-                    yesterday.low += increment;
-                    break;
-                case 4:
-                    yesterday.open += increment;
-                    break;
-                case 5:
-                    yesterday.volume += increment;
-                    break;
-                case 6:
-                    today.close += increment;
-                    break;
-                case 7:
-                    today.high += increment;
-                    break;
-                case 8:
-                    today.low += increment;
-                    break;
-                case 9:
-                    today.open += increment;
-                    break;
-                case 10:
-                    today.volume += increment;
-                    break;
-            }
-
-            this.Normalize();
-        }
-        internal void Randomize()
-        {
-            overall = Stockmarket.rand.NextDouble();
-            yesterday.Randomize();
-            today.Randomize();
-            this.Normalize();
-        }
-        public static TradeWeight RandomWeight
-        {
-            get
-            {
-                TradeWeight w = new TradeWeight();
-                w.Randomize();
-                return w;
-            }
-        }
-        private void Normalize()
-        {
-            overall = normalizeWeight(overall);
-            yesterday.Normalize();
-            today.Normalize();
-        }
-        private static double normalizeWeight(double d)
-        {
-            if (d > 1.0)
-                return 1.0;
-            if (d < 0.0)
-                return 0.0;
-            return d;
-        }
-
-    }
-
     internal enum TradeAction
     {
         BUY,
         SELL,
         NONE
-    }
-
-    internal class TradeRecord
-    {
-        internal TradeAction type; // BOUGHT or SOLD
-        internal int month, day, year;
-        internal double price;
-        internal int shares;
-        internal double money;
-    }
-
-    internal class Strategy : IComparable
-    {
-        private TradeWeight buyWeight;
-        private TradeWeight sellWeight;
-        private double result;
-        private List<TradeRecord> trades;
-        private Portfolio portfolio;
-
-        internal Strategy()
-        {
-            buyWeight = TradeWeight.RandomWeight;
-            sellWeight = TradeWeight.RandomWeight;
-            result = 0.0;
-            trades = new List<TradeRecord>();
-            portfolio = new Portfolio();
-        }
-
-        internal double Result
-        {
-            get { return result; }
-            set { result = value; }
-        }
-
-        internal TradeWeight BuyWeight
-        {
-            get { return buyWeight; }
-        }
-        internal TradeWeight SellWeight
-        {
-            get { return sellWeight; }
-        }
-        internal Portfolio Portfolio
-        {
-            get { return portfolio; }
-        }
-        internal List<TradeRecord> Trades
-        {
-            get { return trades; }
-        }
-
-        int IComparable.CompareTo(object obj)
-        {
-            Strategy other = obj as Strategy;
-            return this.result.CompareTo(other.result);
-        }
-
-        internal Strategy copy()
-        {
-            Strategy s = new Strategy();
-            s.buyWeight = buyWeight.copy();
-            s.sellWeight = sellWeight.copy();
-            s.portfolio = portfolio.copy();
-            s.result = result;
-            s.trades = copyTradeRecords(trades);
-            return s;
-        }
-
-        private static List<TradeRecord> copyTradeRecords(List<TradeRecord> list)
-        {
-            List<TradeRecord> listCopy = new List<TradeRecord>();
-            foreach (TradeRecord original in list)
-            {
-                TradeRecord copy = new TradeRecord()
-                {
-                    day = original.day,
-                    money = original.money,
-                    month = original.month,
-                    price = original.price,
-                    shares = original.shares,
-                    type = original.type,
-                    year = original.year
-                };
-                listCopy.Add(copy);
-            }
-            return listCopy;
-        }
     }
 
     internal static class Stockmarket
@@ -529,14 +264,6 @@ namespace stockmarket
             double profit = s.Result - STARTING_MONEY;
             return (profit / STARTING_MONEY) * 100;
         }
-        private static void debugPrintTradeHistory(Strategy s, double shareAmt, int tCount)
-        {
-
-        }
-        private static void printTwoColumns(int line, int start, int offset, string text)
-        {
-
-        }
         private static void printResults(List<Strategy> s, int sCount, long gIdx, List<Quote> q, int qCount)
         {
             StringBuilder sb = new StringBuilder();
@@ -561,6 +288,22 @@ namespace stockmarket
             sb.AppendFormat("Worst Trades:  {0}\n", s[s.Count - 1].Portfolio.trades);
             sb.AppendFormat("Best:          {0}\n", s[0].Result);
             sb.AppendFormat("Best Trades:   {0}\n", s[0].Portfolio.trades);
+            sb.AppendFormat("Profitability: {0}\n", proofStrategy(s[0], q, qCount));
+
+            sb.AppendLine();
+
+            sb.AppendFormat("               BuyWeight      SellWeight\n");
+            sb.AppendFormat("   overall     {0}            {1}\n", s[0].BuyWeight.overall, s[0].SellWeight.overall);
+            sb.AppendFormat("y: open        {0}            {1}\n", s[0].BuyWeight.yesterday.open, s[0].SellWeight.yesterday.open);
+            sb.AppendFormat("   close       {0}            {1}\n", s[0].BuyWeight.yesterday.close, s[0].SellWeight.yesterday.close);
+            sb.AppendFormat("   high        {0}            {1}\n", s[0].BuyWeight.yesterday.high, s[0].SellWeight.yesterday.high);
+            sb.AppendFormat("   low         {0}            {1}\n", s[0].BuyWeight.yesterday.low, s[0].SellWeight.yesterday.low);
+            sb.AppendFormat("   volume      {0}            {1}\n", s[0].BuyWeight.yesterday.volume, s[0].SellWeight.yesterday.volume);
+            sb.AppendFormat("t: open        {0}            {1}\n", s[0].BuyWeight.today.open, s[0].SellWeight.today.open);
+            sb.AppendFormat("   close       {0}            {1}\n", s[0].BuyWeight.today.close, s[0].SellWeight.today.close);
+            sb.AppendFormat("   high        {0}            {1}\n", s[0].BuyWeight.today.high, s[0].SellWeight.today.high);
+            sb.AppendFormat("   low         {0}            {1}\n", s[0].BuyWeight.today.low, s[0].SellWeight.today.low);
+            sb.AppendFormat("   volume      {0}            {1}\n", s[0].BuyWeight.today.volume, s[0].SellWeight.today.volume);
 
             MainWindow.resultText = sb.ToString();
         }
@@ -597,7 +340,10 @@ namespace stockmarket
             for (i = 0; i < gCount; i++)
             {
                 generation(strategies, sCount, quotes, qCount);
-                strategies.Sort();
+
+                Enumerable.OrderBy<Strategy, double>(strategies, s => { return s.Result; });
+                
+                //strategies.Sort();
 
                 printResults(strategies, sCount, i, quotes, qCount);
 
