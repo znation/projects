@@ -14,17 +14,13 @@ namespace stockmarket
         SELL,
         NONE
     }
-
     internal static class Stockmarket
     {
         internal const double STARTING_MONEY = 100000.0;
         private const double COMMISSION = 8.0;
-        private const int MAX_QUOTES = 2858;
-        private const int MAX_TRADES = MAX_QUOTES;
         internal static readonly Random rand = new Random();
 
-
-        private static List<Quote> buildQuotes(int count)
+        private static List<Quote> buildQuotes()
         {
             List<Quote> quotes = new List<Quote>();
 
@@ -187,8 +183,9 @@ namespace stockmarket
             }
             s.Result = s.Portfolio.money + (s.Portfolio.shares * lastPrice);
         }
-        private static void generation(List<Strategy> s, int sCount, List<Quote> q, int qCount)
+        private static void generation(List<Strategy> s, int sCount, List<Quote> q)
         {
+            int qCount = q.Count;
             int j;
             for (j = 0; j < sCount; j++)
             {
@@ -264,7 +261,7 @@ namespace stockmarket
             double profit = s.Result - STARTING_MONEY;
             return (profit / STARTING_MONEY) * 100;
         }
-        private static void printResults(List<Strategy> s, int sCount, long gIdx, List<Quote> q, int qCount)
+        private static void printResults(List<Strategy> s, int sCount, long gIdx, List<Quote> q)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -288,7 +285,7 @@ namespace stockmarket
             sb.AppendFormat("Worst Trades:  {0}\n", s[s.Count - 1].Portfolio.trades);
             sb.AppendFormat("Best:          {0}\n", s[0].Result);
             sb.AppendFormat("Best Trades:   {0}\n", s[0].Portfolio.trades);
-            sb.AppendFormat("Profitability: {0}\n", proofStrategy(s[0], q, qCount));
+            sb.AppendFormat("Profitability: {0}\n", proofStrategy(s[0], q));
 
             sb.AppendLine();
 
@@ -307,11 +304,12 @@ namespace stockmarket
 
             MainWindow.resultText = sb.ToString();
         }
-        private static double proofStrategy(Strategy s, List<Quote> q, int qCount)
+        private static double proofStrategy(Strategy s, List<Quote> q)
         {
             // Set up a copy with the same weights
             // but a new portfolio and history
             Strategy copy = s.copy();
+            int qCount = q.Count;
 
             // Run the strategy and get the percent profit
             runStrategy(copy, q, (qCount - (qCount / 5)), qCount);
@@ -322,11 +320,10 @@ namespace stockmarket
         internal static void main()
         {
             long gCount = long.MaxValue; // generations
-            int qCount = MAX_QUOTES, // quotes
-                sCount = 100; // strategies
+            int sCount = 100; // strategies
 
             // initialize quotes
-            List<Quote> quotes = buildQuotes(qCount);
+            List<Quote> quotes = buildQuotes();
 
             // initialize trade weights / strategies
             List<Strategy> strategies = new List<Strategy>();
@@ -339,13 +336,13 @@ namespace stockmarket
 
             for (i = 0; i < gCount; i++)
             {
-                generation(strategies, sCount, quotes, qCount);
+                generation(strategies, sCount, quotes);
 
                 Enumerable.OrderBy<Strategy, double>(strategies, s => { return s.Result; });
                 
                 //strategies.Sort();
 
-                printResults(strategies, sCount, i, quotes, qCount);
+                printResults(strategies, sCount, i, quotes);
 
                 if (i != gCount - 1)
                     mutate(strategies, sCount);
