@@ -55,7 +55,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Portfolio.cs" />
+    <Compile Include="Quote.cs" />
     <Compile Include="Stockmarket.cs" />
+    <Compile Include="Strategy.cs" />
+    <Compile Include="TradeRecord.cs" />
+    <Compile Include="TradeWeight.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
