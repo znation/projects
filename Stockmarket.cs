@@ -20,10 +20,20 @@ namespace stockmarket
         private const double COMMISSION = 8.0;
         internal static readonly Random rand = new Random();
 
+        private static List<Quote> sineWaveQuotes()
+        {
+            List<Quote> quotes = new List<Quote>();
+            for (int i = 0; i < 365 * 10; i++)
+            {
+
+            }
+            return quotes;
+        }
+
         private static List<Quote> buildQuotes()
         {
             List<Quote> quotes = new List<Quote>();
-
+            
             using (FileStream fs = new FileStream("data.csv", FileMode.Open))
             {
                 StreamReader sr = new StreamReader(fs);
@@ -49,7 +59,6 @@ namespace stockmarket
                     quotes.Add(q);
                 }
             }
-
 
             return quotes;
         }
@@ -261,6 +270,9 @@ namespace stockmarket
             double profit = s.Result - STARTING_MONEY;
             return (profit / STARTING_MONEY) * 100;
         }
+
+       
+
         private static void printResults(List<Strategy> s, int sCount, long gIdx, List<Quote> q)
         {
             StringBuilder sb = new StringBuilder();
@@ -277,33 +289,39 @@ namespace stockmarket
             meanTrades /= sCount;
 
             sb.AppendFormat("Generation:    {0}\n", gIdx);
-            sb.AppendFormat("Median:        {0}\n", s[sCount / 2].Result);
+            sb.AppendFormat("Median:        {0}\n", s[sCount / 2].Result.ToString("F2"));
             sb.AppendFormat("Median Trades: {0}\n", s[sCount / 2].Portfolio.trades);
-            sb.AppendFormat("Mean:          {0}\n", mean);
+            sb.AppendFormat("Mean:          {0}\n", mean.ToString("F2"));
             sb.AppendFormat("Mean Trades:   {0}\n", meanTrades);
-            sb.AppendFormat("Worst:         {0}\n", s[s.Count - 1].Result);
+            sb.AppendFormat("Worst:         {0}\n", s[s.Count - 1].Result.ToString("F2"));
             sb.AppendFormat("Worst Trades:  {0}\n", s[s.Count - 1].Portfolio.trades);
-            sb.AppendFormat("Best:          {0}\n", s[0].Result);
+            sb.AppendFormat("Best:          {0}\n", s[0].Result.ToString("F2"));
             sb.AppendFormat("Best Trades:   {0}\n", s[0].Portfolio.trades);
-            sb.AppendFormat("Profitability: {0}\n", proofStrategy(s[0], q));
-
-            sb.AppendLine();
-
-            sb.AppendFormat("               BuyWeight      SellWeight\n");
-            sb.AppendFormat("   overall     {0}            {1}\n", s[0].BuyWeight.overall, s[0].SellWeight.overall);
-            sb.AppendFormat("y: open        {0}            {1}\n", s[0].BuyWeight.yesterday.open, s[0].SellWeight.yesterday.open);
-            sb.AppendFormat("   close       {0}            {1}\n", s[0].BuyWeight.yesterday.close, s[0].SellWeight.yesterday.close);
-            sb.AppendFormat("   high        {0}            {1}\n", s[0].BuyWeight.yesterday.high, s[0].SellWeight.yesterday.high);
-            sb.AppendFormat("   low         {0}            {1}\n", s[0].BuyWeight.yesterday.low, s[0].SellWeight.yesterday.low);
-            sb.AppendFormat("   volume      {0}            {1}\n", s[0].BuyWeight.yesterday.volume, s[0].SellWeight.yesterday.volume);
-            sb.AppendFormat("t: open        {0}            {1}\n", s[0].BuyWeight.today.open, s[0].SellWeight.today.open);
-            sb.AppendFormat("   close       {0}            {1}\n", s[0].BuyWeight.today.close, s[0].SellWeight.today.close);
-            sb.AppendFormat("   high        {0}            {1}\n", s[0].BuyWeight.today.high, s[0].SellWeight.today.high);
-            sb.AppendFormat("   low         {0}            {1}\n", s[0].BuyWeight.today.low, s[0].SellWeight.today.low);
-            sb.AppendFormat("   volume      {0}            {1}\n", s[0].BuyWeight.today.volume, s[0].SellWeight.today.volume);
+            sb.AppendFormat("Profitability: {0}\n", proofStrategy(s[0], q).ToString("F2"));
 
             MainWindow.resultText = sb.ToString();
+
+            printTradeWeight(s[0]);
         }
+
+        private static void printTradeWeight(Strategy s)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("           BuyWeight   SellWeight\n");
+            sb.AppendFormat("   overall {0} {1}\n", s.BuyWeight.overall.ToString("F9"), s.SellWeight.overall.ToString("F9"));
+            sb.AppendFormat("y: open    {0} {1}\n", s.BuyWeight.yesterday.open.ToString("F9"), s.SellWeight.yesterday.open.ToString("F9"));
+            sb.AppendFormat("   close   {0} {1}\n", s.BuyWeight.yesterday.close.ToString("F9"), s.SellWeight.yesterday.close.ToString("F9"));
+            sb.AppendFormat("   high    {0} {1}\n", s.BuyWeight.yesterday.high.ToString("F9"), s.SellWeight.yesterday.high.ToString("F9"));
+            sb.AppendFormat("   low     {0} {1}\n", s.BuyWeight.yesterday.low.ToString("F9"), s.SellWeight.yesterday.low.ToString("F9"));
+            sb.AppendFormat("   volume  {0} {1}\n", s.BuyWeight.yesterday.volume.ToString("F9"), s.SellWeight.yesterday.volume.ToString("F9"));
+            sb.AppendFormat("t: open    {0} {1}\n", s.BuyWeight.today.open.ToString("F9"), s.SellWeight.today.open.ToString("F9"));
+            sb.AppendFormat("   close   {0} {1}\n", s.BuyWeight.today.close.ToString("F9"), s.SellWeight.today.close.ToString("F9"));
+            sb.AppendFormat("   high    {0} {1}\n", s.BuyWeight.today.high.ToString("F9"), s.SellWeight.today.high.ToString("F9"));
+            sb.AppendFormat("   low     {0} {1}\n", s.BuyWeight.today.low.ToString("F9"), s.SellWeight.today.low.ToString("F9"));
+            sb.AppendFormat("   volume  {0} {1}\n", s.BuyWeight.today.volume.ToString("F9"), s.SellWeight.today.volume.ToString("F9"));
+            MainWindow.tradeWeightText = sb.ToString();
+        }
+
         private static double proofStrategy(Strategy s, List<Quote> q)
         {
             // Set up a copy with the same weights

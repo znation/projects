@@ -57,6 +57,7 @@
     </ApplicationDefinition>
     <Compile Include="Portfolio.cs" />
     <Compile Include="Quote.cs" />
+    <Compile Include="QuoteGraph.cs" />
     <Compile Include="Stockmarket.cs" />
     <Compile Include="Strategy.cs" />
     <Compile Include="TradeRecord.cs" />

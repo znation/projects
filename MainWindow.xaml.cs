@@ -22,7 +22,8 @@ namespace stockmarket
     public partial class MainWindow : Window
     {
         private List<Thread> threads;
-        internal static volatile string resultText;
+        internal static volatile string resultText = String.Empty;
+        internal static volatile string tradeWeightText = String.Empty;
 
         public MainWindow()
         {
@@ -59,6 +60,7 @@ namespace stockmarket
         private void UpdateResults()
         {
             Results.Text = resultText;
+            TradeWeight.Text = tradeWeightText;
         }
     }
 }

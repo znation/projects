@@ -2,7 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Stockmarket Analyzer" Height="600" Width="800" Loaded="Window_Loaded">
-    <Grid>
-        <TextBox FontFamily="Consolas" Height="600" HorizontalAlignment="Left" Margin="0,0,0,0" Name="Results" VerticalAlignment="Top" Width="800" />
-    </Grid>
+    <WrapPanel Name="Panel">
+        <TextBox FontFamily="Consolas" Name="Results" />
+        <TextBox FontFamily="Consolas" Name="TradeWeight" />
+    </WrapPanel>
 </Window>
