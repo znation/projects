@@ -271,58 +271,7 @@ namespace stockmarket
             return (profit / STARTING_MONEY) * 100;
         }
 
-       
-
-        private static void printResults(List<Strategy> s, int sCount, long gIdx, List<Quote> q)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            double mean = 0.0;
-            int meanTrades = 0;
-            int i;
-            for (i = 0; i < sCount; i++)
-            {
-                mean += s[i].Result;
-                meanTrades += s[i].Portfolio.trades;
-            }
-            mean /= sCount;
-            meanTrades /= sCount;
-
-            sb.AppendFormat("Generation:    {0}\n", gIdx);
-            sb.AppendFormat("Median:        {0}\n", s[sCount / 2].Result.ToString("F2"));
-            sb.AppendFormat("Median Trades: {0}\n", s[sCount / 2].Portfolio.trades);
-            sb.AppendFormat("Mean:          {0}\n", mean.ToString("F2"));
-            sb.AppendFormat("Mean Trades:   {0}\n", meanTrades);
-            sb.AppendFormat("Worst:         {0}\n", s[s.Count - 1].Result.ToString("F2"));
-            sb.AppendFormat("Worst Trades:  {0}\n", s[s.Count - 1].Portfolio.trades);
-            sb.AppendFormat("Best:          {0}\n", s[0].Result.ToString("F2"));
-            sb.AppendFormat("Best Trades:   {0}\n", s[0].Portfolio.trades);
-            sb.AppendFormat("Profitability: {0}\n", proofStrategy(s[0], q).ToString("F2"));
-
-            MainWindow.resultText = sb.ToString();
-
-            printTradeWeight(s[0]);
-        }
-
-        private static void printTradeWeight(Strategy s)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("           BuyWeight   SellWeight\n");
-            sb.AppendFormat("   overall {0} {1}\n", s.BuyWeight.overall.ToString("F9"), s.SellWeight.overall.ToString("F9"));
-            sb.AppendFormat("y: open    {0} {1}\n", s.BuyWeight.yesterday.open.ToString("F9"), s.SellWeight.yesterday.open.ToString("F9"));
-            sb.AppendFormat("   close   {0} {1}\n", s.BuyWeight.yesterday.close.ToString("F9"), s.SellWeight.yesterday.close.ToString("F9"));
-            sb.AppendFormat("   high    {0} {1}\n", s.BuyWeight.yesterday.high.ToString("F9"), s.SellWeight.yesterday.high.ToString("F9"));
-            sb.AppendFormat("   low     {0} {1}\n", s.BuyWeight.yesterday.low.ToString("F9"), s.SellWeight.yesterday.low.ToString("F9"));
-            sb.AppendFormat("   volume  {0} {1}\n", s.BuyWeight.yesterday.volume.ToString("F9"), s.SellWeight.yesterday.volume.ToString("F9"));
-            sb.AppendFormat("t: open    {0} {1}\n", s.BuyWeight.today.open.ToString("F9"), s.SellWeight.today.open.ToString("F9"));
-            sb.AppendFormat("   close   {0} {1}\n", s.BuyWeight.today.close.ToString("F9"), s.SellWeight.today.close.ToString("F9"));
-            sb.AppendFormat("   high    {0} {1}\n", s.BuyWeight.today.high.ToString("F9"), s.SellWeight.today.high.ToString("F9"));
-            sb.AppendFormat("   low     {0} {1}\n", s.BuyWeight.today.low.ToString("F9"), s.SellWeight.today.low.ToString("F9"));
-            sb.AppendFormat("   volume  {0} {1}\n", s.BuyWeight.today.volume.ToString("F9"), s.SellWeight.today.volume.ToString("F9"));
-            MainWindow.tradeWeightText = sb.ToString();
-        }
-
-        private static double proofStrategy(Strategy s, List<Quote> q)
+        internal static double proofStrategy(Strategy s, List<Quote> q)
         {
             // Set up a copy with the same weights
             // but a new portfolio and history
@@ -358,9 +307,13 @@ namespace stockmarket
 
                 Enumerable.OrderBy<Strategy, double>(strategies, s => { return s.Result; });
                 
-                //strategies.Sort();
-
-                printResults(strategies, sCount, i, quotes);
+                // set context for the render thread
+                lock (MainWindow.updateLock)
+                {
+                    MainWindow.s_strategies = strategies;
+                    MainWindow.s_quotes = quotes;
+                    MainWindow.s_gIdx = i;
+                }
 
                 if (i != gCount - 1)
                     mutate(strategies, sCount);

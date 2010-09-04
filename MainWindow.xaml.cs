@@ -22,8 +22,12 @@ namespace stockmarket
     public partial class MainWindow : Window
     {
         private List<Thread> threads;
-        internal static volatile string resultText = String.Empty;
-        internal static volatile string tradeWeightText = String.Empty;
+        private string resultText = String.Empty;
+        private string tradeWeightText = String.Empty;
+        internal static Object updateLock = new Object();
+        internal static List<Strategy> s_strategies;
+        internal static long s_gIdx;
+        internal static List<Quote> s_quotes;
 
         public MainWindow()
         {
@@ -59,8 +63,67 @@ namespace stockmarket
 
         private void UpdateResults()
         {
+            lock (updateLock)
+            {
+                printResults();
+            }
             Results.Text = resultText;
             TradeWeight.Text = tradeWeightText;
         }
+
+        private void printResults()
+        {
+            if (s_strategies == null
+                || s_quotes == null)
+                return;
+
+            StringBuilder sb = new StringBuilder();
+            int sCount = s_strategies.Count;
+
+            double mean = 0.0;
+            int meanTrades = 0;
+            int i;
+            for (i = 0; i < sCount; i++)
+            {
+                mean += s_strategies[i].Result;
+                meanTrades += s_strategies[i].Portfolio.trades;
+            }
+            mean /= sCount;
+            meanTrades /= sCount;
+
+            sb.AppendFormat("Generation:    {0}\n", s_gIdx);
+            sb.AppendFormat("Median:        {0}\n", s_strategies[sCount / 2].Result.ToString("F2"));
+            sb.AppendFormat("Median Trades: {0}\n", s_strategies[sCount / 2].Portfolio.trades);
+            sb.AppendFormat("Mean:          {0}\n", mean.ToString("F2"));
+            sb.AppendFormat("Mean Trades:   {0}\n", meanTrades);
+            sb.AppendFormat("Worst:         {0}\n", s_strategies[s_strategies.Count - 1].Result.ToString("F2"));
+            sb.AppendFormat("Worst Trades:  {0}\n", s_strategies[s_strategies.Count - 1].Portfolio.trades);
+            sb.AppendFormat("Best:          {0}\n", s_strategies[0].Result.ToString("F2"));
+            sb.AppendFormat("Best Trades:   {0}\n", s_strategies[0].Portfolio.trades);
+            sb.AppendFormat("Profitability: {0}\n", Stockmarket.proofStrategy(s_strategies[0], s_quotes).ToString("F2"));
+
+            resultText = sb.ToString();
+
+            printTradeWeight(s_strategies[0]);
+        }
+
+        private void printTradeWeight(Strategy s)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("           BuyWeight   SellWeight\n");
+            sb.AppendFormat("   overall {0} {1}\n", s.BuyWeight.overall.ToString("F9"), s.SellWeight.overall.ToString("F9"));
+            sb.AppendFormat("y: open    {0} {1}\n", s.BuyWeight.yesterday.open.ToString("F9"), s.SellWeight.yesterday.open.ToString("F9"));
+            sb.AppendFormat("   close   {0} {1}\n", s.BuyWeight.yesterday.close.ToString("F9"), s.SellWeight.yesterday.close.ToString("F9"));
+            sb.AppendFormat("   high    {0} {1}\n", s.BuyWeight.yesterday.high.ToString("F9"), s.SellWeight.yesterday.high.ToString("F9"));
+            sb.AppendFormat("   low     {0} {1}\n", s.BuyWeight.yesterday.low.ToString("F9"), s.SellWeight.yesterday.low.ToString("F9"));
+            sb.AppendFormat("   volume  {0} {1}\n", s.BuyWeight.yesterday.volume.ToString("F9"), s.SellWeight.yesterday.volume.ToString("F9"));
+            sb.AppendFormat("t: open    {0} {1}\n", s.BuyWeight.today.open.ToString("F9"), s.SellWeight.today.open.ToString("F9"));
+            sb.AppendFormat("   close   {0} {1}\n", s.BuyWeight.today.close.ToString("F9"), s.SellWeight.today.close.ToString("F9"));
+            sb.AppendFormat("   high    {0} {1}\n", s.BuyWeight.today.high.ToString("F9"), s.SellWeight.today.high.ToString("F9"));
+            sb.AppendFormat("   low     {0} {1}\n", s.BuyWeight.today.low.ToString("F9"), s.SellWeight.today.low.ToString("F9"));
+            sb.AppendFormat("   volume  {0} {1}\n", s.BuyWeight.today.volume.ToString("F9"), s.SellWeight.today.volume.ToString("F9"));
+            tradeWeightText = sb.ToString();
+        }
+
     }
 }
