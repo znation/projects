@@ -23,9 +23,26 @@ namespace stockmarket
         private static List<Quote> sineWaveQuotes()
         {
             List<Quote> quotes = new List<Quote>();
+            int low = 20,
+                high = 80,
+                period = 200;
+            DateTime date = DateTime.Today.AddDays(-(365*10));
             for (int i = 0; i < 365 * 10; i++)
             {
-
+                double today = Math.Sin(((double)i / (double)period) * 2 * Math.PI);
+                today *= (high - low);
+                today += low;
+                Quote q = new Quote();
+                q.close = today;
+                q.open = today;
+                q.high = today;
+                q.low = today;
+                q.volume = 100000;
+                q.month = date.Month;
+                q.year = date.Year;
+                q.day = date.Day;
+                quotes.Add(q);
+                date = date.AddDays(1);
             }
             return quotes;
         }
@@ -290,7 +307,8 @@ namespace stockmarket
             int sCount = 100; // strategies
 
             // initialize quotes
-            List<Quote> quotes = buildQuotes();
+            //List<Quote> quotes = buildQuotes();
+            List<Quote> quotes = sineWaveQuotes();
 
             // initialize trade weights / strategies
             List<Strategy> strategies = new List<Strategy>();
@@ -305,7 +323,7 @@ namespace stockmarket
             {
                 generation(strategies, sCount, quotes);
 
-                Enumerable.OrderBy<Strategy, double>(strategies, s => { return s.Result; });
+                strategies.Sort();
                 
                 // set context for the render thread
                 lock (MainWindow.updateLock)
