@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace stockmarket
 {
@@ -80,8 +81,14 @@ namespace stockmarket
             StringBuilder sb = new StringBuilder();
             int sCount = s_strategies.Count;
 
-            double mean = 0.0;
-            int meanTrades = 0;
+            double mean = 0.0,
+                median = s_strategies[sCount / 2].Result,
+                best = s_strategies[0].Result,
+                worst = s_strategies[s_strategies.Count - 1].Result;
+            int meanTrades = 0,
+                medianTrades = s_strategies[sCount / 2].Portfolio.trades,
+                bestTrades = s_strategies[0].Portfolio.trades,
+                worstTrades = s_strategies[s_strategies.Count - 1].Portfolio.trades;
             int i;
             for (i = 0; i < sCount; i++)
             {
@@ -91,15 +98,20 @@ namespace stockmarket
             mean /= sCount;
             meanTrades /= sCount;
 
+            Debug.Assert(best >= median);
+            Debug.Assert(best >= mean);
+            Debug.Assert(median >= worst);
+            Debug.Assert(mean >= worst);
+
             sb.AppendFormat("Generation:    {0}\n", s_gIdx);
-            sb.AppendFormat("Median:        {0}\n", s_strategies[sCount / 2].Result.ToString("F2"));
-            sb.AppendFormat("Median Trades: {0}\n", s_strategies[sCount / 2].Portfolio.trades);
+            sb.AppendFormat("Median:        {0}\n", median.ToString("F2"));
+            sb.AppendFormat("Median Trades: {0}\n", medianTrades);
             sb.AppendFormat("Mean:          {0}\n", mean.ToString("F2"));
             sb.AppendFormat("Mean Trades:   {0}\n", meanTrades);
-            sb.AppendFormat("Worst:         {0}\n", s_strategies[s_strategies.Count - 1].Result.ToString("F2"));
-            sb.AppendFormat("Worst Trades:  {0}\n", s_strategies[s_strategies.Count - 1].Portfolio.trades);
-            sb.AppendFormat("Best:          {0}\n", s_strategies[0].Result.ToString("F2"));
-            sb.AppendFormat("Best Trades:   {0}\n", s_strategies[0].Portfolio.trades);
+            sb.AppendFormat("Worst:         {0}\n", worst.ToString("F2"));
+            sb.AppendFormat("Worst Trades:  {0}\n", worstTrades);
+            sb.AppendFormat("Best:          {0}\n", best.ToString("F2"));
+            sb.AppendFormat("Best Trades:   {0}\n", bestTrades);
             sb.AppendFormat("Profitability: {0}\n", Stockmarket.proofStrategy(s_strategies[0], s_quotes).ToString("F2"));
 
             resultText = sb.ToString();
