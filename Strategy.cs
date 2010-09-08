@@ -62,22 +62,26 @@ namespace stockmarket
             return s;
         }
 
+        private static Object copyLock = new Object();
         private static List<TradeRecord> copyTradeRecords(List<TradeRecord> list)
         {
             List<TradeRecord> listCopy = new List<TradeRecord>();
-            foreach (TradeRecord original in list)
+            lock (copyLock)
             {
-                TradeRecord copy = new TradeRecord()
+                foreach (TradeRecord original in list)
                 {
-                    day = original.day,
-                    money = original.money,
-                    month = original.month,
-                    price = original.price,
-                    shares = original.shares,
-                    type = original.type,
-                    year = original.year
-                };
-                listCopy.Add(copy);
+                    TradeRecord copy = new TradeRecord()
+                    {
+                        day = original.day,
+                        money = original.money,
+                        month = original.month,
+                        price = original.price,
+                        shares = original.shares,
+                        type = original.type,
+                        year = original.year
+                    };
+                    listCopy.Add(copy);
+                }
             }
             return listCopy;
         }
