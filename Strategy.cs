@@ -67,5 +67,31 @@ namespace stockmarket
             }
             return copies;
         }
+
+        internal static void Sort(List<Strategy> strategies)
+        {
+            for (int i = 0; i < strategies.Count - 1; i++)
+            {
+                for (int j = 0; j < strategies.Count - 1; j++)
+                {
+                    if (strategies[j].Result < strategies[j + 1].Result)
+                    {
+                        Strategy temp = strategies[j];
+                        strategies[j] = strategies[j + 1];
+                        strategies[j + 1] = temp;
+                    }
+                }
+            }
+        }
+
+        internal static bool Sorted(List<Strategy> strategies)
+        {
+            for (int i = 0; i < strategies.Count - 1; i++)
+            {
+                if (strategies[i + 1].Result > strategies[i].Result)
+                    return false;
+            }
+            return true;
+        }
     }
 }

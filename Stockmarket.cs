@@ -277,7 +277,9 @@ namespace stockmarket
             {
                 generation(strategies, sCount, quotes);
 
-                strategies.Sort();
+                Strategy.Sort(strategies);
+
+                Debug.Assert(Strategy.Sorted(strategies));
                 
                 // set context for the render thread
                 lock (MainWindow.updateLock)
