@@ -32,15 +32,7 @@ namespace stockmarket
                 double today = Math.Sin(((double)i / (double)period) * 2 * Math.PI);
                 today *= (high - low);
                 today += low;
-                Quote q = new Quote();
-                q.close = today;
-                q.open = today;
-                q.high = today;
-                q.low = today;
-                q.volume = 100000;
-                q.month = date.Month;
-                q.year = date.Year;
-                q.day = date.Day;
+                Quote q = new Quote(date.Month, date.Day, date.Year, today, today, today, today, 100000);
                 quotes.Add(q);
                 date = date.AddDays(1);
             }
@@ -64,41 +56,42 @@ namespace stockmarket
                     string[] parts = line.Split(',');
                     string[] dateParts = parts[0].Split('/');
 
-                    Quote q = new Quote();
-                    q.month = int.Parse(dateParts[0]);
-                    q.day = int.Parse(dateParts[1]);
-                    q.year = int.Parse(dateParts[2]);
-                    q.open = double.Parse(parts[1]);
-                    q.high = double.Parse(parts[2]);
-                    q.low = double.Parse(parts[3]);
-                    q.close = double.Parse(parts[4]);
-                    q.volume = long.Parse(parts[5]);
+                    Quote q = new Quote(int.Parse(dateParts[0]),
+                        int.Parse(dateParts[1]),
+                        int.Parse(dateParts[2]),
+                        double.Parse(parts[1]),
+                        double.Parse(parts[4]),
+                        double.Parse(parts[2]),
+                        double.Parse(parts[3]),
+                        long.Parse(parts[5]));
                     quotes.Add(q);
                 }
             }
 
             return quotes;
         }
-        private static int buy(double price, int shares, Portfolio portfolio)
+        private static int buy(double price, int shares, Strategy s)
         {
             Debug.Assert(shares > 0);
-            if (portfolio.money >= (price * shares) + COMMISSION)
+            if (s.Portfolio.money >= (price * shares) + COMMISSION)
             {
-                portfolio.shares += shares;
-                portfolio.money -= (price * shares) + COMMISSION;
-                portfolio.trades += 1;
+                s.Portfolio = new Portfolio(s.Portfolio.shares + shares,
+                    s.Portfolio.money - (price * shares) + COMMISSION,
+                    s.Portfolio.trades + 1);
                 return shares;
             }
             return 0;
         }
-        private static int sell(double price, int shares, Portfolio portfolio)
+        private static int sell(double price, Strategy s)
         {
+            int shares = s.Portfolio.shares;
             Debug.Assert(shares > 0);
-            if (portfolio.shares >= shares)
+            if (s.Portfolio.shares >= shares)
             {
-                portfolio.shares -= shares;
-                portfolio.money += (price * shares) - COMMISSION;
-                portfolio.trades += 1;
+                s.Portfolio = new Portfolio(
+                    s.Portfolio.shares - shares,
+                    s.Portfolio.money + (price * shares) - COMMISSION,
+                    s.Portfolio.trades + 1);
                 return shares;
             }
             return 0;
@@ -112,18 +105,7 @@ namespace stockmarket
         }
         private static bool maybe(Quote yesterday, Quote today, TradeWeight weight)
         {
-            double x = ((yesterday.open * weight.yesterday.open)
-                + (yesterday.close * weight.yesterday.close)
-                + (yesterday.high * weight.yesterday.high)
-                + (yesterday.low * weight.yesterday.low)
-                + (yesterday.volume * weight.yesterday.volume)
-                + (today.open * weight.today.open)
-                + (today.close * weight.today.close)
-                + (today.high * weight.today.high)
-                + (today.low * weight.today.low)
-                + (today.volume * weight.today.volume))
-                * weight.overall;
-            if (x >= 0.5)
+            if ((yesterday.close * weight.yesterday.close) > (today.close * weight.today.close))
                 return true;
             return false;
         }
@@ -137,7 +119,7 @@ namespace stockmarket
                 return 0;
 
             if (maybe(yesterday, today, s.BuyWeight))
-                return buy(today.close, shares, s.Portfolio);
+                return buy(today.close, shares, s);
 
             return 0;
         }
@@ -151,7 +133,7 @@ namespace stockmarket
                 return 0;
 
             if (maybe(yesterday, today, s.SellWeight))
-                return sell(today.close, s.Portfolio.shares, s.Portfolio);
+                return sell(today.close, s);
 
             return 0;
         }
@@ -164,9 +146,7 @@ namespace stockmarket
         private static void runStrategy(Strategy s, List<Quote> q, int qFirst, int qLast)
         {
             // initialize portfolio
-            s.Portfolio.money = STARTING_MONEY;
-            s.Portfolio.shares = 0;
-            s.Portfolio.trades = 0;
+            s.Portfolio = new Portfolio();
 
             // initialize trade history
             s.Trades.Clear();
@@ -191,16 +171,13 @@ namespace stockmarket
                 if (type != TradeAction.NONE)
                 {
                     Debug.Assert(s.Portfolio.trades >= 1);
-                    TradeRecord trade = new TradeRecord()
-                    {
-                        shares = shares,
-                        type = type,
-                        price = today.close,
-                        month = today.month,
-                        day = today.day,
-                        year = today.year,
-                        money = s.Portfolio.money
-                    };
+                    TradeRecord trade = new TradeRecord(type,
+                        today.month,
+                        today.day,
+                        today.year,
+                        today.close,
+                        shares,
+                        s.Portfolio.money);
                     s.Trades.Add(trade);
                     Debug.Assert(s.Trades.Count == s.Portfolio.trades);
                 }
@@ -218,31 +195,9 @@ namespace stockmarket
                 runStrategy(s[j], q, 1, (qCount - (qCount / 5)));
             }
         }
-        private static void copyBytes(TradeWeight twSource, TradeWeight twDest)
-        {
-            twDest.overall = twSource.overall;
-            Action<TradeWeight.Day, TradeWeight.Day> copy = new Action<TradeWeight.Day, TradeWeight.Day>((src, dest) =>
-            {
-                dest.close = src.close;
-                dest.high = src.high;
-                dest.low = src.low;
-                dest.open = src.open;
-                dest.volume = src.volume;
-            });
-            copy(twSource.yesterday, twDest.yesterday);
-            copy(twSource.today, twDest.today);
-        }
         private static Strategy spawn(Strategy source)
         {
-            // reset the Strategy members
-            source.Result = 0.0;
-            source.Portfolio.Clear();
-
-            Strategy dest = new Strategy();
-
-            // copy source to dest
-            copyBytes(source.BuyWeight, dest.BuyWeight);
-            copyBytes(source.SellWeight, dest.SellWeight);
+            Strategy dest = source.copy();
 
             // mutate destination
             // pick either buy or sell weight randomly
@@ -292,12 +247,11 @@ namespace stockmarket
         {
             // Set up a copy with the same weights
             // but a new portfolio and history
-            Strategy copy = s.copy();
             int qCount = q.Count;
 
             // Run the strategy and get the percent profit
-            runStrategy(copy, q, (qCount - (qCount / 5)), qCount);
-            double profit = percentProfit(copy);
+            runStrategy(s, q, (qCount - (qCount / 5)), qCount);
+            double profit = percentProfit(s);
 
             return profit;
         }
@@ -328,7 +282,7 @@ namespace stockmarket
                 // set context for the render thread
                 lock (MainWindow.updateLock)
                 {
-                    MainWindow.s_strategies = strategies;
+                    MainWindow.s_strategies = Strategy.copy(strategies);
                     MainWindow.s_quotes = quotes;
                     MainWindow.s_gIdx = i;
                 }

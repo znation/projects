@@ -7,9 +7,9 @@ namespace stockmarket
 {
     internal class Portfolio
     {
-        internal int shares;
-        internal double money;
-        internal int trades;
+        internal int shares { get; private set; }
+        internal double money { get; private set; }
+        internal int trades { get; private set; }
 
         internal Portfolio()
         {
@@ -18,13 +18,16 @@ namespace stockmarket
             trades = 0;
         }
 
+        internal Portfolio(int shares, double money, int trades)
+        {
+            this.shares = shares;
+            this.money = money;
+            this.trades = trades;
+        }
+
         internal Portfolio copy()
         {
-            Portfolio p = new Portfolio();
-            p.shares = shares;
-            p.money = money;
-            p.trades = trades;
-            return p;
+            return new Portfolio(shares, money, trades);
         }
 
         internal void Clear()

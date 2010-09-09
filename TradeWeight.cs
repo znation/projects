@@ -61,9 +61,9 @@ namespace stockmarket
             return w;
         }
 
-        internal Day yesterday;
-        internal Day today;
-        internal double overall;
+        internal Day yesterday { get; private set; }
+        internal Day today { get; private set; }
+        internal double overall { get; private set; }
 
         internal void Mutate()
         {

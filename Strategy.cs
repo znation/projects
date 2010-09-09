@@ -7,83 +7,65 @@ namespace stockmarket
 {
     internal class Strategy : IComparable
     {
-        private TradeWeight buyWeight;
-        private TradeWeight sellWeight;
-        private double result;
-        private List<TradeRecord> trades;
-        private Portfolio portfolio;
-
         internal Strategy()
         {
-            buyWeight = TradeWeight.RandomWeight;
-            sellWeight = TradeWeight.RandomWeight;
-            result = 0.0;
-            trades = new List<TradeRecord>();
-            portfolio = new Portfolio();
+            BuyWeight = TradeWeight.RandomWeight;
+            SellWeight = TradeWeight.RandomWeight;
+            Result = 0.0;
+            Trades = new List<TradeRecord>();
+            Portfolio = new Portfolio();
         }
 
-        internal double Result
-        {
-            get { return result; }
-            set { result = value; }
-        }
+        // TODO: refactor to be more purely functional, don't modify Result (make it private)
+        internal Portfolio Portfolio { get; set; }
+        internal double Result { get; set; }
 
-        internal TradeWeight BuyWeight
-        {
-            get { return buyWeight; }
-        }
-        internal TradeWeight SellWeight
-        {
-            get { return sellWeight; }
-        }
-        internal Portfolio Portfolio
-        {
-            get { return portfolio; }
-        }
-        internal List<TradeRecord> Trades
-        {
-            get { return trades; }
-        }
+        internal TradeWeight BuyWeight { get; private set; }
+        internal TradeWeight SellWeight { get; private set; }
+        internal List<TradeRecord> Trades { get; private set; }
 
         int IComparable.CompareTo(object obj)
         {
             Strategy other = obj as Strategy;
-            return other.result.CompareTo(this.result);
+            return other.Result.CompareTo(this.Result);
         }
 
         internal Strategy copy()
         {
             Strategy s = new Strategy();
-            s.buyWeight = buyWeight.copy();
-            s.sellWeight = sellWeight.copy();
-            s.portfolio = portfolio.copy();
-            s.result = result;
-            s.trades = copyTradeRecords(trades);
+            s.BuyWeight = BuyWeight.copy();
+            s.SellWeight = SellWeight.copy();
+            s.Portfolio = Portfolio.copy();
+            s.Result = Result;
+            s.Trades = copyTradeRecords(Trades);
             return s;
         }
 
-        private static Object copyLock = new Object();
         private static List<TradeRecord> copyTradeRecords(List<TradeRecord> list)
         {
             List<TradeRecord> listCopy = new List<TradeRecord>();
-            lock (copyLock)
+            foreach (TradeRecord original in list)
             {
-                foreach (TradeRecord original in list)
-                {
-                    TradeRecord copy = new TradeRecord()
-                    {
-                        day = original.day,
-                        money = original.money,
-                        month = original.month,
-                        price = original.price,
-                        shares = original.shares,
-                        type = original.type,
-                        year = original.year
-                    };
-                    listCopy.Add(copy);
-                }
+                TradeRecord copy = new TradeRecord(original.type,
+                    original.month,
+                    original.day,
+                    original.year,
+                    original.price,
+                    original.shares,
+                    original.money);
+                listCopy.Add(copy);
             }
             return listCopy;
+        }
+
+        internal static List<Strategy> copy(List<Strategy> strategies)
+        {
+            List<Strategy> copies = new List<Strategy>();
+            foreach (Strategy s in strategies)
+            {
+                copies.Add(s.copy());
+            }
+            return copies;
         }
     }
 }
