@@ -11,14 +11,14 @@ namespace stockmarket
         {
             BuyWeight = TradeWeight.RandomWeight;
             SellWeight = TradeWeight.RandomWeight;
-            Result = 0.0;
+            Result = 0.0m;
             Trades = new List<TradeRecord>();
             Portfolio = new Portfolio();
         }
 
         // TODO: refactor to be more purely functional, don't modify Result (make it private)
         internal Portfolio Portfolio { get; set; }
-        internal double Result { get; set; }
+        internal decimal Result { get; set; }
 
         internal TradeWeight BuyWeight { get; private set; }
         internal TradeWeight SellWeight { get; private set; }
@@ -68,13 +68,20 @@ namespace stockmarket
             return copies;
         }
 
+        private static decimal score(Strategy s)
+        {
+            if (s.Portfolio.trades == 0)
+                return decimal.MinValue; // the worst possible strategy is one that didn't trade at all
+            return s.Result * (((decimal)Math.Log10(s.Portfolio.trades) / 10.0m) + 1m);
+        }
+
         internal static void Sort(List<Strategy> strategies)
         {
             for (int i = 0; i < strategies.Count - 1; i++)
             {
                 for (int j = 0; j < strategies.Count - 1; j++)
                 {
-                    if (strategies[j].Result < strategies[j + 1].Result)
+                    if (score(strategies[j]) < score(strategies[j + 1]))
                     {
                         Strategy temp = strategies[j];
                         strategies[j] = strategies[j + 1];

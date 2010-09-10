@@ -81,7 +81,7 @@ namespace stockmarket
             StringBuilder sb = new StringBuilder();
             int sCount = s_strategies.Count;
 
-            double mean = 0.0,
+            decimal mean = 0.0m,
                 median = s_strategies[sCount / 2].Result,
                 best = s_strategies[0].Result,
                 worst = s_strategies[s_strategies.Count - 1].Result;

@@ -12,7 +12,7 @@ namespace stockmarket
             // per quote, 100 pixels vertically, 1 horizontally, 4 bytes per pixel
             Bytes = new byte[quotes.Count * 100 * 4];
 
-            double min = double.MaxValue, max = double.MinValue;
+            decimal min = decimal.MaxValue, max = decimal.MinValue;
             foreach (Quote q in quotes)
             {
                 min = Math.Min(min, q.close);
@@ -27,7 +27,7 @@ namespace stockmarket
                 Bytes[weighted + i + 2] = 255;
                 Bytes[weighted + i + 3] = 255;
                 i++;
-            }            
+            }
         }
 
         internal byte[] Bytes { get; set; }

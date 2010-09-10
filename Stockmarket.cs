@@ -16,8 +16,8 @@ namespace stockmarket
     }
     internal static class Stockmarket
     {
-        internal const double STARTING_MONEY = 100000.0;
-        private const double COMMISSION = 8.0;
+        internal const decimal STARTING_MONEY = 100000.0m;
+        private const decimal COMMISSION = 8.0m;
         internal static readonly Random rand = new Random();
 
         private static List<Quote> sineWaveQuotes()
@@ -29,7 +29,7 @@ namespace stockmarket
             DateTime date = DateTime.Today.AddDays(-(365*10));
             for (int i = 0; i < 365 * 10; i++)
             {
-                double today = Math.Sin(((double)i / (double)period) * 2 * Math.PI);
+                decimal today = (decimal)Math.Sin(((double)i / (double)period) * 2 * Math.PI);
                 today *= (high - low);
                 today += low;
                 Quote q = new Quote(date.Month, date.Day, date.Year, today, today, today, today, 100000);
@@ -59,10 +59,10 @@ namespace stockmarket
                     Quote q = new Quote(int.Parse(dateParts[0]),
                         int.Parse(dateParts[1]),
                         int.Parse(dateParts[2]),
-                        double.Parse(parts[1]),
-                        double.Parse(parts[4]),
-                        double.Parse(parts[2]),
-                        double.Parse(parts[3]),
+                        decimal.Parse(parts[1]),
+                        decimal.Parse(parts[4]),
+                        decimal.Parse(parts[2]),
+                        decimal.Parse(parts[3]),
                         long.Parse(parts[5]));
                     quotes.Add(q);
                 }
@@ -70,7 +70,7 @@ namespace stockmarket
 
             return quotes;
         }
-        private static int buy(double price, int shares, Strategy s)
+        private static int buy(decimal price, int shares, Strategy s)
         {
             Debug.Assert(shares > 0);
             if (s.Portfolio.money >= (price * shares) + COMMISSION)
@@ -82,7 +82,7 @@ namespace stockmarket
             }
             return 0;
         }
-        private static int sell(double price, Strategy s)
+        private static int sell(decimal price, Strategy s)
         {
             int shares = s.Portfolio.shares;
             Debug.Assert(shares > 0);
@@ -137,12 +137,6 @@ namespace stockmarket
 
             return 0;
         }
-        private static double score(Strategy s)
-        {
-            if (s.Portfolio.trades == 0)
-                return double.MinValue; // the worst possible strategy is one that didn't trade at all
-            return s.Result * ((Math.Log10(s.Portfolio.trades) / 10.0) + 1);
-        }
         private static void runStrategy(Strategy s, List<Quote> q, int qFirst, int qLast)
         {
             // initialize portfolio
@@ -151,7 +145,7 @@ namespace stockmarket
             // initialize trade history
             s.Trades.Clear();
 
-            double lastPrice = 0.0;
+            decimal lastPrice = 0.0m;
             int i;
             for (i = qFirst; i < qLast; i++)
             {
@@ -237,13 +231,13 @@ namespace stockmarket
                 s[i].SellWeight.Randomize();
             }
         }
-        private static double percentProfit(Strategy s)
+        private static decimal percentProfit(Strategy s)
         {
-            double profit = s.Result - STARTING_MONEY;
-            return (profit / STARTING_MONEY) * 100;
+            decimal profit = s.Result - STARTING_MONEY;
+            return (profit / STARTING_MONEY) * 100m;
         }
 
-        internal static double proofStrategy(Strategy s, List<Quote> q)
+        internal static decimal proofStrategy(Strategy s, List<Quote> q)
         {
             // Set up a copy with the same weights
             // but a new portfolio and history
@@ -251,7 +245,7 @@ namespace stockmarket
 
             // Run the strategy and get the percent profit
             runStrategy(s, q, (qCount - (qCount / 5)), qCount);
-            double profit = percentProfit(s);
+            decimal profit = percentProfit(s);
 
             return profit;
         }

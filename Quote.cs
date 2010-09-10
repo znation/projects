@@ -10,13 +10,13 @@ namespace stockmarket
         internal int month { get; private set; }
         internal int day { get; private set; }
         internal int year { get; private set; }
-        internal double open { get; private set; }
-        internal double close { get; private set; }
-        internal double high { get; private set; }
-        internal double low { get; private set; }
+        internal decimal open { get; private set; }
+        internal decimal close { get; private set; }
+        internal decimal high { get; private set; }
+        internal decimal low { get; private set; }
         internal long volume { get; private set; }
         internal Quote(int m, int d, int y,
-            double o, double c, double h, double l,
+            decimal o, decimal c, decimal h, decimal l,
             long v)
         {
             month = m;
