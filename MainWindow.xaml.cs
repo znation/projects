@@ -29,6 +29,8 @@ namespace stockmarket
         internal static List<Strategy> s_strategies;
         internal static long s_gIdx;
         internal static List<Quote> s_quotes;
+        private bool resultsUpdated = false;
+        private List<Rectangle[,]> gridContents = null;
 
         public MainWindow()
         {
@@ -41,9 +43,43 @@ namespace stockmarket
             CompositionTarget.Rendering += new EventHandler(Render);
         }
 
+        private int renderCount = 0;
         void Render(object sender, EventArgs e)
         {
+            renderCount++;
+            if (renderCount % 10 != 0)
+                return;
+
             UpdateResults();
+            if (resultsUpdated && gridContents == null)
+            {
+                gridContents = new List<Rectangle[,]>();
+                QuoteGraph qg = new QuoteGraph(s_quotes);
+
+                int w = (int)Panel.ActualWidth;
+                int h = 100;
+                Rectangle[,] rect = new Rectangle[w, h];
+                WrapPanel grid = new WrapPanel();
+                grid.Width = w;
+                grid.Height = h;
+                for (int i = 0; i < h; i++)
+                {
+                    for (int j = 0; j < w; j++)
+                    {
+                        Rectangle r = new Rectangle();
+                        r.Width = 1;
+                        r.Height = 1;
+                        if (i == qg.Values[j])
+                            r.Fill = Brushes.Black;
+                        else
+                            r.Fill = Brushes.LightGray;
+                        rect[j, i] = r;
+                        grid.Children.Add(r);
+                    }
+                }
+                gridContents.Add(rect);
+                Panel.Children.Add(grid);
+            }
         }
 
         void MainWindow_Closing(object sender, CancelEventArgs e)
@@ -98,11 +134,6 @@ namespace stockmarket
             mean /= sCount;
             meanTrades /= sCount;
 
-            Debug.Assert(best >= median);
-            Debug.Assert(best >= mean);
-            Debug.Assert(median >= worst);
-            Debug.Assert(mean >= worst);
-
             sb.AppendFormat("Generation:    {0}\n", s_gIdx);
             sb.AppendFormat("Median:        {0}\n", median.ToString("F2"));
             sb.AppendFormat("Median Trades: {0}\n", medianTrades);
@@ -117,6 +148,8 @@ namespace stockmarket
             resultText = sb.ToString();
 
             printTradeWeight(s_strategies[0]);
+
+            resultsUpdated = true;
         }
 
         private void printTradeWeight(Strategy s)

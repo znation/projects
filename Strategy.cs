@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 namespace stockmarket
 {
@@ -89,16 +90,6 @@ namespace stockmarket
                     }
                 }
             }
-        }
-
-        internal static bool Sorted(List<Strategy> strategies)
-        {
-            for (int i = 0; i < strategies.Count - 1; i++)
-            {
-                if (strategies[i + 1].Result > strategies[i].Result)
-                    return false;
-            }
-            return true;
         }
     }
 }

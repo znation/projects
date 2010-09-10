@@ -255,8 +255,8 @@ namespace stockmarket
             int sCount = 100; // strategies
 
             // initialize quotes
-            //List<Quote> quotes = buildQuotes();
-            List<Quote> quotes = sineWaveQuotes();
+            List<Quote> quotes = buildQuotes();
+            //List<Quote> quotes = sineWaveQuotes();
 
             // initialize trade weights / strategies
             List<Strategy> strategies = new List<Strategy>();
@@ -272,8 +272,6 @@ namespace stockmarket
                 generation(strategies, sCount, quotes);
 
                 Strategy.Sort(strategies);
-
-                Debug.Assert(Strategy.Sorted(strategies));
                 
                 // set context for the render thread
                 lock (MainWindow.updateLock)
