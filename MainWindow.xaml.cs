@@ -29,7 +29,6 @@ namespace stockmarket
         internal static List<Strategy> s_strategies;
         internal static long s_gIdx;
         internal static List<Quote> s_quotes;
-        private bool resultsUpdated = false;
         private List<Rectangle[,]> gridContents = null;
 
         public MainWindow()
@@ -51,35 +50,49 @@ namespace stockmarket
                 return;
 
             UpdateResults();
-            if (resultsUpdated && gridContents == null)
-            {
-                gridContents = new List<Rectangle[,]>();
-                QuoteGraph qg = new QuoteGraph(s_quotes);
+            BuildQuoteGraph();
+        }
 
-                int w = (int)Panel.ActualWidth;
-                int h = 100;
-                Rectangle[,] rect = new Rectangle[w, h];
-                WrapPanel grid = new WrapPanel();
-                grid.Width = w;
-                grid.Height = h;
-                for (int i = 0; i < h; i++)
-                {
-                    for (int j = 0; j < w; j++)
-                    {
-                        Rectangle r = new Rectangle();
-                        r.Width = 1;
-                        r.Height = 1;
-                        if (i == qg.Values[j])
-                            r.Fill = Brushes.Black;
-                        else
-                            r.Fill = Brushes.LightGray;
-                        rect[j, i] = r;
-                        grid.Children.Add(r);
-                    }
-                }
-                gridContents.Add(rect);
-                Panel.Children.Add(grid);
+        private void BuildQuoteGraph()
+        {
+            if (gridContents != null)
+                return;
+
+            QuoteGraph qg = null;
+            lock (updateLock)
+            {
+                if (s_quotes != null)
+                    qg = new QuoteGraph(s_quotes);
             }
+
+            if (qg == null)
+                return;
+
+            gridContents = new List<Rectangle[,]>();
+
+            int w = (int)Panel.ActualWidth;
+            int h = 100;
+            Rectangle[,] rect = new Rectangle[w, h];
+            WrapPanel grid = new WrapPanel();
+            grid.Width = w;
+            grid.Height = h;
+            for (int i = 0; i < h; i++)
+            {
+                for (int j = 0; j < w; j++)
+                {
+                    Rectangle r = new Rectangle();
+                    r.Width = 1;
+                    r.Height = 1;
+                    if (i == qg.Values[j])
+                        r.Fill = Brushes.Black;
+                    else
+                        r.Fill = Brushes.LightGray;
+                    rect[j, i] = r;
+                    grid.Children.Add(r);
+                }
+            }
+            gridContents.Add(rect);
+            Panel.Children.Add(grid);
         }
 
         void MainWindow_Closing(object sender, CancelEventArgs e)
@@ -148,8 +161,6 @@ namespace stockmarket
             resultText = sb.ToString();
 
             printTradeWeight(s_strategies[0]);
-
-            resultsUpdated = true;
         }
 
         private void printTradeWeight(Strategy s)
