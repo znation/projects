@@ -15,13 +15,15 @@ namespace stockmarket
             decimal min = decimal.MaxValue, max = decimal.MinValue;
             foreach (Quote q in quotes)
             {
-                min = Math.Min(min, q.close);
-                max = Math.Max(max, q.close);
+                decimal close = q.close.ToDecimal();
+                min = Math.Min(min, close);
+                max = Math.Max(max, close);
             }
             int i = 0;
             foreach (Quote q in quotes)
             {
-                int weighted = (int)(100.0m * ((q.close - min) / (max - min)));
+                decimal close = q.close.ToDecimal();
+                int weighted = (int)(100.0m * ((close - min) / (max - min)));
                 Values[i] = weighted;
                 i++;
             }

@@ -8,7 +8,7 @@ namespace stockmarket
     internal class Portfolio
     {
         internal int shares { get; private set; }
-        internal decimal money { get; private set; }
+        internal Money money { get; private set; }
         internal int trades { get; private set; }
 
         internal Portfolio()
@@ -18,7 +18,7 @@ namespace stockmarket
             trades = 0;
         }
 
-        internal Portfolio(int shares, decimal money, int trades)
+        internal Portfolio(int shares, Money money, int trades)
         {
             this.shares = shares;
             this.money = money;

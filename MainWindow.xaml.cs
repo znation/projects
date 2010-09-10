@@ -116,9 +116,9 @@ namespace stockmarket
 
             StringBuilder sb = new StringBuilder();
             int sCount = s_strategies.Count;
+            List<Money> results = new List<Money>();
 
-            decimal mean = 0.0m,
-                median = s_strategies[sCount / 2].Result,
+            Money median = s_strategies[sCount / 2].Result,
                 best = s_strategies[0].Result,
                 worst = s_strategies[s_strategies.Count - 1].Result;
             int meanTrades = 0,
@@ -128,20 +128,20 @@ namespace stockmarket
             int i;
             for (i = 0; i < sCount; i++)
             {
-                mean += s_strategies[i].Result;
+                results.Add(s_strategies[i].Result);
                 meanTrades += s_strategies[i].Portfolio.trades;
             }
-            mean /= sCount;
+            Money mean = Money.Mean(results);
             meanTrades /= sCount;
 
             sb.AppendFormat("Generation:    {0}\n", s_gIdx);
-            sb.AppendFormat("Median:        {0}\n", median.ToString("F2"));
+            sb.AppendFormat("Median:        {0}\n", median.ToString());
             sb.AppendFormat("Median Trades: {0}\n", medianTrades);
-            sb.AppendFormat("Mean:          {0}\n", mean.ToString("F2"));
+            sb.AppendFormat("Mean:          {0}\n", mean.ToString());
             sb.AppendFormat("Mean Trades:   {0}\n", meanTrades);
-            sb.AppendFormat("Worst:         {0}\n", worst.ToString("F2"));
+            sb.AppendFormat("Worst:         {0}\n", worst.ToString());
             sb.AppendFormat("Worst Trades:  {0}\n", worstTrades);
-            sb.AppendFormat("Best:          {0}\n", best.ToString("F2"));
+            sb.AppendFormat("Best:          {0}\n", best.ToString());
             sb.AppendFormat("Best Trades:   {0}\n", bestTrades);
             sb.AppendFormat("Profitability: {0}\n", Stockmarket.proofStrategy(s_strategies[0], s_quotes).ToString("F2"));
 

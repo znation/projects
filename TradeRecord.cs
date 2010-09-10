@@ -11,13 +11,13 @@ namespace stockmarket
         internal int month { get; private set; }
         internal int day { get; private set; }
         internal int year { get; private set; }
-        internal decimal price { get; private set; }
+        internal Money price { get; private set; }
         internal int shares { get; private set; }
-        internal decimal money { get; private set; }
+        internal Money money { get; private set; }
 
         internal TradeRecord(TradeAction type,
             int month, int day, int year,
-            decimal price, int shares, decimal money)
+            Money price, int shares, Money money)
         {
             this.type = type;
             this.month = month;

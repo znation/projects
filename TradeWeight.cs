@@ -9,7 +9,7 @@ namespace stockmarket
     {
         internal class Day
         {
-            internal decimal open,
+            internal double open,
             close,
             high,
             low,
@@ -37,17 +37,17 @@ namespace stockmarket
 
             internal void Randomize()
             {
-                close = (decimal)Stockmarket.rand.NextDouble();
-                high = (decimal)Stockmarket.rand.NextDouble();
-                low = (decimal)Stockmarket.rand.NextDouble();
-                open = (decimal)Stockmarket.rand.NextDouble();
-                volume = (decimal)Stockmarket.rand.NextDouble();
+                close = Stockmarket.rand.NextDouble();
+                high = Stockmarket.rand.NextDouble();
+                low = Stockmarket.rand.NextDouble();
+                open = Stockmarket.rand.NextDouble();
+                volume = Stockmarket.rand.NextDouble();
             }
         }
 
         internal TradeWeight()
         {
-            this.overall = 0.0m;
+            this.overall = 0.0;
             this.today = new Day();
             this.yesterday = new Day();
         }
@@ -63,11 +63,11 @@ namespace stockmarket
 
         internal Day yesterday { get; private set; }
         internal Day today { get; private set; }
-        internal decimal overall { get; private set; }
+        internal double overall { get; private set; }
 
         internal void Mutate()
         {
-            decimal increment = (((decimal)(Stockmarket.rand.Next() % 1000)) - 500.0m) / 1000.0m;
+            double increment = (((Stockmarket.rand.Next() % 1000.0)) - 500.0) / 1000.0;
 
             // pick a double index randomly
             int idx = Stockmarket.rand.Next(11);
@@ -112,7 +112,7 @@ namespace stockmarket
         }
         internal void Randomize()
         {
-            overall = (decimal)Stockmarket.rand.NextDouble();
+            overall = Stockmarket.rand.NextDouble();
             yesterday.Randomize();
             today.Randomize();
             this.Normalize();
@@ -132,12 +132,12 @@ namespace stockmarket
             yesterday.Normalize();
             today.Normalize();
         }
-        private static decimal normalizeWeight(decimal d)
+        private static double normalizeWeight(double d)
         {
-            if (d > 1.0m)
-                return 1.0m;
-            if (d < -1.0m)
-                return -1.0m;
+            if (d > 1.0)
+                return 1.0;
+            if (d < -1.0)
+                return -1.0;
             return d;
         }
 

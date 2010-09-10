@@ -6,30 +6,24 @@ using System.Diagnostics;
 
 namespace stockmarket
 {
-    internal class Strategy : IComparable
+    internal class Strategy
     {
         internal Strategy()
         {
             BuyWeight = TradeWeight.RandomWeight;
             SellWeight = TradeWeight.RandomWeight;
-            Result = 0.0m;
+            Result = new Money(0.0m);
             Trades = new List<TradeRecord>();
             Portfolio = new Portfolio();
         }
 
         // TODO: refactor to be more purely functional, don't modify Result (make it private)
         internal Portfolio Portfolio { get; set; }
-        internal decimal Result { get; set; }
+        internal Money Result { get; set; }
 
         internal TradeWeight BuyWeight { get; private set; }
         internal TradeWeight SellWeight { get; private set; }
         internal List<TradeRecord> Trades { get; private set; }
-
-        int IComparable.CompareTo(object obj)
-        {
-            Strategy other = obj as Strategy;
-            return other.Result.CompareTo(this.Result);
-        }
 
         internal Strategy copy()
         {
@@ -69,11 +63,11 @@ namespace stockmarket
             return copies;
         }
 
-        private static decimal score(Strategy s)
+        private static double score(Strategy s)
         {
             if (s.Portfolio.trades == 0)
-                return decimal.MinValue; // the worst possible strategy is one that didn't trade at all
-            return s.Result * (((decimal)Math.Log10(s.Portfolio.trades) / 10.0m) + 1m);
+                return double.MinValue; // the worst possible strategy is one that didn't trade at all
+            return s.Result.ToDouble() * ((Math.Log10(s.Portfolio.trades) / 10.0) + 1.0);
         }
 
         internal static void Sort(List<Strategy> strategies)

@@ -16,28 +16,9 @@ namespace stockmarket
     }
     internal static class Stockmarket
     {
-        internal const decimal STARTING_MONEY = 100000.0m;
-        private const decimal COMMISSION = 8.0m;
+        internal static readonly Money STARTING_MONEY = new Money(100000.0m);
+        private static readonly Money COMMISSION = new Money(8.0m);
         internal static readonly Random rand = new Random();
-
-        private static List<Quote> sineWaveQuotes()
-        {
-            List<Quote> quotes = new List<Quote>();
-            int low = 20,
-                high = 80,
-                period = 200;
-            DateTime date = DateTime.Today.AddDays(-(365*10));
-            for (int i = 0; i < 365 * 10; i++)
-            {
-                decimal today = (decimal)Math.Sin(((double)i / (double)period) * 2 * Math.PI);
-                today *= (high - low);
-                today += low;
-                Quote q = new Quote(date.Month, date.Day, date.Year, today, today, today, today, 100000);
-                quotes.Add(q);
-                date = date.AddDays(1);
-            }
-            return quotes;
-        }
 
         private static List<Quote> buildQuotes()
         {
@@ -59,10 +40,10 @@ namespace stockmarket
                     Quote q = new Quote(int.Parse(dateParts[0]),
                         int.Parse(dateParts[1]),
                         int.Parse(dateParts[2]),
-                        decimal.Parse(parts[1]),
-                        decimal.Parse(parts[4]),
-                        decimal.Parse(parts[2]),
-                        decimal.Parse(parts[3]),
+                        new Money(decimal.Parse(parts[1])),
+                        new Money(decimal.Parse(parts[4])),
+                        new Money(decimal.Parse(parts[2])),
+                        new Money(decimal.Parse(parts[3])),
                         long.Parse(parts[5]));
                     quotes.Add(q);
                 }
@@ -70,19 +51,19 @@ namespace stockmarket
 
             return quotes;
         }
-        private static int buy(decimal price, int shares, Strategy s)
+        private static int buy(Money price, int shares, Strategy s)
         {
             Debug.Assert(shares > 0);
-            if (s.Portfolio.money >= (price * shares) + COMMISSION)
+            if (s.Portfolio.money.CanBuy(price, shares, COMMISSION))
             {
                 s.Portfolio = new Portfolio(s.Portfolio.shares + shares,
-                    s.Portfolio.money - (price * shares) + COMMISSION,
+                    s.Portfolio.money.Buy(price, shares, COMMISSION),
                     s.Portfolio.trades + 1);
                 return shares;
             }
             return 0;
         }
-        private static int sell(decimal price, Strategy s)
+        private static int sell(Money price, Strategy s)
         {
             int shares = s.Portfolio.shares;
             Debug.Assert(shares > 0);
@@ -90,7 +71,7 @@ namespace stockmarket
             {
                 s.Portfolio = new Portfolio(
                     s.Portfolio.shares - shares,
-                    s.Portfolio.money + (price * shares) - COMMISSION,
+                    s.Portfolio.money.Sell(price, shares, COMMISSION),
                     s.Portfolio.trades + 1);
                 return shares;
             }
@@ -105,7 +86,7 @@ namespace stockmarket
         }
         private static bool maybe(Quote yesterday, Quote today, TradeWeight weight)
         {
-            if ((yesterday.close * weight.yesterday.close) > (today.close * weight.today.close))
+            if ((yesterday.close.ToDouble() * weight.yesterday.close) > (today.close.ToDouble() * weight.today.close))
                 return true;
             return false;
         }
@@ -114,7 +95,7 @@ namespace stockmarket
             if (s.Portfolio.money <= COMMISSION)
                 return 0;
 
-            int shares = (int)((s.Portfolio.money - COMMISSION) / today.close);
+            int shares = s.Portfolio.money.CalculateShares(COMMISSION, today.close);
             if (shares <= 0)
                 return 0;
 
@@ -145,7 +126,7 @@ namespace stockmarket
             // initialize trade history
             s.Trades.Clear();
 
-            decimal lastPrice = 0.0m;
+            Money lastPrice = new Money(0.0m);
             int i;
             for (i = qFirst; i < qLast; i++)
             {
@@ -178,7 +159,7 @@ namespace stockmarket
 
                 lastPrice = today.close;
             }
-            s.Result = s.Portfolio.money + (s.Portfolio.shares * lastPrice);
+            s.Result = s.Portfolio.money.Buy(lastPrice, s.Portfolio.shares, new Money(0.0m));
         }
         private static void generation(List<Strategy> s, int sCount, List<Quote> q)
         {
@@ -231,13 +212,15 @@ namespace stockmarket
                 s[i].SellWeight.Randomize();
             }
         }
-        private static decimal percentProfit(Strategy s)
+        private static double percentProfit(Strategy s)
         {
-            decimal profit = s.Result - STARTING_MONEY;
-            return (profit / STARTING_MONEY) * 100m;
+            Money profit = s.Result - STARTING_MONEY;
+            profit /= STARTING_MONEY;
+            double percent = profit.ToDouble();
+            return percent * 100.0;
         }
 
-        internal static decimal proofStrategy(Strategy s, List<Quote> q)
+        internal static double proofStrategy(Strategy s, List<Quote> q)
         {
             // Set up a copy with the same weights
             // but a new portfolio and history
@@ -245,7 +228,7 @@ namespace stockmarket
 
             // Run the strategy and get the percent profit
             runStrategy(s, q, (qCount - (qCount / 5)), qCount);
-            decimal profit = percentProfit(s);
+            double profit = percentProfit(s);
 
             return profit;
         }
