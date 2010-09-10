@@ -40,11 +40,7 @@ namespace stockmarket
                     Quote q = new Quote(int.Parse(dateParts[0]),
                         int.Parse(dateParts[1]),
                         int.Parse(dateParts[2]),
-                        new Money(decimal.Parse(parts[1])),
-                        new Money(decimal.Parse(parts[4])),
-                        new Money(decimal.Parse(parts[2])),
-                        new Money(decimal.Parse(parts[3])),
-                        long.Parse(parts[5]));
+                        new Money(decimal.Parse(parts[4])));
                     quotes.Add(q);
                 }
             }
@@ -76,13 +72,6 @@ namespace stockmarket
                 return shares;
             }
             return 0;
-        }
-        private static double dblRemainder(double a)
-        {
-            double retVal = Math.IEEERemainder(a, 1);
-            Debug.Assert(retVal >= -1.0);
-            Debug.Assert(retVal <= 1.0);
-            return retVal;
         }
         private static bool maybe(Quote yesterday, Quote today, TradeWeight weight)
         {

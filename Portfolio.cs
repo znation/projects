@@ -29,12 +29,5 @@ namespace stockmarket
         {
             return new Portfolio(shares, money, trades);
         }
-
-        internal void Clear()
-        {
-            shares = 0;
-            money = Stockmarket.STARTING_MONEY;
-            trades = 0;
-        }
     }
 }
