@@ -63,11 +63,11 @@ namespace stockmarket
             return copies;
         }
 
-        private static double score(Strategy s)
+        internal double Score()
         {
-            if (s.Portfolio.trades == 0)
+            if (Portfolio.trades == 0)
                 return double.MinValue; // the worst possible strategy is one that didn't trade at all
-            return s.Result.ToDouble() * ((Math.Log10(s.Portfolio.trades) / 10.0) + 1.0);
+            return Result.ToDouble() * ((Math.Log10(Portfolio.trades) / 10.0) + 1.0);
         }
 
         internal static void Sort(List<Strategy> strategies)
@@ -76,7 +76,7 @@ namespace stockmarket
             {
                 for (int j = 0; j < strategies.Count - 1; j++)
                 {
-                    if (score(strategies[j]) < score(strategies[j + 1]))
+                    if (strategies[j].Score() < strategies[j + 1].Score())
                     {
                         Strategy temp = strategies[j];
                         strategies[j] = strategies[j + 1];

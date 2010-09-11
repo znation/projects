@@ -49,7 +49,6 @@ namespace stockmarket
 
         void Render(object sender, EventArgs e)
         {
-            // TODO: remove updateLock and just use volatile on the variables
             lock (updateLock)
             {
                 Results.Text = resultText;
@@ -156,11 +155,15 @@ namespace stockmarket
                 generation = s_gIdx;
                 median = s_strategies[sCount / 2].Result;
                 best = s_strategies[0].Result;
-                worst = s_strategies[s_strategies.Count - 1].Result;
+                worst = s_strategies[sCount - 1].Result;
                 medianTrades = s_strategies[sCount / 2].Portfolio.trades;
                 bestTrades = s_strategies[0].Portfolio.trades;
-                worstTrades = s_strategies[s_strategies.Count - 1].Portfolio.trades;
-                profitability = Stockmarket.proofStrategy(s_strategies[0], s_quotes);
+                worstTrades = s_strategies[sCount - 1].Portfolio.trades;
+                profitability = Stockmarket.proofStrategy(s_strategies[0].copy(), s_quotes);
+
+                Debug.Assert(s_strategies[0].Score() >= s_strategies[1].Score());
+                Debug.Assert(s_strategies[0].Score() >= s_strategies[sCount - 1].Score());
+                Debug.Assert(s_strategies[0].Result >= new Money(0.0m));
 
                 for (int i = 0; i < sCount; i++)
                 {
