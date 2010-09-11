@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Threading;
 
 namespace stockmarket
 {
@@ -223,6 +224,7 @@ namespace stockmarket
         }
         internal static void main()
         {
+            Thread.CurrentThread.Name = "Stockmarket Main";
             long gCount = long.MaxValue; // generations
             int sCount = 100; // strategies
 
