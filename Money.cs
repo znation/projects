@@ -92,6 +92,11 @@ namespace stockmarket
             return new Money(this.money + (price.money * shares) - commission.money);
         }
 
+        internal static Money CalculateResult(Money lastPrice, Portfolio portfolio)
+        {
+            return new Money(portfolio.money.money + (lastPrice.money * portfolio.shares));
+        }
+
         internal static Money Mean(List<Money> l)
         {
             BigInteger avg = 0;

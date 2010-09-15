@@ -149,8 +149,10 @@ namespace stockmarket
 
                 lastPrice = today.close;
             }
-            s.Result = s.Portfolio.money.Buy(lastPrice, s.Portfolio.shares, new Money(0.0m));
+            s.Result = Money.CalculateResult(lastPrice, s.Portfolio);
         }
+
+        
         private static void generation(List<Strategy> s, int sCount, List<Quote> q)
         {
             int qCount = q.Count;
@@ -222,6 +224,80 @@ namespace stockmarket
 
             return profit;
         }
+
+        private static void printResults(List<Strategy> s_strategies, List<Quote> s_quotes, long s_gIdx)
+        {
+            StringBuilder sb = new StringBuilder();
+            List<Money> results = new List<Money>();
+            Money mean,
+                median,
+                    best,
+                    worst;
+            int meanTrades = 0,
+                medianTrades,
+                bestTrades,
+                worstTrades,
+                sCount;
+            long generation;
+            double profitability;
+
+            sCount = s_strategies.Count;
+            generation = s_gIdx;
+            median = s_strategies[sCount / 2].Result;
+            best = s_strategies[0].Result;
+            worst = s_strategies[sCount - 1].Result;
+            medianTrades = s_strategies[sCount / 2].Portfolio.trades;
+            bestTrades = s_strategies[0].Portfolio.trades;
+            worstTrades = s_strategies[sCount - 1].Portfolio.trades;
+            profitability = Stockmarket.proofStrategy(s_strategies[0].copy(), s_quotes);
+
+            Debug.Assert(s_strategies[0].Score() >= s_strategies[1].Score());
+            Debug.Assert(s_strategies[0].Score() >= s_strategies[sCount - 1].Score());
+            Debug.Assert(s_strategies[0].Result >= new Money(0.0m));
+
+            for (int i = 0; i < sCount; i++)
+            {
+                results.Add(s_strategies[i].Result);
+                meanTrades += s_strategies[i].Portfolio.trades;
+            }
+            mean = Money.Mean(results);
+
+            meanTrades /= sCount;
+
+            sb.AppendFormat("Generation:    {0}\n", generation);
+            sb.AppendFormat("Median:        {0}\n", median.ToString());
+            sb.AppendFormat("Median Trades: {0}\n", medianTrades);
+            sb.AppendFormat("Mean:          {0}\n", mean.ToString());
+            sb.AppendFormat("Mean Trades:   {0}\n", meanTrades);
+            sb.AppendFormat("Worst:         {0}\n", worst.ToString());
+            sb.AppendFormat("Worst Trades:  {0}\n", worstTrades);
+            sb.AppendFormat("Best:          {0}\n", best.ToString());
+            sb.AppendFormat("Best Trades:   {0}\n", bestTrades);
+            sb.AppendFormat("Profitability: {0}\n", profitability.ToString("F3"));
+
+            MainWindow.resultText = sb.ToString();
+            MainWindow.tradeWeightText = printTradeWeight(s_strategies[0]);
+        }
+
+        private static string printTradeWeight(Strategy s)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("           BuyWeight   SellWeight\n");
+            sb.AppendFormat("   overall {0} {1}\n", s.BuyWeight.overall.ToString("F9"), s.SellWeight.overall.ToString("F9"));
+            sb.AppendFormat("y: open    {0} {1}\n", s.BuyWeight.yesterday.open.ToString("F9"), s.SellWeight.yesterday.open.ToString("F9"));
+            sb.AppendFormat("   close   {0} {1}\n", s.BuyWeight.yesterday.close.ToString("F9"), s.SellWeight.yesterday.close.ToString("F9"));
+            sb.AppendFormat("   high    {0} {1}\n", s.BuyWeight.yesterday.high.ToString("F9"), s.SellWeight.yesterday.high.ToString("F9"));
+            sb.AppendFormat("   low     {0} {1}\n", s.BuyWeight.yesterday.low.ToString("F9"), s.SellWeight.yesterday.low.ToString("F9"));
+            sb.AppendFormat("   volume  {0} {1}\n", s.BuyWeight.yesterday.volume.ToString("F9"), s.SellWeight.yesterday.volume.ToString("F9"));
+            sb.AppendFormat("t: open    {0} {1}\n", s.BuyWeight.today.open.ToString("F9"), s.SellWeight.today.open.ToString("F9"));
+            sb.AppendFormat("   close   {0} {1}\n", s.BuyWeight.today.close.ToString("F9"), s.SellWeight.today.close.ToString("F9"));
+            sb.AppendFormat("   high    {0} {1}\n", s.BuyWeight.today.high.ToString("F9"), s.SellWeight.today.high.ToString("F9"));
+            sb.AppendFormat("   low     {0} {1}\n", s.BuyWeight.today.low.ToString("F9"), s.SellWeight.today.low.ToString("F9"));
+            sb.AppendFormat("   volume  {0} {1}\n", s.BuyWeight.today.volume.ToString("F9"), s.SellWeight.today.volume.ToString("F9"));
+
+            return sb.ToString();
+        }
+
         internal static void main()
         {
             Thread.CurrentThread.Name = "Stockmarket Main";
@@ -230,6 +306,7 @@ namespace stockmarket
 
             // initialize quotes
             List<Quote> quotes = buildQuotes();
+            MainWindow.quoteGraph = new QuoteGraph(quotes);
             //List<Quote> quotes = sineWaveQuotes();
 
             // initialize trade weights / strategies
@@ -248,12 +325,7 @@ namespace stockmarket
                 Strategy.Sort(strategies);
                 
                 // set context for the render thread
-                lock (MainWindow.updateLock)
-                {
-                    MainWindow.s_strategies = Strategy.copy(strategies);
-                    MainWindow.s_quotes = quotes;
-                    MainWindow.s_gIdx = i;
-                }
+                printResults(strategies, quotes, i);
 
                 if (i != gCount - 1)
                     mutate(strategies, sCount);
