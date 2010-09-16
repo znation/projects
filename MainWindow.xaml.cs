@@ -26,7 +26,7 @@ namespace stockmarket
         internal static volatile string resultText = String.Empty;
         internal static volatile string tradeWeightText = String.Empty;
         internal static volatile QuoteGraph quoteGraph = null;
-        private WriteableBitmap gridBitmap = null;
+        private DrawingSurface grid = null;
         
         public MainWindow()
         {
@@ -47,56 +47,38 @@ namespace stockmarket
 
         // The DrawPixel method updates the WriteableBitmap by using
         // unsafe code to write a pixel into the back buffer.
-        private void DrawPixel(int x, int y, Color c)
-        {
-            unsafe
-            {
-                // Get a pointer to the back buffer.
-                int pBackBuffer = (int)gridBitmap.BackBuffer;
-
-                // Find the address of the pixel to draw.
-                pBackBuffer += y * gridBitmap.BackBufferStride;
-                pBackBuffer += x * 4;
-
-                // Compute the pixel's color.
-                int color_data = c.A << 24;
-                color_data |= c.R << 16;
-                color_data |= c.G << 8;
-                color_data |= c.B << 0;
-
-                // Assign the color data to the pixel.
-                *((int*)pBackBuffer) = color_data;
-            }
-
-            // Specify the area of the bitmap that changed.
-            gridBitmap.AddDirtyRect(new Int32Rect(x, y, 1, 1));
-        }
+        
 
         private void AttachQuoteGraph()
         {
             if (quoteGraph == null)
                 return;
-            if (gridBitmap != null)
+            if (grid != null)
                 return;
 
             int w = (int)Panel.ActualWidth;
-            int h = 100; 
-            gridBitmap = new WriteableBitmap(w, h, 96, 96, PixelFormats.Bgra32, null);
-            PriceGraph.Source = gridBitmap;
+            int rows = (int)Math.Ceiling((double)quoteGraph.Values.Length / (double)w);
+            int h = (100 * rows) + (10 * (rows - 1));
+
+            grid = new DrawingSurface(new WriteableBitmap(w, h, 96, 96, PixelFormats.Bgra32, null));
+            PriceGraph.Source = grid.Bitmap;
             PriceGraph.Stretch = Stretch.None;
 
-            gridBitmap.Lock();
-            for (int i = 0; i < h; i++)
+            grid.Bitmap.Lock();
+            for (int row = 0; row < rows; row++)
             {
-                for (int j = 0; j < w; j++)
+                for (int y = 0; y < 100; y++)
                 {
-                    if (i == quoteGraph.Values[j])
-                        DrawPixel(j, i, Colors.Black);
-                    else
-                        DrawPixel(j, i, Colors.LightGray);
+                    for (int x = 0; x < w; x++)
+                    {
+                        if (y == quoteGraph.Values[x+(row*100)])
+                            grid.DrawPixel(x, y+(row*110), Colors.Black);
+                        else
+                            grid.DrawPixel(x, y+(row*110), Colors.LightGray);
+                    }
                 }
             }
-            gridBitmap.Unlock();
+            grid.Bitmap.Unlock();
         }
 
         void MainWindow_Closing(object sender, CancelEventArgs e)
