@@ -65,19 +65,25 @@ namespace stockmarket
             PriceGraph.Stretch = Stretch.None;
 
             grid.Bitmap.Lock();
+
             for (int row = 0; row < rows; row++)
             {
                 for (int y = 0; y < 100; y++)
                 {
                     for (int x = 0; x < w; x++)
                     {
-                        if (y == quoteGraph.Values[x+(row*100)])
-                            grid.DrawPixel(x, y+(row*110), Colors.Black);
-                        else
-                            grid.DrawPixel(x, y+(row*110), Colors.LightGray);
+                        int quoteIdx = x+(row*w);
+                        if (quoteGraph.Values.Length > quoteIdx)
+                        {
+                            if (y == quoteGraph.Values[quoteIdx])
+                                grid.DrawPixel(x, y + (row * 110), Colors.Black);
+                            else
+                                grid.DrawPixel(x, y + (row * 110), Colors.LightGray);
+                        }
                     }
                 }
             }
+
             grid.Bitmap.Unlock();
         }
 
