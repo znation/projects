@@ -45,10 +45,7 @@ namespace stockmarket
             AttachQuoteGraph();
         }
 
-        // The DrawPixel method updates the WriteableBitmap by using
-        // unsafe code to write a pixel into the back buffer.
-        
-
+        private const int ROWSEP = 15;
         private void AttachQuoteGraph()
         {
             if (quoteGraph == null)
@@ -58,7 +55,7 @@ namespace stockmarket
 
             int w = (int)Panel.ActualWidth;
             int rows = (int)Math.Ceiling((double)quoteGraph.Values.Length / (double)w);
-            int h = (100 * rows) + (10 * (rows - 1));
+            int h = (QuoteGraph.ROWHEIGHT * rows) + (ROWSEP * (rows - 1));
 
             grid = new DrawingSurface(new WriteableBitmap(w, h, 96, 96, PixelFormats.Bgra32, null));
             PriceGraph.Source = grid.Bitmap;
@@ -68,7 +65,7 @@ namespace stockmarket
 
             for (int row = 0; row < rows; row++)
             {
-                for (int y = 0; y < 100; y++)
+                for (int y = 0; y < QuoteGraph.ROWHEIGHT; y++)
                 {
                     for (int x = 0; x < w; x++)
                     {
@@ -76,9 +73,9 @@ namespace stockmarket
                         if (quoteGraph.Values.Length > quoteIdx)
                         {
                             if (y == quoteGraph.Values[quoteIdx])
-                                grid.DrawPixel(x, y + (row * 110), Colors.Black);
+                                grid.DrawPixel(x, y + (row * (QuoteGraph.ROWHEIGHT + ROWSEP)), Colors.Black);
                             else
-                                grid.DrawPixel(x, y + (row * 110), Colors.LightGray);
+                                grid.DrawPixel(x, y + (row * (QuoteGraph.ROWHEIGHT + ROWSEP)), Colors.LightGray);
                         }
                     }
                 }

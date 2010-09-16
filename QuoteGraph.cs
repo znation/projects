@@ -7,6 +7,7 @@ namespace stockmarket
 {
     internal class QuoteGraph
     {
+        internal const int ROWHEIGHT = 200;
         internal QuoteGraph(List<Quote> quotes)
         {
             // per quote, 100 pixels vertically, 1 horizontally, 4 bytes per pixel
@@ -23,7 +24,7 @@ namespace stockmarket
             foreach (Quote q in quotes)
             {
                 decimal close = q.close.ToDecimal();
-                int weighted = (int)(100.0m * ((close - min) / (max - min)));
+                int weighted = (int)(ROWHEIGHT * ((close - min) / (max - min)));
                 Values[i] = weighted;
                 i++;
             }
