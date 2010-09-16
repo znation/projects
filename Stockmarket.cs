@@ -307,7 +307,7 @@ namespace stockmarket
             // initialize quotes
             List<Quote> quotes = buildQuotes();
             MainWindow.quoteGraph = new QuoteGraph(quotes);
-            //List<Quote> quotes = sineWaveQuotes();
+            
 
             // initialize trade weights / strategies
             List<Strategy> strategies = new List<Strategy>();

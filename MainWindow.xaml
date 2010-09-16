@@ -5,5 +5,6 @@
     <WrapPanel Name="Panel">
         <TextBox FontFamily="Consolas" Name="Results" />
         <TextBox FontFamily="Consolas" Name="TradeWeight" />
+        <Image Name="PriceGraph" />
     </WrapPanel>
 </Window>
