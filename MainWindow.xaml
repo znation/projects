@@ -5,6 +5,10 @@
     <WrapPanel Name="Panel">
         <TextBox FontFamily="Consolas" Name="Results" />
         <TextBox FontFamily="Consolas" Name="TradeWeight" />
-        <Image Name="PriceGraph" />
+        <Canvas Name="GraphCanvas">
+            <Image Name="PriceGraph" Stretch="None" Canvas.Top="0" Canvas.Left="0" Panel.ZIndex="0"/>
+            <Image Name="TradeGraph" Stretch="None" Canvas.Top="0" Canvas.Left="0" Panel.ZIndex="1" Opacity=".5"/>
+        </Canvas>
     </WrapPanel>
+    
 </Window>

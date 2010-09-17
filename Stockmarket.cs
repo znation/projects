@@ -277,6 +277,45 @@ namespace stockmarket
 
             MainWindow.resultText = sb.ToString();
             MainWindow.tradeWeightText = printTradeWeight(s_strategies[0]);
+            MainWindow.tradeGraph = BuildTradeGraph(s_strategies[0].Trades, s_quotes);
+        }
+
+        private static bool[] BuildTradeGraph(List<TradeRecord> list, List<Quote> quotes)
+        {
+            int qCount = quotes.Count;
+            Quote firstDay = quotes[0];
+            Quote lastDay = quotes[quotes.Count - 1];
+            bool[] trades = new bool[qCount];
+            bool holding = false;
+            int listIdx = 0;
+            DateTime prevTradeDate = new DateTime(firstDay.year, firstDay.month, firstDay.day);
+            for (int i = 0; i < qCount; i++)
+            {
+                if (list.Count > listIdx)
+                {
+                    TradeRecord nextTrade = list[listIdx];
+                    DateTime nextTradeDate = new DateTime(nextTrade.year, nextTrade.month, nextTrade.day);
+                    int diff = nextTradeDate.Subtract(prevTradeDate).Days;
+                    if (i == diff)
+                    {
+                        // trade nextTrade takes place today
+                        if (nextTrade.type == TradeAction.BUY)
+                        {
+                            holding = true;
+                        }
+                        else
+                        {
+                            Debug.Assert(nextTrade.type == TradeAction.SELL);
+                            holding = false;
+                        }
+                        listIdx++;
+                    }
+                }
+
+                trades[i] = holding;
+            }
+
+            return trades;
         }
 
         private static string printTradeWeight(Strategy s)
@@ -325,7 +364,8 @@ namespace stockmarket
                 Strategy.Sort(strategies);
                 
                 // set context for the render thread
-                printResults(strategies, quotes, i);
+                if (i % 20 == 0)
+                    printResults(strategies, quotes, i);
 
                 if (i != gCount - 1)
                     mutate(strategies, sCount);

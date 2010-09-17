@@ -8,12 +8,12 @@ namespace stockmarket
     {
         internal WriteableBitmap Bitmap { get; private set; }
 
-        internal DrawingSurface(WriteableBitmap b)
+        public DrawingSurface(int w, int h)
         {
-            Bitmap = b;
+            Bitmap = new WriteableBitmap(w, h, 96, 96, PixelFormats.Bgra32, null);
         }
 
-        internal void DrawPixel(int x, int y, Color c)
+        internal void DrawPixelUnlocked(int x, int y, Color c)
         {
             unsafe
             {

@@ -22,11 +22,17 @@ namespace stockmarket
     /// </summary>
     public partial class MainWindow : Window
     {
+        private const int ROWSEP = 15;
         private readonly List<Thread> threads;
         internal static volatile string resultText = String.Empty;
         internal static volatile string tradeWeightText = String.Empty;
         internal static volatile QuoteGraph quoteGraph = null;
-        private DrawingSurface grid = null;
+        internal static volatile bool[] tradeGraph = null;
+        private DrawingSurface priceGrid = null;
+        private DrawingSurface tradeGrid = null;
+        private int graphWidth;
+        private int graphHeight;
+        private int rows;
         
         public MainWindow()
         {
@@ -42,46 +48,70 @@ namespace stockmarket
         {
             Results.Text = resultText;
             TradeWeight.Text = tradeWeightText;
-            AttachQuoteGraph();
+            AttachPriceGraph();
+            UpdateTradeGraph();
         }
 
-        private const int ROWSEP = 15;
-        private void AttachQuoteGraph()
+        private void UpdateTradeGraph()
         {
-            if (quoteGraph == null)
+            if (tradeGraph == null ||
+                tradeGrid == null)
                 return;
-            if (grid != null)
+
+            tradeGrid.Bitmap.Lock();
+            for (int i = 0; i < rows; i++)
+            {
+                for (int y = 0; y < QuoteGraph.ROWHEIGHT; y++)
+                {
+                    for (int x = 0; x < graphWidth; x++)
+                    {
+                        if (tradeGraph[(i * QuoteGraph.ROWHEIGHT)+x])
+                            tradeGrid.DrawPixelUnlocked(x, y, Colors.DarkRed);
+                    }
+                }
+            }
+            tradeGrid.Bitmap.Unlock();
+        }
+
+        private void AttachPriceGraph()
+        {
+            if (quoteGraph == null ||
+                priceGrid != null)
                 return;
 
-            int w = (int)Panel.ActualWidth;
-            int rows = (int)Math.Ceiling((double)quoteGraph.Values.Length / (double)w);
-            int h = (QuoteGraph.ROWHEIGHT * rows) + (ROWSEP * (rows - 1));
+            graphWidth = (int)Panel.ActualWidth;
+            rows = (int)Math.Ceiling((double)quoteGraph.Values.Length / (double)graphWidth);
+            graphHeight = (QuoteGraph.ROWHEIGHT * rows) + (ROWSEP * (rows - 1));
 
-            grid = new DrawingSurface(new WriteableBitmap(w, h, 96, 96, PixelFormats.Bgra32, null));
-            PriceGraph.Source = grid.Bitmap;
-            PriceGraph.Stretch = Stretch.None;
+            GraphCanvas.Width = graphWidth;
 
-            grid.Bitmap.Lock();
+            priceGrid = new DrawingSurface(graphWidth, graphHeight);
+            PriceGraph.Source = priceGrid.Bitmap;
+
+            tradeGrid = new DrawingSurface(graphWidth, graphHeight);
+            TradeGraph.Source = tradeGrid.Bitmap;
+
+            priceGrid.Bitmap.Lock();
+            tradeGrid.Bitmap.Lock();
 
             for (int row = 0; row < rows; row++)
             {
                 for (int y = 0; y < QuoteGraph.ROWHEIGHT; y++)
                 {
-                    for (int x = 0; x < w; x++)
+                    for (int x = 0; x < graphWidth; x++)
                     {
-                        int quoteIdx = x+(row*w);
+                        int quoteIdx = x+(row*graphWidth);
                         if (quoteGraph.Values.Length > quoteIdx)
                         {
                             if (y == quoteGraph.Values[quoteIdx])
-                                grid.DrawPixel(x, y + (row * (QuoteGraph.ROWHEIGHT + ROWSEP)), Colors.Black);
-                            else
-                                grid.DrawPixel(x, y + (row * (QuoteGraph.ROWHEIGHT + ROWSEP)), Colors.LightGray);
+                                priceGrid.DrawPixelUnlocked(x, y + (row * (QuoteGraph.ROWHEIGHT + ROWSEP)), Colors.Black);
                         }
                     }
                 }
             }
 
-            grid.Bitmap.Unlock();
+            priceGrid.Bitmap.Unlock();
+            tradeGrid.Bitmap.Unlock();
         }
 
         void MainWindow_Closing(object sender, CancelEventArgs e)
