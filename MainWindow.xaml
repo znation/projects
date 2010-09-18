@@ -7,7 +7,7 @@
         <TextBox FontFamily="Consolas" Name="TradeWeight" />
         <Canvas Name="GraphCanvas">
             <Image Name="PriceGraph" Stretch="None" Canvas.Top="0" Canvas.Left="0" Panel.ZIndex="0"/>
-            <Image Name="TradeGraph" Stretch="None" Canvas.Top="0" Canvas.Left="0" Panel.ZIndex="1" Opacity=".5"/>
+            <Image Name="TradeGraph" Stretch="None" Canvas.Top="0" Canvas.Left="0" Panel.ZIndex="1"/>
         </Canvas>
     </WrapPanel>
     

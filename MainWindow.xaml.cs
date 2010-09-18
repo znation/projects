@@ -23,11 +23,16 @@ namespace stockmarket
     public partial class MainWindow : Window
     {
         private const int ROWSEP = 15;
+        private readonly Color TRANSPARENT;
+        private readonly Color DARKRED;
         private readonly List<Thread> threads;
+
         internal static volatile string resultText = String.Empty;
         internal static volatile string tradeWeightText = String.Empty;
         internal static volatile QuoteGraph quoteGraph = null;
         internal static volatile bool[] tradeGraph = null;
+        internal static volatile bool hasUpdates = false;
+
         private DrawingSurface priceGrid = null;
         private DrawingSurface tradeGrid = null;
         private int graphWidth;
@@ -36,6 +41,15 @@ namespace stockmarket
         
         public MainWindow()
         {
+            TRANSPARENT = new Color();
+            TRANSPARENT.A = 0;
+            TRANSPARENT.R = 0;
+            TRANSPARENT.G = 0;
+            TRANSPARENT.B = 0;
+
+            DARKRED = Colors.DarkRed;
+            DARKRED.A = Byte.MaxValue / 2;
+
             threads = new List<Thread>();
             threads.Add(new Thread(Stockmarket.main));
             InitializeComponent();
@@ -46,6 +60,10 @@ namespace stockmarket
 
         void Render(object sender, EventArgs e)
         {
+            if (!hasUpdates)
+                return;
+
+            hasUpdates = false;
             Results.Text = resultText;
             TradeWeight.Text = tradeWeightText;
             AttachPriceGraph();
@@ -65,8 +83,12 @@ namespace stockmarket
                 {
                     for (int x = 0; x < graphWidth; x++)
                     {
-                        if (tradeGraph[(i * QuoteGraph.ROWHEIGHT)+x])
-                            tradeGrid.DrawPixelUnlocked(x, y, Colors.DarkRed);
+                        int tradeIdx = (i * graphWidth) + x;
+                        int adjustedY = y + (i * (QuoteGraph.ROWHEIGHT + ROWSEP));
+                        if (tradeIdx < tradeGraph.Length && tradeGraph[tradeIdx])
+                            tradeGrid.DrawPixelUnlocked(x, adjustedY, DARKRED);
+                        else
+                            tradeGrid.DrawPixelUnlocked(x, adjustedY, TRANSPARENT);
                     }
                 }
             }

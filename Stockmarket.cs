@@ -278,6 +278,7 @@ namespace stockmarket
             MainWindow.resultText = sb.ToString();
             MainWindow.tradeWeightText = printTradeWeight(s_strategies[0]);
             MainWindow.tradeGraph = BuildTradeGraph(s_strategies[0].Trades, s_quotes);
+            MainWindow.hasUpdates = true;
         }
 
         private static bool[] BuildTradeGraph(List<TradeRecord> list, List<Quote> quotes)
