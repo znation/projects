@@ -19,11 +19,10 @@ namespace Synth
 
         internal static byte[] ToByteArray(UInt32 integer, UInt32 byteCount)
         {
-            // TODO -- make sure this works!
             byte[] bytes = new byte[byteCount];
             for (int i = 0; i < byteCount; i++)
             {
-                bytes[i] = (byte)((integer & (0xff << (i * 8))) >> (i * 8));
+                bytes[(byteCount-1)-i] = (byte)((integer & (0xff << (i * 8))) >> (i * 8));
             }
             return bytes;
         }
