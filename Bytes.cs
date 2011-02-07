@@ -37,10 +37,5 @@ namespace Synth
         {
             return ToByteArray(integer, 2);
         }
-
-        internal static byte[] GetRandomBytes(int p)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -36,34 +36,42 @@ namespace Synth
         {
             get
             {
-                // TODO -- return the real size
-                return Bytes.ToByteArray(1);
+                UInt32 s = (UInt32) (4 // 16
+                    + 16 // the WaveFormatEx
+                    + 4 // "data"
+                    + 4 // dataSize
+                    + data.Length); // whole file minus "WAVEfmt "
+                return Bytes.ToByteArray(s);
             }
         }
         private static readonly byte[] WAVE = Bytes.ToByteArray("WAVE".ToCharArray());
         private static readonly byte[] fmt = Bytes.ToByteArray("fmt ".ToCharArray());
         private static readonly byte[] WaveFormatExSize = Bytes.ToByteArray(16);
         private static readonly byte[] WaveFormatEx = (new WaveFormatEx()).ToByteArray();
-        private static readonly byte[] data = Bytes.ToByteArray("data".ToCharArray());
+        private static readonly byte[] dataChars = Bytes.ToByteArray("data".ToCharArray());
         private byte[] dataSize
         {
 
             get
             {
-                return Bytes.ToByteArray(1); // TODO -- return the real size
+                return Bytes.ToByteArray((UInt32)data.Length);
             }
         }
 
-        private byte[] Data
-        {
-            get;
-            set;
-        }
+        private byte[] data;
 
         internal byte[] ToByteArray()
         {
             List<byte> list = new List<byte>();
             list.AddRange(RIFF);
+            list.AddRange(size);
+            list.AddRange(WAVE);
+            list.AddRange(fmt);
+            list.AddRange(WaveFormatExSize);
+            list.AddRange(WaveFormatEx);
+            list.AddRange(dataChars);
+            list.AddRange(dataSize);
+            list.AddRange(data);
             return list.ToArray();
         }
 
@@ -72,7 +80,8 @@ namespace Synth
             get
             {
                 Wave w = new Wave();
-                w.Data = Bytes.GetRandomBytes(1024 * 1024);
+                w.data = new byte[1024 * 1024];
+                Synth.Random.NextBytes(w.data);
                 return w.ToByteArray();
             }
         }
