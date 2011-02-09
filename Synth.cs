@@ -5,6 +5,7 @@ using System.Text;
 using SdlDotNet.Graphics;
 using SdlDotNet.Core;
 using SdlDotNet.Audio;
+using System.IO;
 
 namespace Synth
 {
@@ -17,6 +18,14 @@ namespace Synth
         {
             Synth app = new Synth();
             app.Go();
+
+            //using (FileStream fs = new FileStream("test.wav", FileMode.Create))
+            //{
+            //    using (BinaryWriter bw = new BinaryWriter(fs))
+            //    {
+            //        bw.Write(Wave.Random);
+            //    }
+            //}
         }
 
         private Synth()
@@ -25,7 +34,7 @@ namespace Synth
             Video.WindowCaption = "Synth";
 
             Sound sound = new Sound(Wave.Random);
-            sound.Play(false);
+            sound.Play(true);
         }
 
         private void Go()

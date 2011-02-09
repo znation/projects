@@ -17,24 +17,24 @@ namespace Synth
             return bytes;
         }
 
-        internal static byte[] ToByteArray(UInt32 integer, UInt32 byteCount)
+        internal static byte[] ToByteArray(UInt32 integer)
         {
-            byte[] bytes = new byte[byteCount];
-            for (int i = 0; i < byteCount; i++)
+            byte[] bytes = new byte[4];
+            for (int i = 0; i < 4; i++)
             {
-                bytes[(byteCount-1)-i] = (byte)((integer & (0xff << (i * 8))) >> (i * 8));
+                bytes[i] = (byte)((integer & (0xff << (i * 8))) >> (i * 8));
             }
             return bytes;
         }
 
-        internal static byte[] ToByteArray(UInt32 integer)
-        {
-            return ToByteArray(integer, 4);
-        }
-
         internal static byte[] ToByteArray(UInt16 integer)
         {
-            return ToByteArray(integer, 2);
+            byte[] bytes = new byte[2];
+            for (int i = 0; i < 2; i++)
+            {
+                bytes[i] = (byte)((integer & (0xff << (i * 8))) >> (i * 8));
+            }
+            return bytes;
         }
     }
 }
