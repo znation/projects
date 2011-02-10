@@ -11,7 +11,9 @@ namespace Synth
 {
     internal class Synth
     {
-        internal static readonly Random Random = new Random();
+        internal static readonly Random RANDOM = new Random();
+        internal const UInt32 SAMPLES_PER_SECOND = 44100;
+        internal const UInt16 BITS_PER_SAMPLE = 16;
 
         [STAThread]
         public static void Main()
@@ -33,7 +35,7 @@ namespace Synth
             Video.SetVideoMode(400, 300);
             Video.WindowCaption = "Synth";
 
-            Sound sound = new Sound(Wave.Random);
+            Sound sound = new Sound(Wave.FromHz(440));
             sound.Play(true);
         }
 
