@@ -9,7 +9,7 @@ namespace Synth
 {
     // http://msdn.microsoft.com/en-us/library/aa446573.aspx
 
-    internal class WaveFormatEx
+    internal static class WaveFormatExClass
     {
         private const ushort wFormatTag = 1; // pcm
         private const ushort nChannels = Synth.CHANNELS; // stereo
@@ -18,7 +18,7 @@ namespace Synth
         private const ushort nBlockAlign = Synth.CHANNELS * (Synth.BITS_PER_SAMPLE / 8);
         private const ushort wBitsPerSample = Synth.BITS_PER_SAMPLE;
 
-        internal byte[] ToByteArray()
+        internal static byte[] ToByteArray()
         {
             List<byte> bytes = new List<byte>();
             bytes.AddRange(Bytes.ToByteArray(wFormatTag));
@@ -72,7 +72,7 @@ namespace Synth
         private static readonly byte[] WAVE = Bytes.ToByteArray("WAVE".ToCharArray());
         private static readonly byte[] fmt = Bytes.ToByteArray("fmt ".ToCharArray());
         private static readonly byte[] WaveFormatExSize = Bytes.ToByteArray((UInt32)16);
-        private static readonly byte[] WaveFormatEx = (new WaveFormatEx()).ToByteArray();
+        private static readonly byte[] WaveFormatEx = WaveFormatExClass.ToByteArray();
         private static readonly byte[] dataChars = Bytes.ToByteArray("data".ToCharArray());
         private uint dataSize
         {
@@ -103,17 +103,17 @@ namespace Synth
             return bytes;
         }
 
-        internal static byte[] Random
+        internal static Wave Random
         {
             get
             {
                 Wave w = new Wave((uint)Synth.RANDOM.Next(10) * 1000);
                 Synth.RANDOM.NextBytes(w.data);
-                return w.ToByteArray();
+                return w;
             }
         }
 
-        internal static Sound FromHz(uint ms, params Frequency[] frequencies)
+        internal static Wave FromHz(uint ms, params Frequency[] frequencies)
         {
             Wave w = new Wave(ms);
             int dataIdx = 0;
@@ -128,9 +128,9 @@ namespace Synth
 
                     double weight = ((double)Int16.MaxValue) * frequencies[j].volume;
 
-                    double insideSineStuff = ((double)frequencies[j].hz * (double)i * 1000) / ((double)Synth.SAMPLES_PER_SECOND * (double)Synth.CHANNELS);
+                    double insideSineStuff = (frequencies[j].hz * (double)i) / ((double)Synth.SAMPLES_PER_SECOND * (double)Synth.CHANNELS);
 
-                    double sine = Math.Sin(Math.PI * 2 * insideSineStuff);
+                    double sine = Math.Sin(Math.PI * (double)2 * insideSineStuff);
 
                     Debug.Assert(sine >= -1.0 && sine <= 1.0);
 
@@ -149,8 +149,7 @@ namespace Synth
                 }
             }
 
-            byte[] bytes = w.ToByteArray();
-            return new Sound(bytes);
+            return w;
         }
     }
 }

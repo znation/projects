@@ -7,15 +7,15 @@ namespace Synth
 {
     class Frequency
     {
-        internal double hz
+        internal protected double hz
         {
             get;
-            private set;
+            protected set;
         }
-        internal double volume
+        internal protected double volume
         {
             get;
-            private set;
+            protected set;
         }
 
         internal Frequency(double hz) : this(hz, 1.0) { }
@@ -24,5 +24,6 @@ namespace Synth
             this.hz = hz;
             this.volume = volume;
         }
+        protected Frequency() { } // used to extend in Note
     }
 }

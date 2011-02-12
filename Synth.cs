@@ -7,6 +7,7 @@ using SdlDotNet.Core;
 using SdlDotNet.Audio;
 using System.IO;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Synth
 {
@@ -27,7 +28,7 @@ namespace Synth
             //{
             //    using (BinaryWriter bw = new BinaryWriter(fs))
             //    {
-            //        bw.Write(Wave.Random);
+            //        bw.Write(Bytes.FromHz(1000, new Note("B", 4)));
             //    }
             //}
         }
@@ -37,21 +38,23 @@ namespace Synth
             Video.SetVideoMode(400, 300);
             Video.WindowCaption = "Synth";
 
-            Sound sound = Wave.FromHz(4000, new Frequency(110, .3),
-                                            new Frequency(220, .6),
-                                            new Frequency(440, .9),
-                                            new Frequency(880, .6),
-                                            new Frequency(1760, .3));
-            sound.Play(false);
-
-            /*
-            for (uint i = 0; i < 4; i++)
+            char c;
+            ushort i;
+            for (c = 'C', i = 3; i <=5; c++)
             {
-                Sound sound = Wave.FromHz(2000, (uint)(110 * Math.Pow(2, i)), 1.0);
+                if (c == 'H')
+                {
+                    c = 'A';
+                    i++;
+                }
+
+                Sound sound = Sound.FromHz(200, new Note(c.ToString(), i));
                 sound.Play(false);
-                Thread.Sleep(5000);
+                Thread.Sleep(210);
+
+                if (c == 'C' && i == 5)
+                    break;
             }
-            */
         }
 
         private void Go()

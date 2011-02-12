@@ -56,5 +56,10 @@ namespace Synth
             }
             return bytes;
         }
+
+        internal static byte[] FromHz(uint ms, params Frequency[] frequencies)
+        {
+            return Wave.FromHz(ms, frequencies).ToByteArray();
+        }
     }
 }

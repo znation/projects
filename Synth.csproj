@@ -49,6 +49,8 @@
   <ItemGroup>
     <Compile Include="Bytes.cs" />
     <Compile Include="Frequency.cs" />
+    <Compile Include="Note.cs" />
+    <Compile Include="Sound.cs" />
     <Compile Include="Synth.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Wave.cs" />
