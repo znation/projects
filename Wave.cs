@@ -113,7 +113,7 @@ namespace Synth
             }
         }
 
-        internal static Sound FromHz(uint ms, params Tuple<uint, double>[] frequencies)
+        internal static Sound FromHz(uint ms, params Frequency[] frequencies)
         {
             Wave w = new Wave(ms);
             int dataIdx = 0;
@@ -123,12 +123,12 @@ namespace Synth
                 double[] values = new double[frequencies.Length];
                 for (int j = 0; j < frequencies.Length; j++)
                 {
-                    if (frequencies[j].Item2 <= 0.0 || frequencies[j].Item2 > 1.0)
-                        throw new Exception("Weight must be > 0.0 and <= 1.0");
+                    if (frequencies[j].volume <= 0.0 || frequencies[j].volume > 1.0)
+                        throw new Exception("Volume must be > 0.0 and <= 1.0");
 
-                    double weight = ((double)Int16.MaxValue) * frequencies[j].Item2;
+                    double weight = ((double)Int16.MaxValue) * frequencies[j].volume;
 
-                    double insideSineStuff = ((double)frequencies[j].Item1 * (double)i * 1000) / ((double)Synth.SAMPLES_PER_SECOND * (double)Synth.CHANNELS);
+                    double insideSineStuff = ((double)frequencies[j].hz * (double)i * 1000) / ((double)Synth.SAMPLES_PER_SECOND * (double)Synth.CHANNELS);
 
                     double sine = Math.Sin(Math.PI * 2 * insideSineStuff);
 
@@ -151,11 +151,6 @@ namespace Synth
 
             byte[] bytes = w.ToByteArray();
             return new Sound(bytes);
-        }
-
-        internal static Sound FromHz(uint ms, uint frequency, double volume)
-        {
-            return FromHz(ms, new Tuple<uint, double>(frequency, volume));
         }
     }
 }
