@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using SdlDotNet.Audio;
 
 namespace Synth
 {
@@ -10,12 +11,12 @@ namespace Synth
 
     internal class WaveFormatEx
     {
-        private const UInt16 wFormatTag = 1; // pcm
-        private const UInt16 nChannels = 2; // stereo
-        private const UInt32 nSamplesPerSec = Synth.SAMPLES_PER_SECOND; // hz
-        private const UInt32 nAvgBytesPerSec = (Synth.BITS_PER_SAMPLE / 8) * Synth.SAMPLES_PER_SECOND; // 16 bits (2 bytes) per sample * 44100 samples per second
-        private const UInt16 nBlockAlign = 0; // ???
-        private const UInt16 wBitsPerSample = Synth.BITS_PER_SAMPLE;
+        private const ushort wFormatTag = 1; // pcm
+        private const ushort nChannels = Synth.CHANNELS; // stereo
+        private const uint nSamplesPerSec = Synth.SAMPLES_PER_SECOND; // hz
+        private static readonly uint nAvgBytesPerSec = (uint)Math.Ceiling((double)Synth.BITS_PER_SAMPLE / (double)8) * Synth.SAMPLES_PER_SECOND * Synth.CHANNELS; // 16 bits (2 bytes) per sample * 44100 samples per second
+        private const ushort nBlockAlign = Synth.CHANNELS * (Synth.BITS_PER_SAMPLE / 8);
+        private const ushort wBitsPerSample = Synth.BITS_PER_SAMPLE;
 
         internal byte[] ToByteArray()
         {
@@ -33,8 +34,15 @@ namespace Synth
 
     internal class Wave
     {
+        private readonly uint samples;
+        private Wave(uint ms)
+        {
+            samples = (ms * Synth.SAMPLES_PER_SECOND) / 1000;
+            data = new byte[dataSize];
+        }
+
         private static readonly byte[] RIFF = Bytes.ToByteArray("RIFF".ToCharArray());
-        private UInt32 sizeInt
+        private uint sizeInt
         {
             get
             {
@@ -43,9 +51,9 @@ namespace Synth
                 Debug.Assert(WaveFormatExSize.Length == 4);
                 Debug.Assert(WaveFormatEx.Length == 16);
                 Debug.Assert(dataChars.Length == 4);
-                Debug.Assert(dataSize.Length == 4);
+                Debug.Assert(Bytes.ToByteArray(dataSize).Length == 4);
 
-                return (UInt32)(4 // "WAVE"
+                return (uint)(4 // "WAVE"
                     + 4 // "fmt "
                     + 4 // WaveFormatExSize
                     + 16 // the WaveFormatEx
@@ -66,12 +74,12 @@ namespace Synth
         private static readonly byte[] WaveFormatExSize = Bytes.ToByteArray((UInt32)16);
         private static readonly byte[] WaveFormatEx = (new WaveFormatEx()).ToByteArray();
         private static readonly byte[] dataChars = Bytes.ToByteArray("data".ToCharArray());
-        private byte[] dataSize
+        private uint dataSize
         {
 
             get
             {
-                return Bytes.ToByteArray((UInt32)data.Length);
+                return samples * Synth.CHANNELS * Synth.BITS_PER_SAMPLE / 8;
             }
         }
 
@@ -87,7 +95,7 @@ namespace Synth
             list.AddRange(WaveFormatExSize);
             list.AddRange(WaveFormatEx);
             list.AddRange(dataChars);
-            list.AddRange(dataSize);
+            list.AddRange(Bytes.ToByteArray(dataSize));
             list.AddRange(data);
 
             byte[] bytes = list.ToArray();
@@ -99,43 +107,55 @@ namespace Synth
         {
             get
             {
-                Wave w = new Wave();
-                w.data = new byte[1024 * 1024];
+                Wave w = new Wave((uint)Synth.RANDOM.Next(10) * 1000);
                 Synth.RANDOM.NextBytes(w.data);
                 return w.ToByteArray();
             }
         }
 
-        internal static byte[] FromHz(UInt32 hz)
+        internal static Sound FromHz(uint ms, params Tuple<uint, double>[] frequencies)
         {
-            Wave w = new Wave();
-
-            UInt32 seconds = 10; // seconds
-            UInt32 samples = seconds * Synth.SAMPLES_PER_SECOND;
-            UInt32 bits = samples * Synth.BITS_PER_SAMPLE;
-            UInt32 bytes = bits / 8;
-            w.data = new byte[bytes];
+            Wave w = new Wave(ms);
             int dataIdx = 0;
 
-            for (UInt32 i = 0; i < samples; i++)
+            for (uint i = 0; i < w.samples; i++)
             {
-                double value = Math.Sin((Math.PI * (((double)i * Synth.SAMPLES_PER_SECOND) / (double)seconds)) / (double)hz);
-
-                // normalize to UInt16
-                value *= (UInt16.MaxValue / 2);
-                value += (UInt16.MaxValue / 2);
-
-
-                UInt16 sample = Convert.ToUInt16(value);
-                byte[] sampleBytes = Bytes.ToByteArray(sample);
-                for (int j = 0; j < sampleBytes.Length; j++)
+                double[] values = new double[frequencies.Length];
+                for (int j = 0; j < frequencies.Length; j++)
                 {
-                    w.data[dataIdx + j] = sampleBytes[j];
+                    if (frequencies[j].Item2 <= 0.0 || frequencies[j].Item2 > 1.0)
+                        throw new Exception("Weight must be > 0.0 and <= 1.0");
+
+                    double weight = ((double)Int16.MaxValue) * frequencies[j].Item2;
+
+                    double insideSineStuff = ((double)frequencies[j].Item1 * (double)i * 1000) / ((double)Synth.SAMPLES_PER_SECOND * (double)Synth.CHANNELS);
+
+                    double sine = Math.Sin(Math.PI * 2 * insideSineStuff);
+
+                    Debug.Assert(sine >= -1.0 && sine <= 1.0);
+
+                    values[j] = (sine * weight);
                 }
-                dataIdx += sampleBytes.Length;
+
+                double value = values.Average();
+
+                Debug.Assert(value >= short.MinValue && value <= short.MaxValue);
+
+                byte[] sample = Bytes.ToByteArray(Convert.ToInt16(value));
+                Debug.Assert(sample.Length == 2);
+                for (int j = 0; j < sample.Length; j++)
+                {
+                    w.data[dataIdx++] = sample[j];
+                }
             }
 
-            return w.ToByteArray();
+            byte[] bytes = w.ToByteArray();
+            return new Sound(bytes);
+        }
+
+        internal static Sound FromHz(uint ms, uint frequency, double volume)
+        {
+            return FromHz(ms, new Tuple<uint, double>(frequency, volume));
         }
     }
 }

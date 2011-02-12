@@ -17,7 +17,7 @@ namespace Synth
             return bytes;
         }
 
-        internal static byte[] ToByteArray(UInt32 integer)
+        internal static byte[] ToByteArray(int integer)
         {
             byte[] bytes = new byte[4];
             for (int i = 0; i < 4; i++)
@@ -27,7 +27,27 @@ namespace Synth
             return bytes;
         }
 
-        internal static byte[] ToByteArray(UInt16 integer)
+        internal static byte[] ToByteArray(uint integer)
+        {
+            byte[] bytes = new byte[4];
+            for (int i = 0; i < 4; i++)
+            {
+                bytes[i] = (byte)((integer & (0xff << (i * 8))) >> (i * 8));
+            }
+            return bytes;
+        }
+
+        internal static byte[] ToByteArray(short integer)
+        {
+            byte[] bytes = new byte[2];
+            for (int i = 0; i < 2; i++)
+            {
+                bytes[i] = (byte)((integer & (0xff << (i * 8))) >> (i * 8));
+            }
+            return bytes;
+        }
+
+        internal static byte[] ToByteArray(ushort integer)
         {
             byte[] bytes = new byte[2];
             for (int i = 0; i < 2; i++)

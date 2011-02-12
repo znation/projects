@@ -6,14 +6,16 @@ using SdlDotNet.Graphics;
 using SdlDotNet.Core;
 using SdlDotNet.Audio;
 using System.IO;
+using System.Threading;
 
 namespace Synth
 {
     internal class Synth
     {
         internal static readonly Random RANDOM = new Random();
-        internal const UInt32 SAMPLES_PER_SECOND = 44100;
-        internal const UInt16 BITS_PER_SAMPLE = 16;
+        internal const uint SAMPLES_PER_SECOND = 44100;
+        internal const ushort BITS_PER_SAMPLE = 16;
+        internal const ushort CHANNELS = 1;
 
         [STAThread]
         public static void Main()
@@ -35,8 +37,12 @@ namespace Synth
             Video.SetVideoMode(400, 300);
             Video.WindowCaption = "Synth";
 
-            Sound sound = new Sound(Wave.FromHz(440));
-            sound.Play(true);
+            for (uint i = 0; i < 8; i++)
+            {
+                Sound sound = Wave.FromHz(2000, (uint)(55 * Math.Pow(2, i)), 1.0);
+                sound.Play(false);
+                Thread.Sleep(5000);
+            }
         }
 
         private void Go()
