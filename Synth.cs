@@ -17,6 +17,7 @@ namespace Synth
         internal const uint SAMPLES_PER_SECOND = 44100;
         internal const ushort BITS_PER_SAMPLE = 16;
         internal const ushort CHANNELS = 1;
+        private List<Thread> threads = new List<Thread>();
 
         [STAThread]
         public static void Main()
@@ -33,28 +34,26 @@ namespace Synth
             //}
         }
 
+        private void StartThreads()
+        {
+            threads.Add(new Thread(Sequencer.PlayLoop));
+            foreach (Thread t in threads)
+            {
+                t.Start();
+            }
+        }
+
         private Synth()
         {
+            Note.RenderNotes();
+            StartThreads();
             Video.SetVideoMode(400, 300);
             Video.WindowCaption = "Synth";
-
-            char c;
-            ushort i;
-            for (c = 'C', i = 3; i <=5; c++)
-            {
-                if (c == 'H')
-                {
-                    c = 'A';
-                    i++;
-                }
-
-                Sound sound = Sound.FromHz(200, new Note(c.ToString(), i));
-                sound.Play(false);
-                Thread.Sleep(210);
-
-                if (c == 'C' && i == 5)
-                    break;
-            }
+            Sequencer.Enqueue("C", 4, 1000, DateTime.Now);
+            Sequencer.Enqueue("D", 4, 1000, DateTime.Now.AddMilliseconds(1000));
+            Sequencer.Enqueue("E", 4, 1000, DateTime.Now.AddMilliseconds(2000));
+            Sequencer.Enqueue("F", 4, 1000, DateTime.Now.AddMilliseconds(3000));
+            Sequencer.Enqueue("G", 4, 1000, DateTime.Now.AddMilliseconds(4000));
         }
 
         private void Go()
@@ -65,6 +64,10 @@ namespace Synth
 
         private void Quit(object sender, QuitEventArgs e)
         {
+            foreach (Thread t in threads)
+            {
+                t.Abort();
+            }
             Events.QuitApplication();
         }
     }

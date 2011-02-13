@@ -9,9 +9,9 @@ namespace Synth
     {
         private Sound(byte[] bytes) : base(bytes) { }
 
-        internal static Sound FromHz(uint ms, params Frequency[] frequencies)
+        internal static Sound FromHz(int samples, params Frequency[] frequencies)
         {
-            return new Sound(Bytes.FromHz(ms, frequencies));
+            return new Sound(Bytes.FromHz(samples, frequencies));
         }
     }
 }

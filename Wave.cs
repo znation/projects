@@ -34,10 +34,11 @@ namespace Synth
 
     internal class Wave
     {
-        private readonly uint samples;
-        private Wave(uint ms)
+        internal Frequency[] frequencies;
+        private readonly int samples;
+        private Wave(int samples)
         {
-            samples = (ms * Synth.SAMPLES_PER_SECOND) / 1000;
+            this.samples = samples;
             data = new byte[dataSize];
         }
 
@@ -79,7 +80,7 @@ namespace Synth
 
             get
             {
-                return samples * Synth.CHANNELS * Synth.BITS_PER_SAMPLE / 8;
+                return (uint)samples * Synth.CHANNELS * Synth.BITS_PER_SAMPLE / 8;
             }
         }
 
@@ -107,15 +108,16 @@ namespace Synth
         {
             get
             {
-                Wave w = new Wave((uint)Synth.RANDOM.Next(10) * 1000);
+                Wave w = new Wave(Synth.RANDOM.Next(10) * 1000);
                 Synth.RANDOM.NextBytes(w.data);
                 return w;
             }
         }
 
-        internal static Wave FromHz(uint ms, params Frequency[] frequencies)
+        internal static Wave FromHz(int samples, params Frequency[] frequencies)
         {
-            Wave w = new Wave(ms);
+            Wave w = new Wave(samples);
+            w.frequencies = frequencies;
             int dataIdx = 0;
 
             for (uint i = 0; i < w.samples; i++)

@@ -57,9 +57,9 @@ namespace Synth
             return bytes;
         }
 
-        internal static byte[] FromHz(uint ms, params Frequency[] frequencies)
+        internal static byte[] FromHz(int samples, params Frequency[] frequencies)
         {
-            return Wave.FromHz(ms, frequencies).ToByteArray();
+            return Wave.FromHz(samples, frequencies).ToByteArray();
         }
     }
 }
