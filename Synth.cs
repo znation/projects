@@ -8,6 +8,7 @@ using SdlDotNet.Audio;
 using System.IO;
 using System.Threading;
 using System.Diagnostics;
+using SdlDotNet.Input;
 
 namespace Synth
 {
@@ -36,7 +37,6 @@ namespace Synth
 
         private void StartThreads()
         {
-            threads.Add(new Thread(Sequencer.PlayLoop));
             foreach (Thread t in threads)
             {
                 t.Start();
@@ -49,16 +49,32 @@ namespace Synth
             StartThreads();
             Video.SetVideoMode(400, 300);
             Video.WindowCaption = "Synth";
-            Sequencer.Enqueue("C", 4, 1000, DateTime.Now);
-            Sequencer.Enqueue("D", 4, 1000, DateTime.Now.AddMilliseconds(1000));
-            Sequencer.Enqueue("E", 4, 1000, DateTime.Now.AddMilliseconds(2000));
-            Sequencer.Enqueue("F", 4, 1000, DateTime.Now.AddMilliseconds(3000));
-            Sequencer.Enqueue("G", 4, 1000, DateTime.Now.AddMilliseconds(4000));
+        }
+
+        private void Tick(object sender, TickEventArgs e)
+        {
+
+        }
+
+        private void KeyboardHandler(object sender, KeyboardEventArgs e)
+        {
+            String key = e.KeyboardCharacter.ToUpper();
+            char c = key[0];
+            if (c >= 'A' && c <= 'G')
+            {
+                if (e.Down)
+                    Sequencer.Play(key, 4);
+                else
+                    Sequencer.Stop(key, 4);
+            }
         }
 
         private void Go()
         {
             Events.Quit += new EventHandler<QuitEventArgs>(this.Quit);
+            Events.Tick += new EventHandler<TickEventArgs>(this.Tick);
+            Events.KeyboardUp += new EventHandler<KeyboardEventArgs>(this.KeyboardHandler);
+            Events.KeyboardDown += new EventHandler<KeyboardEventArgs>(this.KeyboardHandler);
             Events.Run();
         }
 
