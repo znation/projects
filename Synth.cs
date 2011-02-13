@@ -23,20 +23,16 @@ namespace Synth
         [STAThread]
         public static void Main()
         {
+            Note.RenderNotes();
+            Mixer.InitializeChannels();
+
             Synth app = new Synth();
             app.Go();
-
-            //using (FileStream fs = new FileStream("test.wav", FileMode.Create))
-            //{
-            //    using (BinaryWriter bw = new BinaryWriter(fs))
-            //    {
-            //        bw.Write(Bytes.FromHz(1000, new Note("B", 4)));
-            //    }
-            //}
         }
 
         private void StartThreads()
         {
+            threads.Add(new Thread(Mixer.MixLoop));
             foreach (Thread t in threads)
             {
                 t.Start();
@@ -45,7 +41,6 @@ namespace Synth
 
         private Synth()
         {
-            Note.RenderNotes();
             StartThreads();
             Video.SetVideoMode(400, 300);
             Video.WindowCaption = "Synth";

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SdlDotNet.Audio;
 
 namespace Synth
 {
@@ -63,8 +64,8 @@ namespace Synth
                 {
                     double frequency = GetFrequency(noteName, i);
                     double samples = (1.0 / frequency) * (double)Synth.SAMPLES_PER_SECOND;
-                    renderedNotes[frequency] = Sound.FromHz(Convert.ToInt32(samples), // TODO: calculate the right number of hz for a loop at this frequency
-                        new Frequency(frequency));
+                    renderedNotes[frequency] = new Sound(Bytes.FromHz(Convert.ToInt32(samples), // TODO: calculate the right number of hz for a loop at this frequency
+                        new Frequency(frequency)));
                 }
                 
             }
