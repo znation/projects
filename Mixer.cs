@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using SdlDotNet.Audio;
+using System;
 
 namespace Synth
 {
@@ -55,6 +56,19 @@ namespace Synth
         internal static void Stop(Sound s)
         {
             stopQueue.Enqueue(s);
+        }
+
+        // Plays until stopped
+        internal static void Play(String note, int octave)
+        {
+            Sound s = Note.GetNoteSound(note, octave);
+            Play(s);
+        }
+
+        internal static void Stop(String note, int octave)
+        {
+            Sound s = Note.GetNoteSound(note, octave);
+            Stop(s);
         }
     }
 }
