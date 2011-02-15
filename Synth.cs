@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SdlDotNet.Graphics;
-using SdlDotNet.Core;
-using SdlDotNet.Audio;
-using System.IO;
 using System.Threading;
-using System.Diagnostics;
+using SdlDotNet.Core;
+using SdlDotNet.Graphics;
 using SdlDotNet.Input;
 
 namespace Synth

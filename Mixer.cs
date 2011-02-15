@@ -1,17 +1,14 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SdlDotNet.Audio;
-using System.Collections;
 using System.Threading;
+using SdlDotNet.Audio;
 
 namespace Synth
 {
     internal static class Mixer
     {
         private const int NUM_CHANNELS = 1024;
-        private const int SLEEP_DELAY = 20;
+        private const int SLEEP_DELAY = 10;
         private static Stack<Channel> unused = new Stack<Channel>();
         private static Dictionary<Sound, Channel> playing = new Dictionary<Sound, Channel>();
         private static Queue playQueue = Queue.Synchronized(new Queue());
