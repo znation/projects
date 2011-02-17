@@ -13,6 +13,8 @@ namespace Synth
         internal const uint SAMPLES_PER_SECOND = 44100;
         internal const ushort BITS_PER_SAMPLE = 16;
         internal const ushort CHANNELS = 1;
+        internal const int SLEEP_DELAY = 10;
+
         private List<Thread> threads = new List<Thread>();
 
         [STAThread]
@@ -39,6 +41,22 @@ namespace Synth
             StartThreads();
             Video.SetVideoMode(400, 300);
             Video.WindowCaption = "Synth";
+
+            Sequencer s = new Sequencer(4, 90);
+            for (int i = 0; i < 2; i++)
+            {
+                s.Add("C", 4, 4, 0 + i, 0);
+                s.Add("D", 4, 4, 0 + i, 1);
+                s.Add("E", 4, 4, 0 + i, 2);
+                s.Add("C", 4, 4, 0 + i, 3);
+            }
+            for (int i = 0; i < 2; i++)
+            {
+                s.Add("E", 4, 4, 2 + i, 0);
+                s.Add("F", 4, 4, 2 + i, 1);
+                s.Add("G", 4, 2, 2 + i, 1);
+            }
+            threads.Add(s.Play());
         }
 
         private void Tick(object sender, TickEventArgs e)
@@ -53,9 +71,9 @@ namespace Synth
             if (c >= 'A' && c <= 'G')
             {
                 if (e.Down)
-                    Sequencer.Play(key, 4);
+                    Mixer.Play(key, 4);
                 else
-                    Sequencer.Stop(key, 4);
+                    Mixer.Stop(key, 4);
             }
         }
 

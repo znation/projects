@@ -51,6 +51,8 @@
     <Compile Include="Frequency.cs" />
     <Compile Include="Mixer.cs" />
     <Compile Include="Note.cs" />
+    <Compile Include="NoteDuration.cs" />
+    <Compile Include="PriorityQueue.cs" />
     <Compile Include="Sequencer.cs" />
     <Compile Include="Synth.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
