@@ -46,15 +46,27 @@ namespace Synth
             for (int i = 0; i < 2; i++)
             {
                 s.Add("C", 4, 4, 0 + i, 0);
+                s.Add("E", 4, 4, 0 + i, 0);
+
                 s.Add("D", 4, 4, 0 + i, 1);
+                s.Add("F", 4, 4, 0 + i, 1);
+
                 s.Add("E", 4, 4, 0 + i, 2);
+                s.Add("G", 4, 4, 0 + i, 2);
+
                 s.Add("C", 4, 4, 0 + i, 3);
+                s.Add("E", 4, 4, 0 + i, 3);
             }
             for (int i = 0; i < 2; i++)
             {
                 s.Add("E", 4, 4, 2 + i, 0);
+                s.Add("C", 4, 4, 2 + i, 0);
+
                 s.Add("F", 4, 4, 2 + i, 1);
+                s.Add("Bb", 3, 4, 2 + i, 1);
+
                 s.Add("G", 4, 2, 2 + i, 1);
+                s.Add("C", 4, 2, 2 + i, 1);
             }
             threads.Add(s.Play());
         }

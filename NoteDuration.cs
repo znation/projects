@@ -42,7 +42,7 @@ namespace Synth
             double positionMs = (double)position * durationMs;
 
             this.Start = measureMs + positionMs;
-            this.End = this.Start + durationMs - 20.0;
+            this.End = this.Start + durationMs;
             this.Sound = Note.GetNoteSound(note, octave);
         }
     }

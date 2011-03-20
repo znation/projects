@@ -11,25 +11,25 @@ namespace Synth
         {
             {"A", 1},
             {"A#", 2},
-            {"Bf", 2},
+            {"Bb", 2},
             {"B", 3},
-            {"Cf", 3},
+            {"Cb", 3},
             {"B#", 4},
             {"C", 4},
             {"C#", 5},
-            {"Df", 5},
+            {"Db", 5},
             {"D", 6},
             {"D#", 7},
-            {"Ef", 7},
+            {"Eb", 7},
             {"E", 8},
-            {"Ff", 8},
+            {"Fb", 8},
             {"E#", 9},
             {"F", 9},
             {"F#", 10},
-            {"Gf", 10},
+            {"Gb", 10},
             {"G", 11},
             {"G#", 12},
-            {"Af", 12}
+            {"Ab", 12}
         };
 
         private static Dictionary<double, Sound> renderedNotes = new Dictionary<double, Sound>();
@@ -55,7 +55,7 @@ namespace Synth
                 {
                     c.ToString(),
                     c.ToString() + "#",
-                    c.ToString() + "f"
+                    c.ToString() + "b"
                 };
 
                 foreach(String noteName in noteNames)
