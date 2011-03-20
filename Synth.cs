@@ -7,27 +7,24 @@ using SdlDotNet.Input;
 
 namespace Synth
 {
-    internal class Synth
+    internal static class Synth
     {
         internal static readonly Random RANDOM = new Random();
         internal const uint SAMPLES_PER_SECOND = 44100;
         internal const ushort BITS_PER_SAMPLE = 16;
         internal const ushort CHANNELS = 1;
         internal const int SLEEP_DELAY = 10;
-
-        private List<Thread> threads = new List<Thread>();
+        private static List<Thread> threads = new List<Thread>();
 
         [STAThread]
         public static void Main()
         {
             Note.RenderNotes();
             Mixer.InitializeChannels();
-
-            Synth app = new Synth();
-            app.Go();
+            Go();
         }
 
-        private void StartThreads()
+        private static void StartThreads()
         {
             threads.Add(new Thread(Mixer.MixLoop));
             foreach (Thread t in threads)
@@ -36,7 +33,25 @@ namespace Synth
             }
         }
 
-        private Synth()
+        private static void Tick(object sender, TickEventArgs e)
+        {
+
+        }
+
+        private static void KeyboardHandler(object sender, KeyboardEventArgs e)
+        {
+            String key = e.KeyboardCharacter.ToUpper();
+            char c = key[0];
+            if (c >= 'A' && c <= 'G')
+            {
+                if (e.Down)
+                    Mixer.Play(key, 4);
+                else
+                    Mixer.Stop(key, 4);
+            }
+        }
+
+        private static void Go()
         {
             StartThreads();
             Video.SetVideoMode(400, 300);
@@ -68,37 +83,17 @@ namespace Synth
                 s.Add("G", 4, 2, 2 + i, 1);
                 s.Add("C", 4, 2, 2 + i, 1);
             }
+
             threads.Add(s.Play());
-        }
-
-        private void Tick(object sender, TickEventArgs e)
-        {
-
-        }
-
-        private void KeyboardHandler(object sender, KeyboardEventArgs e)
-        {
-            String key = e.KeyboardCharacter.ToUpper();
-            char c = key[0];
-            if (c >= 'A' && c <= 'G')
-            {
-                if (e.Down)
-                    Mixer.Play(key, 4);
-                else
-                    Mixer.Stop(key, 4);
-            }
-        }
-
-        private void Go()
-        {
-            Events.Quit += new EventHandler<QuitEventArgs>(this.Quit);
-            Events.Tick += new EventHandler<TickEventArgs>(this.Tick);
-            Events.KeyboardUp += new EventHandler<KeyboardEventArgs>(this.KeyboardHandler);
-            Events.KeyboardDown += new EventHandler<KeyboardEventArgs>(this.KeyboardHandler);
+            
+            Events.Quit += new EventHandler<QuitEventArgs>(Quit);
+            Events.Tick += new EventHandler<TickEventArgs>(Tick);
+            Events.KeyboardUp += new EventHandler<KeyboardEventArgs>(KeyboardHandler);
+            Events.KeyboardDown += new EventHandler<KeyboardEventArgs>(KeyboardHandler);
             Events.Run();
         }
 
-        private void Quit(object sender, QuitEventArgs e)
+        private static void Quit(object sender, QuitEventArgs e)
         {
             foreach (Thread t in threads)
             {
