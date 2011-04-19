@@ -1,4 +1,4 @@
-module Wave (makeWave, writeWaveFile) where
+module Wave (makeWave, writeWaveFile, fromHz) where
 
 import qualified Data.ByteString.Lazy.Char8 as BSC
 import qualified Data.ByteString.Lazy as BSL
@@ -13,7 +13,7 @@ data WaveFile = WaveFile {  waveFormatEx        :: WaveFormatEx.WaveFormatEx,
                             dataBytes           :: [Word8] }
                             
 makeWave :: WaveFile
-makeWave = WaveFile WaveFormatEx.create randomBytes
+makeWave = WaveFile WaveFormatEx.create (fromHz 440)
 
 riffStr = "RIFF"
 waveStr = "WAVE"
@@ -34,11 +34,23 @@ randomBytes = BSL.unpack BSL.empty
 
 waveToByteString :: WaveFile -> BSL.ByteString
 waveToByteString waveFile = BSL.concat [(BSC.pack riffStr),
-                                        (encode32 (waveSize waveFile)),
+                                        (BSL.pack (byteEncode (waveSize waveFile))),
                                         (BSC.pack waveStr),
                                         (BSC.pack fmtStr),
-                                        (encode32 WaveFormatEx.size),
+                                        (BSL.pack (byteEncode WaveFormatEx.size)),
                                         (WaveFormatEx.toByteString (waveFormatEx waveFile)),
                                         (BSC.pack dataStr),
-                                        (encode32 (dataSize waveFile)),
+                                        (BSL.pack (byteEncode (dataSize waveFile))),
                                         (BSL.pack (dataBytes waveFile))]
+
+fromHz :: Int -> [Word8]
+fromHz hz = fromHz' 0 44100 hz
+
+fromHz' :: Int -> Int -> Int -> [Word8]
+fromHz' idx max hz =    let numerator :: Double
+                            numerator = fromInteger (toInteger (hz * idx))
+                            denominator = 44100.0 * 2.0
+                            makeBytes = byteEncode (sin (pi * 2.0 * (numerator / denominator)))
+                        in  if (idx == max)
+                            then    makeBytes
+                            else    makeBytes ++ (fromHz' (idx+1) max hz)

@@ -13,12 +13,12 @@ data WaveFormatEx = WaveFormatEx {  formatTag           :: Word16,
                                     bitsPerSample       :: Word16 }
 
 toByteString :: WaveFormatEx -> BSL.ByteString
-toByteString wfe = BSL.concat  [(encode16 (formatTag wfe)),
-                                            (encode16 (channels wfe)),
-                                            (encode32 (samplesPerSecond wfe)),
-                                            (encode32 (avgBytesPerSecond wfe)),
-                                            (encode16 (blockAlign wfe)),
-                                            (encode16 (bitsPerSample wfe))]
+toByteString wfe = BSL.concat  [(BSL.pack (byteEncode (formatTag wfe))),
+                                            (BSL.pack (byteEncode (channels wfe))),
+                                            (BSL.pack (byteEncode (samplesPerSecond wfe))),
+                                            (BSL.pack (byteEncode (avgBytesPerSecond wfe))),
+                                            (BSL.pack (byteEncode (blockAlign wfe))),
+                                            (BSL.pack (byteEncode (bitsPerSample wfe)))]
                                             
 create :: WaveFormatEx
 create = WaveFormatEx 1 2 44100 (ceiling (2 * 44100 * 2)) (2 * 2) 16;
