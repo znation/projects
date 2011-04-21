@@ -9,6 +9,9 @@ import Encoding
 import qualified WaveFormatEx
 import System.IO
 
+samplesPerSecond = 44100
+channels = 1
+
 data WaveFile = WaveFile {  waveFormatEx        :: WaveFormatEx.WaveFormatEx,
                             dataBytes           :: [Word8] }
                             
@@ -47,10 +50,13 @@ fromHz :: Int -> [Word8]
 fromHz hz = fromHz' 0 44100 hz
 
 fromHz' :: Int -> Int -> Int -> [Word8]
-fromHz' idx max hz =    let numerator :: Double
-                            numerator = fromInteger (toInteger (hz * idx))
-                            denominator = 44100.0 * 2.0
-                            makeBytes = byteEncode (sin (pi * 2.0 * (numerator / denominator)))
+fromHz' idx max hz =    let numerator = toRational (hz * idx)
+                            denominator = toRational (samplesPerSecond * channels)
+                            weight = toRational ((maxBound::Int16) - 1)
+                            value :: Int16
+                            value = floor ((sin (pi * 2.0 * (fromRational (numerator / denominator)))) * (fromRational weight))
+                            
+                            makeBytes = byteEncode value
                         in  if (idx == max)
                             then    makeBytes
                             else    makeBytes ++ (fromHz' (idx+1) max hz)

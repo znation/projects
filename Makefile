@@ -1,4 +1,4 @@
-Synth.exe:
+Synth.exe: clean
 	ghc --make Encoding.hs WaveFormatEx.hs Wave.hs Synth.hs
 	rm -f *.hi *.o
 

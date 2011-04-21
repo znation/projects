@@ -15,5 +15,5 @@ byteEncode' size i
     | size == 4 = [(getByte i 0), (getByte i 1), (getByte i 2), (getByte i 3)]
     | otherwise = []
 
-getByte :: Integral a => B.Bits a => FS.Storable a => a -> Int -> W.Word8
-getByte i idx = fromInteger( toInteger(B.shiftL (B.shiftR i (8 * idx)) (8 * ((FS.sizeOf i) - idx))))
+getByte :: (Integral a, B.Bits a, FS.Storable a) => a -> Int -> W.Word8
+getByte i idx = fromIntegral (B.shift i ((-8) * idx)) B..&. 0xFF -- TODO -- this is totally broken
