@@ -1,7 +1,8 @@
-module Encoding (byteEncode) where
+module Encoding (byteDecode, byteEncode) where
 
 import qualified Data.Bits as B
 import qualified Data.ByteString.Lazy as BSL
+import qualified Data.Int as I
 import qualified Data.Word as W
 import qualified Foreign.Storable as FS
 
@@ -16,4 +17,9 @@ byteEncode' size i
     | otherwise = []
 
 getByte :: (Integral a, B.Bits a, FS.Storable a) => a -> Int -> W.Word8
-getByte i idx = fromIntegral (B.shift i ((-8) * idx)) B..&. 0xFF -- TODO -- this is totally broken
+getByte i idx = fromIntegral (B.shift i ((-8) * idx)) B..&. 0xFF
+
+byteDecode :: Num a => [W.Word8] -> a
+byteDecode bytes = fromInteger ((toInteger (bytes !! 0)) B..|. (B.shift (toInteger (bytes !! 1)) (8 * 1)) B..|. (B.shift (toInteger (bytes !! 2)) (8 * 2)) B..|. (B.shift (toInteger (bytes !! 3)) (8 * 3)))
+
+-- TODO : test whether decoding works and make byteDecode more succinct

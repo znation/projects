@@ -1,9 +1,10 @@
-Synth.exe: clean
+synth: clean
 	ghc --make Encoding.hs WaveFormatEx.hs Wave.hs Synth.hs
-	rm -f *.hi *.o
+
+test: clean
+	ghc --make Encoding.hs WaveFormatEx.hs Wave.hs Testing.hs 
 
 clean:
-	rm -f Synth.exe *.hi *.o
+	rm -f Synth.exe Test.exe *.hi *.o
 
-all: clean Synth.exe
-
+all: clean synth test

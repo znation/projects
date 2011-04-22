@@ -1,19 +1,21 @@
-module Wave (makeWave, writeWaveFile, fromHz) where
+module Wave (WaveFile(WaveFile, waveFormatEx, dataBytes), makeWave, writeWaveFile, fromHz, toByteString, fromByteString) where
 
 import qualified Data.ByteString.Lazy.Char8 as BSC
 import qualified Data.ByteString.Lazy as BSL
-
 import Data.Int
 import Data.Word
 import Encoding
-import qualified WaveFormatEx
 import System.IO
+import qualified WaveFormatEx
 
 samplesPerSecond = 44100
 channels = 1
 
 data WaveFile = WaveFile {  waveFormatEx        :: WaveFormatEx.WaveFormatEx,
                             dataBytes           :: [Word8] }
+                            
+instance Eq WaveFile where
+    x == y = (waveFormatEx x == waveFormatEx y) && (dataBytes x == dataBytes y)
                             
 makeWave :: WaveFile
 makeWave = WaveFile WaveFormatEx.create (fromHz 440)
@@ -30,13 +32,10 @@ dataSize :: WaveFile -> Int32
 dataSize waveFile = fromInteger (toInteger (length (dataBytes waveFile)))
 
 writeWaveFile :: WaveFile -> FilePath -> IO ()
-writeWaveFile waveFile filePath = do BSL.writeFile filePath (waveToByteString waveFile)
+writeWaveFile waveFile filePath = do BSL.writeFile filePath (toByteString waveFile)
 
-randomBytes :: [Word8]
-randomBytes = BSL.unpack BSL.empty
-
-waveToByteString :: WaveFile -> BSL.ByteString
-waveToByteString waveFile = BSL.concat [(BSC.pack riffStr),
+toByteString :: WaveFile -> BSL.ByteString
+toByteString waveFile = BSL.concat [(BSC.pack riffStr),
                                         (BSL.pack (byteEncode (waveSize waveFile))),
                                         (BSC.pack waveStr),
                                         (BSC.pack fmtStr),
@@ -45,6 +44,20 @@ waveToByteString waveFile = BSL.concat [(BSC.pack riffStr),
                                         (BSC.pack dataStr),
                                         (BSL.pack (byteEncode (dataSize waveFile))),
                                         (BSL.pack (dataBytes waveFile))]
+                                        
+fromByteString :: BSL.ByteString -> WaveFile
+fromByteString bs = let bytes = BSL.unpack bs
+                        --riffStrBytes = take 4 bytes
+                        --riffStr = BSC.unpack riffStrBytes
+                        --waveSizeBytes = take 4 (drop 4 bytes)
+                        --waveStrBytes = take 4 (drop 8 bytes)
+                        --fmtStrBytes = take 4 (drop 12 bytes)
+                        --waveFormatExSizeBytes = take 4 (drop 16 bytes)
+                        waveFormatExBytes = take 4 (drop 20 bytes)
+                        --dataStrBytes = take 4 (drop 36 bytes)
+                        --dataSizeBytes = take 4 (drop 40 bytes)
+                        dataBytes = drop 44 bytes
+                    in  WaveFile (WaveFormatEx.fromBytes waveFormatExBytes) dataBytes
 
 fromHz :: Int -> [Word8]
 fromHz hz = fromHz' 0 44100 hz
