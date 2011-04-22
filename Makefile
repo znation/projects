@@ -1,10 +1,12 @@
-synth: clean
-	ghc --make Encoding.hs WaveFormatEx.hs Wave.hs Synth.hs
+COMMON = Debugging.hs Encoding.hs WaveFormatEx.hs Wave.hs
 
-test: clean
-	ghc --make Encoding.hs WaveFormatEx.hs Wave.hs Testing.hs 
+all: Synth.exe Testing.exe
+
+Synth.exe: $(COMMON) Synth.hs
+	ghc --make Synth.hs
+
+Testing.exe: $(COMMON) Testing.hs
+	ghc --make Testing.hs 
 
 clean:
-	rm -f Synth.exe Test.exe *.hi *.o
-
-all: clean synth test
+	rm -f Synth.exe Testing.exe *.hi *.o

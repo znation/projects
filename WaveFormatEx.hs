@@ -3,6 +3,7 @@ module WaveFormatEx (WaveFormatEx(WaveFormatEx), fromBytes, toByteString, create
 import qualified Data.ByteString.Lazy as BSL
 import Data.Int
 import Data.Word
+import Debugging
 import Encoding
 
 data WaveFormatEx = WaveFormatEx {  formatTag           :: Word16,

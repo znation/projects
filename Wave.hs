@@ -4,6 +4,7 @@ import qualified Data.ByteString.Lazy.Char8 as BSC
 import qualified Data.ByteString.Lazy as BSL
 import Data.Int
 import Data.Word
+import Debugging
 import Encoding
 import System.IO
 import qualified WaveFormatEx
@@ -53,7 +54,7 @@ fromByteString bs = let bytes = BSL.unpack bs
                         --waveStrBytes = take 4 (drop 8 bytes)
                         --fmtStrBytes = take 4 (drop 12 bytes)
                         --waveFormatExSizeBytes = take 4 (drop 16 bytes)
-                        waveFormatExBytes = take 4 (drop 20 bytes)
+                        waveFormatExBytes = take 16 (drop 20 bytes)
                         --dataStrBytes = take 4 (drop 36 bytes)
                         --dataSizeBytes = take 4 (drop 40 bytes)
                         dataBytes = drop 44 bytes
