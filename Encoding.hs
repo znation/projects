@@ -19,7 +19,7 @@ byteEncode' size i
 getByte :: (Integral a, B.Bits a, FS.Storable a) => a -> Int -> W.Word8
 getByte i idx = fromIntegral (B.shift i ((-8) * idx)) B..&. 0xFF
 
-byteDecode :: Num a => [W.Word8] -> a         
+byteDecode :: (Num a, Integral a, B.Bits a, FS.Storable a) => [W.Word8] -> a         
 byteDecode bytes
     | size == 1 = fromInteger (toInteger (bytes !! 0))
     | size == 2 = fromInteger ((toInteger (bytes !! 0)) B..|. (B.shift (toInteger (bytes !! 1)) (8 * 1)))
