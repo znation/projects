@@ -1,4 +1,4 @@
-module Wave (WaveFile(WaveFile, waveFormatEx, dataBytes), makeWave, writeWaveFile, fromHz, toByteString, fromByteString) where
+module Wave (WaveFile(WaveFile, waveFormatEx, dataBytes), makeWave, Wave.writeFile, fromHz, toByteString, fromByteString) where
 
 import qualified Data.ByteString.Lazy.Char8 as BSC
 import qualified Data.ByteString.Lazy as BSL
@@ -32,8 +32,12 @@ waveSize waveFile = 36 + (dataSize waveFile)
 dataSize :: WaveFile -> Int32
 dataSize waveFile = fromInteger (toInteger (length (dataBytes waveFile)))
 
-writeWaveFile :: WaveFile -> FilePath -> IO ()
-writeWaveFile waveFile filePath = do BSL.writeFile filePath (toByteString waveFile)
+writeFile :: WaveFile -> FilePath -> IO ()
+writeFile waveFile filePath = do BSL.writeFile filePath (toByteString waveFile)
+
+readFile :: FilePath -> IO WaveFile
+readFile filePath = do  bytes <- (BSL.readFile filePath)
+                        return (fromByteString bytes)
 
 toByteString :: WaveFile -> BSL.ByteString
 toByteString waveFile = BSL.concat [(BSC.pack riffStr),

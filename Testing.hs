@@ -10,7 +10,6 @@ import qualified WaveFormatEx
 
 main :: IO ()
 main = do   check prop_importExportWave
-            --check prop_importExportWaveBytes ( TODO: requires  an instance declaration for (QC.Arbitrary BSL.ByteString) )
             check prop_encodeDecode8
             check prop_encodeDecode8u
             check prop_encodeDecode16
@@ -23,9 +22,6 @@ check x = QC.quickCheckWith (QC.stdArgs {QC.maxSuccess = 200}) x
 
 prop_importExportWave :: Wave.WaveFile -> Bool
 prop_importExportWave waveFile = waveFile == (Wave.fromByteString (Wave.toByteString waveFile))
-
---prop_importExportWaveBytes :: BSL.ByteString -> Bool
---prop_importExportWaveBytes bs = bs == (Wave.toByteString (Wave.fromByteString bs))
 
 prop_encodeDecode32 :: Int32 -> Bool
 prop_encodeDecode32 x = x == (byteDecode (byteEncode (x)))
