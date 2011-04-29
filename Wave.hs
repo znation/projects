@@ -1,4 +1,4 @@
-module Wave (WaveFile(WaveFile, waveFormatEx, dataBytes), makeWave, Wave.writeFile, fromHz, toByteString, fromByteString) where
+module Wave (WaveFile(WaveFile, waveFormatEx, dataBytes), Wave.writeFile, fromData, fromHz, toByteString, fromByteString) where
 
 import qualified Data.ByteString.Lazy.Char8 as BSC
 import qualified Data.ByteString.Lazy as BSL
@@ -17,14 +17,14 @@ data WaveFile = WaveFile {  waveFormatEx        :: WaveFormatEx.WaveFormatEx,
                             
 instance Eq WaveFile where
     x == y = (waveFormatEx x == waveFormatEx y) && (dataBytes x == dataBytes y)
-                            
-makeWave :: WaveFile
-makeWave = WaveFile WaveFormatEx.create (fromHz 440)
 
 riffStr = "RIFF"
 waveStr = "WAVE"
 fmtStr = "fmt "
 dataStr = "data"
+
+fromData :: [Word8] -> WaveFile
+fromData bytes = WaveFile WaveFormatEx.create bytes
 
 waveSize :: WaveFile -> Int32
 waveSize waveFile = 36 + (dataSize waveFile)
@@ -64,8 +64,8 @@ fromByteString bs = let bytes = BSL.unpack bs
                         dataBytes = drop 44 bytes
                     in  WaveFile (WaveFormatEx.fromBytes waveFormatExBytes) dataBytes
 
-fromHz :: Int -> [Word8]
-fromHz hz = fromHz' 0 44100 hz
+fromHz :: Int -> WaveFile
+fromHz hz = WaveFile WaveFormatEx.create (fromHz' 0 44100 hz)
 
 fromHz' :: Int -> Int -> Int -> [Word8]
 fromHz' idx max hz =    let numerator = toRational (hz * idx)

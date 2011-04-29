@@ -1,4 +1,4 @@
-COMMON = Debugging.hs Encoding.hs WaveFormatEx.hs Wave.hs
+COMMON = Debugging.hs Encoding.hs Statistics.hs WaveFormatEx.hs Wave.hs
 
 all: Synth.exe Testing.exe
 
