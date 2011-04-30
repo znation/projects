@@ -1,4 +1,10 @@
-module Wave (WaveFile(WaveFile, waveFormatEx, dataBytes), Wave.writeFile, fromData, fromHz, toByteString, fromByteString) where
+module Wave (   WaveFile(WaveFile, waveFormatEx, dataBytes),
+                Wave.readFile,
+                Wave.writeFile,
+                fromData,
+                fromHz,
+                toByteString,
+                fromByteString) where
 
 import qualified Data.ByteString.Lazy.Char8 as BSC
 import qualified Data.ByteString.Lazy as BSL
@@ -8,9 +14,6 @@ import Debugging
 import Encoding
 import System.IO
 import qualified WaveFormatEx
-
-samplesPerSecond = 44100
-channels = 1
 
 data WaveFile = WaveFile {  waveFormatEx        :: WaveFormatEx.WaveFormatEx,
                             dataBytes           :: [Word8] }
@@ -68,8 +71,10 @@ fromHz :: Int -> WaveFile
 fromHz hz = WaveFile WaveFormatEx.create (fromHz' 0 44100 hz)
 
 fromHz' :: Int -> Int -> Int -> [Word8]
-fromHz' idx max hz =    let numerator = toRational (hz * idx)
-                            denominator = toRational (samplesPerSecond * channels)
+fromHz' idx max hz =    let samplesPerSecond = WaveFormatEx.samplesPerSecond WaveFormatEx.create
+                            channels = WaveFormatEx.channels WaveFormatEx.create
+                            numerator = toRational (hz * idx)
+                            denominator = toRational (fromIntegral samplesPerSecond * fromIntegral channels)
                             weight = toRational ((maxBound::Int16) - 1)
                             value :: Int16
                             value = floor ((sin (pi * 2.0 * (fromRational (numerator / denominator)))) * (fromRational weight))

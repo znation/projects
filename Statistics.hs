@@ -1,4 +1,4 @@
-module Statistics where
+module Statistics (Statistics, generate) where
 
 import qualified Data.Map as Map
 import Data.Word
@@ -13,9 +13,9 @@ add stats x y = if      (Map.member x stats)
                             else    Map.insert x (Map.insert y 1 inner) stats
                 else    Map.insert x (Map.insert y 1 Map.empty) stats
                 
-generateStatistics :: [Word8] -> Statistics
-generateStatistics = generateStatistics' Map.empty
+generate :: [Word8] -> Statistics
+generate = generate' Map.empty
 
-generateStatistics' :: Statistics -> [Word8] -> Statistics
-generateStatistics' stats (x:y:z:xs) = generateStatistics' (add stats x y) (y:z:xs)
-generateStatistics' stats (x:y:[]) = add stats x y
+generate' :: Statistics -> [Word8] -> Statistics
+generate' stats (x:y:z:xs) = generate' (add stats x y) (y:z:xs)
+generate' stats (x:y:[]) = add stats x y

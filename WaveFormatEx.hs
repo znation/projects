@@ -1,4 +1,4 @@
-module WaveFormatEx (WaveFormatEx(WaveFormatEx), fromBytes, toByteString, create, size) where
+module WaveFormatEx (WaveFormatEx(WaveFormatEx, channels, samplesPerSecond), fromBytes, toByteString, create, size) where
 
 import qualified Data.ByteString.Lazy as BSL
 import Data.Int
@@ -45,7 +45,7 @@ fromBytes bytes =   let formatTagBytes = take 2 bytes
                     in  WaveFormatEx formatTag channels samplesPerSecond avgBytesPerSecond blockAlign bitsPerSample
                                             
 create :: WaveFormatEx
-create = WaveFormatEx 1 2 44100 (ceiling (2 * 44100 * 2)) (2 * 2) 16;
+create = WaveFormatEx 1 1 44100 (ceiling (2 * 44100 * 2)) (2 * 2) 16;
 
 size :: Int32
 size = 16
