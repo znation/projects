@@ -1,8 +1,6 @@
 module Encoding (byteDecode, byteEncode) where
 
 import qualified Data.Bits as B
-import qualified Data.ByteString.Lazy as BSL
-import qualified Data.Int as I
 import qualified Data.Word as W
 import qualified Foreign.Storable as FS
 
@@ -29,5 +27,3 @@ byteDecode bytes
                        (B.shift (toInteger (bytes !! 3)) (8 * 3)))
     | otherwise = error ("Too many bytes to decode: " ++ (show bytes))
     where   size = length bytes
-
--- TODO : test whether decoding works and make byteDecode more succinct

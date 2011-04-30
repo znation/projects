@@ -3,8 +3,8 @@ module WaveFormatEx (WaveFormatEx(WaveFormatEx, channels, samplesPerSecond), fro
 import qualified Data.ByteString.Lazy as BSL
 import Data.Int
 import Data.Word
-import Debugging
 import Encoding
+import qualified Test.QuickCheck as QC
 
 data WaveFormatEx = WaveFormatEx {  formatTag           :: Word16,
                                     channels            :: Word16,
@@ -20,6 +20,16 @@ instance Eq WaveFormatEx where
                 (avgBytesPerSecond x == avgBytesPerSecond y) &&
                 (blockAlign x == blockAlign y) &&
                 (bitsPerSample x == bitsPerSample y)
+
+instance QC.Arbitrary WaveFormatEx.WaveFormatEx where
+    arbitrary = do  formatTag' <- QC.arbitrary
+                    channels' <- QC.arbitrary
+                    samplesPerSecond' <- QC.arbitrary
+                    avgBytesPerSecond' <- QC.arbitrary
+                    blockAlign' <- QC.arbitrary
+                    bitsPerSample' <- QC.arbitrary
+                    return (WaveFormatEx.WaveFormatEx formatTag' channels' samplesPerSecond' avgBytesPerSecond' blockAlign' bitsPerSample')
+
                                    
 toByteString :: WaveFormatEx -> BSL.ByteString
 toByteString wfe = BSL.concat  [(BSL.pack (byteEncode (formatTag wfe))),
@@ -31,21 +41,21 @@ toByteString wfe = BSL.concat  [(BSL.pack (byteEncode (formatTag wfe))),
 
 fromBytes :: [Word8] -> WaveFormatEx
 fromBytes bytes =   let formatTagBytes = take 2 bytes
-                        formatTag = byteDecode formatTagBytes
+                        formatTag' = byteDecode formatTagBytes
                         channelsBytes = take 2 (drop 2 bytes)
-                        channels = byteDecode channelsBytes
+                        channels' = byteDecode channelsBytes
                         samplesPerSecondBytes = take 4 (drop 4 bytes)
-                        samplesPerSecond = byteDecode samplesPerSecondBytes
+                        samplesPerSecond' = byteDecode samplesPerSecondBytes
                         avgBytesPerSecondBytes = take 4 (drop 8 bytes)
-                        avgBytesPerSecond = byteDecode avgBytesPerSecondBytes
+                        avgBytesPerSecond' = byteDecode avgBytesPerSecondBytes
                         blockAlignBytes = take 2 (drop 12 bytes)
-                        blockAlign = byteDecode blockAlignBytes
+                        blockAlign' = byteDecode blockAlignBytes
                         bitsPerSampleBytes = take 2 (drop 14 bytes)
-                        bitsPerSample = byteDecode bitsPerSampleBytes
-                    in  WaveFormatEx formatTag channels samplesPerSecond avgBytesPerSecond blockAlign bitsPerSample
+                        bitsPerSample' = byteDecode bitsPerSampleBytes
+                    in  WaveFormatEx formatTag' channels' samplesPerSecond' avgBytesPerSecond' blockAlign' bitsPerSample'
                                             
 create :: WaveFormatEx
-create = WaveFormatEx 1 1 44100 (ceiling (2 * 44100 * 2)) (2 * 2) 16;
+create = WaveFormatEx 1 1 44100 (2 * 44100 * 2) (2 * 2) 16;
 
 size :: Int32
 size = 16

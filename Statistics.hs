@@ -26,21 +26,22 @@ generate = generate' Map.empty
 generate' :: Statistics -> [Word8] -> Statistics
 generate' stats (x:y:z:xs) = generate' (add stats x y) (y:z:xs)
 generate' stats (x:y:[]) = add stats x y
+generate' stats _ = stats
 
 -- generates a list of (key, frequency) tuples
 percentages :: (Map.Map Word8 Int, Int) -> [(Word8, Double)]
-percentages (map, total) = percentages' (map, total) (Map.keys map) []
+percentages (m, total) = percentages' (m, total) (Map.keys m) []
 
 percentages' :: (Map.Map Word8 Int, Int) -> [Word8] -> [(Word8, Double)] -> [(Word8, Double)]
 percentages' _ [] frequencies = frequencies
-percentages' (map, total) keys frequencies =    let key = head keys
-                                                    count = map Map.! key
-                                                    percentage = 100.0 * ((fromIntegral count) / (fromIntegral total))
-                                                in  percentages' (map, total) (tail keys) ((key, percentage):frequencies)
+percentages' (m, total) keys frequencies =  let key = head keys
+                                                count = m Map.! key
+                                                percentage = 100.0 * ((fromIntegral count) / (fromIntegral total))
+                                            in  percentages' (m, total) (tail keys) ((key, percentage):frequencies)
 
 -- generates a list of 100 items based on the distribution
 distribution :: (Map.Map Word8 Int, Int) -> [Word8]
-distribution (map, total) = distribution' (percentages (map, total)) []
+distribution (m, total) = distribution' (percentages (m, total)) []
 
 distribution' :: [(Word8, Double)] -> [Word8] -> [Word8]
 distribution' [] acc = acc

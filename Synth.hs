@@ -1,4 +1,4 @@
-import System.IO
+import System.IO ()
 import qualified System.Random as Rand
 import qualified Wave
 import qualified Statistics
@@ -17,12 +17,12 @@ fromStatistics randoms input =  let stats = Statistics.generate (Wave.dataBytes 
                                 in  Wave.fromData bytes
 
 fromStatistics' :: [Double] -> Statistics.Statistics -> [Word8] -> Int -> [Word8]
-fromStatistics' randoms stats bytes 0 = bytes
+fromStatistics' _ _ bytes 0 = bytes
 fromStatistics' randoms stats bytes i = let newByte = generateByte (randoms !! i) (stats Map.! (last bytes))
                                         in  fromStatistics' randoms stats (newByte : bytes) (i-1)
 
 generateByte :: Double -> (Map.Map Word8 Int, Int) -> Word8
-generateByte threshold (map, count) =   let dist = Statistics.distribution (map, count)
-                                            idx = floor (threshold * 100.0)
-                                        in  dist !! idx
+generateByte threshold (m, count) = let dist = Statistics.distribution (m, count)
+                                        idx = floor (threshold * 100.0)
+                                    in  dist !! idx
 
