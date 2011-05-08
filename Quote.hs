@@ -1,7 +1,10 @@
 module Quote where
 
-data Quote = Quote {day :: Date,
-                    index :: Int32,
+import Data.Int
+import qualified Test.QuickCheck as QC
+
+data Quote = Quote {day :: String,
+                    index :: Int,
                     volume :: Int64,
                     open, high, low, close :: Double}
             deriving (Show)
@@ -9,12 +12,27 @@ data Quote = Quote {day :: Date,
 instance QC.Arbitrary Quote where
     arbitrary = do
         a <- QC.arbitrary
-        return (Quote (abs a))
+        b <- QC.arbitrary
+        c <- QC.arbitrary
+        d <- QC.arbitrary
+        e <- QC.arbitrary
+        f <- QC.arbitrary
+        g <- QC.arbitrary
+        return (Quote a (abs b) (abs c) (abs d) (abs e) (abs f) (abs g))
 
-makeQuote :: [String] -> Quote
-makeQuote (_:y:_) = Quote (read y::Double)
-makeQuote _ = error "Insufficient data to make a quote"
+makeQuote :: Int -> [String] -> Quote
+makeQuote idx (a:b:c:d:e:f:g:[]) =  let ratio = (read g::Double) / (read e::Double)
+                                        adjOpen = (read b::Double) * ratio
+                                        adjHigh = (read c::Double) * ratio
+                                        adjLow = (read d::Double) * ratio
+                                        adjClose = read g::Double -- also e * ratio
+                                        vol = read f::Int64
+                                    in  Quote a idx vol adjOpen adjHigh adjLow adjClose --(read y::Double)
+makeQuote _ _ = error "Insufficient data to make a quote"
 
 makeQuotes :: [[String]] -> [Quote]
-makeQuotes (x:xs) = (makeQuote x):(makeQuotes xs)
-makeQuotes [] = []
+makeQuotes = makeQuotes' 0
+
+makeQuotes' :: Int -> [[String]] -> [Quote]
+makeQuotes' idx (x:xs) = (makeQuote idx x):(makeQuotes' (idx + 1) xs)
+makeQuotes' _ [] = []
