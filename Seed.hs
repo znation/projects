@@ -1,5 +1,6 @@
 module Seed where
 
+import qualified Quote
 import qualified Random as Rand
 import qualified Test.QuickCheck as QC
 
@@ -38,6 +39,15 @@ random = do
     d <- Rand.randomIO
     e <- Rand.randomIO
     return (normalize (Seed a b c d e))
+    
+data Action = Buy | Sell
+instance Show Action where
+    show Buy = "Buy"
+    show Sell = "Sell"
+
+evaluate :: [Quote.Quote] -> Seed -> [Action]
+evaluate qs s = let evaluate' _ _ = Buy
+                in  map (evaluate' s) qs
 
 prop_weightsBetweenZeroAndOne :: Seed -> Bool
 prop_weightsBetweenZeroAndOne s =   let v = volume s

@@ -1,4 +1,4 @@
-COMMON = Quote.hs Seed.hs
+COMMON = Generation.hs Quote.hs Seed.hs
 ANALYZE = Analyze.hs
 TESTING = Testing.hs
 

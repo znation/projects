@@ -1,3 +1,4 @@
+import qualified Generation
 import qualified IO
 import qualified Quote
 import qualified Seed
@@ -7,11 +8,11 @@ main :: IO ()
 main = do
     inh <- IO.openFile "quotes.tsv" IO.ReadMode
     mylines <- readloop inh []
-    seeds <- Seed.randoms 10
+    seeds <- Seed.randoms Generation.size
     let quotes = Quote.makeQuotes (map words mylines)
-    printlines seeds
+    printlines (Generation.evaluate seeds quotes)
     IO.hClose inh
- 
+
 readloop :: IO.Handle -> [String] -> IO [String]
 readloop inh array = 
     do
