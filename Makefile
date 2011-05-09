@@ -1,4 +1,4 @@
-COMMON = Generation.hs Quote.hs Seed.hs Trade.hs
+COMMON = Generation.hs Portfolio.hs Quote.hs Seed.hs Trade.hs
 ANALYZE = Analyze.hs
 TESTING = Testing.hs
 
