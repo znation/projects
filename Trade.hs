@@ -13,8 +13,11 @@ instance Show Action where
     show Buy = "Buy"
     show Sell = "Sell"
     
-data State = State {    money :: Double,
-                        shares :: Int   }
+data Lot = Lot {    pricePaid :: Double,
+                    shares  :: Int  }
+    
+data Portfolio = Portfolio {    money :: Double,
+                                lots :: [Lot]   }
 
 buysell :: Seed.Seed -> Quote.Quote -> Action
 buysell s q =   if      Seed.open s * Quote.open q > Seed.close s * Quote.close q
@@ -24,31 +27,32 @@ buysell s q =   if      Seed.open s * Quote.open q > Seed.close s * Quote.close 
 evaluate :: [Quote.Quote] -> Seed.Seed -> Double
 evaluate qs s = let actions = map (buysell s) qs -- [Action]
                     zipped = zip qs actions
-                    startingState = State 10000.00 0
+                    startingState = Portfolio 10000.00 []
                     tradedState = foldl trade startingState zipped
-                in  value tradedState
+                in  value (Quote.close (last qs)) tradedState
 
-trade :: State -> (Quote.Quote, Action) -> State
+trade :: Portfolio -> (Quote.Quote, Action) -> Portfolio
 trade s (q, a) =    let startingMoney = money s
-                        startingShares = shares s
+                        startingLots = lots s
                     in  if      (startingMoney - commission > Quote.close q) && (a == Buy)
                         then    buy s q
-                        else    if      (startingShares > 0) && (a == Sell)
+                        else    if      ((length startingLots) > 0) && (a == Sell)
                                 then    sell s q
                                 else    s
 
-buy :: State -> Quote.Quote -> State
+buy :: Portfolio -> Quote.Quote -> Portfolio
 buy s q =   let startingMoney = money s
-                startingShares = shares s
+                startingLots = lots s
                 price = Quote.close q
                 numShares = floor ((startingMoney - commission) / price)
-            in  State (startingMoney - ((price * (fromIntegral numShares)) + commission)) (startingShares + numShares)
+                lot = Lot price numShares
+            in  Portfolio (startingMoney - ((price * (fromIntegral numShares)) + commission)) (lot:startingLots)
             
-sell :: State -> Quote.Quote -> State
-sell s q =  let startingMoney = money s
-                startingShares = shares s
-                price = Quote.close q
-            in  State (startingMoney + (price * (fromIntegral startingShares)) - commission) 0
+sell :: Portfolio -> Quote.Quote -> Portfolio
+sell s q =  Portfolio ((value (Quote.close q) s) - commission) []
 
-value :: State -> Double
-value _ = error "TODO implement value"
+value :: Double -> Portfolio -> Double
+value curr p = foldl (value' curr) (money p) (lots p)
+
+value' :: Double -> Double -> Lot -> Double
+value' curr m l = m + (curr * (fromIntegral (shares l)))
