@@ -1,16 +1,15 @@
 import qualified IO
 import qualified Quote
-import qualified Random as Rand
- 
+import qualified Seed
+
 -- MAIN
 main :: IO ()
 main = do
     inh <- IO.openFile "quotes.tsv" IO.ReadMode
     mylines <- readloop inh []
-    r1 <- Rand.getStdGen
-    let randoms = Rand.randoms r1 :: [Int]
     let quotes = Quote.makeQuotes (map words mylines)
-    printlines quotes
+    let seeds = Seed.randomSeeds 10
+    printlines seeds
     IO.hClose inh
  
 readloop :: IO.Handle -> [String] -> IO [String]
