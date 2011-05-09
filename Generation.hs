@@ -14,19 +14,25 @@ count :: Int -- The number of generations to run
 count = 100
 
 generate :: Generation -> [Quote.Quote] -> Double
-generate randomSeeds quotes =   let gen = take size randomSeeds
-                                in  average (evaluate gen quotes)
+generate randomSeeds quotes = generate' count (drop size randomSeeds) (take size randomSeeds) quotes
 
+generate' :: Int -> Generation -> Generation -> [Quote.Quote] -> Double
+generate' 0 _ gen quotes = average (evaluate gen quotes)
+generate' c randomSeeds gen quotes =    let culled = cull gen quotes
+                                            refilled = refill culled (take count randomSeeds)
+                                        in  generate' (c - 1) (drop count randomSeeds) refilled quotes
+                                
 average :: [Double] -> Double
 average xs = (sum xs) / (fromIntegral (length xs))
 
 evaluate :: Generation -> [Quote.Quote] -> [Double]
 evaluate g qs = map (Trade.evaluate qs) g
 
-cull :: Generation -> [Quote.Quote] -> [(Seed.Seed, Double)]
+cull :: Generation -> [Quote.Quote] -> Generation
 cull g qs = let results = evaluate g qs
                 zipped = zip g results
-            in  filter cull' zipped
+                filtered = filter cull' zipped
+            in  fst (unzip (filtered))
             
 cull' :: (Seed.Seed, Double) -> Bool
 cull' (_,v) = v > Portfolio.startingMoney
