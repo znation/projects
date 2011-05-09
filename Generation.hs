@@ -1,5 +1,6 @@
 module Generation where
 
+import qualified Control.Exception as CE
 import qualified Portfolio
 import qualified Quote
 import qualified Seed
@@ -13,17 +14,14 @@ size = 30
 count :: Int -- The number of generations to run
 count = 100
 
-generate :: Generation -> [Quote.Quote] -> Double
+generate :: Generation -> [Quote.Quote] -> [Double]
 generate randomSeeds quotes = generate' count (drop size randomSeeds) (take size randomSeeds) quotes
 
-generate' :: Int -> Generation -> Generation -> [Quote.Quote] -> Double
-generate' 0 _ gen quotes = average (evaluate gen quotes)
+generate' :: Int -> Generation -> Generation -> [Quote.Quote] -> [Double]
+generate' 0 _ gen quotes = evaluate gen quotes
 generate' c randomSeeds gen quotes =    let culled = cull gen quotes
-                                            refilled = refill culled (take count randomSeeds)
-                                        in  generate' (c - 1) (drop count randomSeeds) refilled quotes
-                                
-average :: [Double] -> Double
-average xs = (sum xs) / (fromIntegral (length xs))
+                                            refilled = refill culled (CE.assert (length randomSeeds >= size) (take size randomSeeds))
+                                        in  generate' (c - 1) (drop size randomSeeds) refilled quotes
 
 evaluate :: Generation -> [Quote.Quote] -> [Double]
 evaluate g qs = map (Trade.evaluate qs) g

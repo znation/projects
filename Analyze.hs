@@ -8,7 +8,7 @@ main :: IO ()
 main = do
     inh <- IO.openFile "quotes.tsv" IO.ReadMode
     mylines <- readloop inh []
-    seeds <- Seed.randoms (Generation.size * Generation.count)
+    seeds <- Seed.randoms (Generation.size * (Generation.count + 1))
     let quotes = Quote.makeQuotes (map words mylines)
     printlines [(Generation.generate seeds quotes)]
     IO.hClose inh
