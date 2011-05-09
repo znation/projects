@@ -13,6 +13,13 @@ size = 30
 count :: Int -- The number of generations to run
 count = 100
 
+generate :: Generation -> [Quote.Quote] -> Double
+generate randomSeeds quotes =   let gen = take size randomSeeds
+                                in  average (evaluate gen quotes)
+
+average :: [Double] -> Double
+average xs = (sum xs) / (fromIntegral (length xs))
+
 evaluate :: Generation -> [Quote.Quote] -> [Double]
 evaluate g qs = map (Trade.evaluate qs) g
 

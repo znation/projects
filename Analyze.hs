@@ -10,15 +10,8 @@ main = do
     mylines <- readloop inh []
     seeds <- Seed.randoms (Generation.size * Generation.count)
     let quotes = Quote.makeQuotes (map words mylines)
-    printlines [(generate seeds quotes)]
+    printlines [(Generation.generate seeds quotes)]
     IO.hClose inh
-
-generate :: Generation.Generation -> [Quote.Quote] -> Double
-generate randomSeeds quotes =   let gen = take Generation.size randomSeeds
-                                in  average (Generation.evaluate gen quotes)
-
-average :: [Double] -> Double
-average xs = (sum xs) / (fromIntegral (length xs))
                                 
 readloop :: IO.Handle -> [String] -> IO [String]
 readloop inh array = 
