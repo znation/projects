@@ -10,6 +10,8 @@ data Portfolio = Portfolio {    money :: Double,
 
 commission :: Double
 commission = 8.00
+
+startingMoney = 10000.00
                                 
 value :: Double -> Portfolio -> Double
 value curr p = foldl (value' curr) (money p) (lots p)

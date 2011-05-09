@@ -19,7 +19,7 @@ buysell s q =   if      Seed.open s * Quote.open q > Seed.close s * Quote.close 
 evaluate :: [Quote.Quote] -> Seed.Seed -> Double
 evaluate qs s = let actions = map (buysell s) qs -- [Action]
                     zipped = zip qs actions
-                    startingState = Portfolio.Portfolio 10000.00 []
+                    startingState = Portfolio.Portfolio Portfolio.startingMoney []
                     tradedState = foldl trade startingState zipped
                 in  Portfolio.value (Quote.close (last qs)) tradedState
 
