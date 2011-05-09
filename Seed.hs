@@ -1,7 +1,6 @@
 module Seed where
 
 import qualified Random as Rand
-import qualified System.IO.Unsafe as Unsafe
 import qualified Test.QuickCheck as QC
 
 data Seed = Seed {volume, open, high, low, close :: Double}
@@ -16,18 +15,18 @@ instance QC.Arbitrary Seed where
         e <- QC.arbitrary
         return (Seed a b c d e)
         
-randomSeeds :: Int -> [Seed]
-randomSeeds count = randomSeeds' count []
+randomSeeds :: Int -> IO [Seed]
+randomSeeds count = sequence (randomSeeds' count [])
 
-randomSeeds' :: Int -> [Seed] -> [Seed]
+randomSeeds' :: Int -> [IO Seed] -> [IO Seed]
 randomSeeds' 0 seeds = seeds
 randomSeeds' count seeds = randomSeeds' (count - 1) (randomSeed:seeds)
 
--- TODO -- always returns the same seed
-randomSeed :: Seed
-randomSeed =    let a = Unsafe.unsafePerformIO Rand.randomIO
-                    b = Unsafe.unsafePerformIO Rand.randomIO
-                    c = Unsafe.unsafePerformIO Rand.randomIO
-                    d = Unsafe.unsafePerformIO Rand.randomIO
-                    e = Unsafe.unsafePerformIO Rand.randomIO
-                in  Seed a b c d e
+randomSeed :: IO Seed
+randomSeed = do
+    a <- Rand.randomIO
+    b <- Rand.randomIO
+    c <- Rand.randomIO
+    d <- Rand.randomIO
+    e <- Rand.randomIO
+    return (Seed a b c d e)
