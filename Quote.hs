@@ -19,7 +19,7 @@ instance QC.Arbitrary Quote where
         f <- QC.arbitrary
         g <- QC.arbitrary
         return (Quote a (abs b) (abs c) (abs d) (abs e) (abs f) (abs g))
-
+        
 makeQuote :: Int -> [String] -> Quote
 makeQuote idx (a:b:c:d:e:f:g:[]) =  let ratio = (read g::Double) / (read e::Double)
                                         adjOpen = (read b::Double) * ratio
