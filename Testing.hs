@@ -9,4 +9,4 @@ main = do
     check Portfolio.prop_buyReducesByCommission
 
 check :: QC.Testable a => a -> IO ()
-check x = QC.quickCheckWith (QC.stdArgs {QC.maxSuccess = 1000}) x
+check x = QC.quickCheckWith (QC.stdArgs {QC.maxSuccess = 10000}) x
