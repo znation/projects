@@ -48,10 +48,19 @@ sell s q =  Portfolio ((value (Quote.close q) s) - commission) []
 prop_sellReducesByCommission :: Portfolio -> Quote.Quote -> Bool
 prop_sellReducesByCommission p q =  let originalValue = value (Quote.close q) p
                                         canSell = length (lots p) > 0
-                                        soldValue = value (Quote.close q) (sell p q)
-                                        
                                     in  if      canSell
-                                        then    let padding = 0.0001 -- padding to within a hundredth of a cent (exact values are susceptible to floating point rounding)
+                                        then    let soldValue = value (Quote.close q) (sell p q)
+                                                    padding = 0.0001 -- padding to within a hundredth of a cent (exact values are susceptible to floating point rounding)
                                                     difference = originalValue - (soldValue + commission)
+                                                in  padding > (abs difference)
+                                        else    True
+
+prop_buyReducesByCommission :: Portfolio -> Quote.Quote -> Bool
+prop_buyReducesByCommission p q =   let originalValue = value (Quote.close q) p
+                                        canBuy = ((money p) - commission) >= (Quote.close q)
+                                    in  if      canBuy
+                                        then    let boughtValue = value (Quote.close q) (buy p q)
+                                                    padding = 0.0001
+                                                    difference = originalValue - (boughtValue + commission)
                                                 in  padding > (abs difference)
                                         else    True
