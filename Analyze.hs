@@ -3,6 +3,8 @@ import qualified IO
 import qualified Quote
 import qualified Seed
 
+-- TODO -- use real stock data from many stocks to calibrate!
+
 -- MAIN
 main :: IO ()
 main = do

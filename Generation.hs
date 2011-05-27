@@ -26,6 +26,7 @@ generate' c randomSeeds gen quotes =    let culled = cull gen quotes
 evaluate :: Generation -> [Quote.Quote] -> [Double]
 evaluate g qs = map (Trade.evaluate qs) g
 
+-- TODO -- mutate the existing generation instead of just throwing some away and getting random new ones
 cull :: Generation -> [Quote.Quote] -> Generation
 cull g qs = let results = evaluate g qs
                 zipped = zip g results
