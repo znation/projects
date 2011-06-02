@@ -2,7 +2,8 @@ COMMON = Generation.hs Portfolio.hs Quote.hs Seed.hs Trade.hs
 ANALYZE = Analyze.hs
 GETQUOTES = GetQuotes.hs
 TESTING = Testing.hs
-GHCOPTS = --make -Wall -prof -auto-all -rtsopts
+GHCOPTS = --make -Wall -auto-all
+# TODO -- how do I get -prof enabled?
 
 all: Analyze.exe Testing.exe
 
@@ -13,4 +14,4 @@ Testing.exe: $(COMMON) $(TESTING)
 	ghc $(GHCOPTS) $(TESTING)
 
 clean:
-	rm -f Analyze.exe Testing.exe *.hi *.o
+	rm -f Analyze Testing Analyze.exe Testing.exe *.hi *.o
