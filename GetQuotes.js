@@ -105,20 +105,31 @@ var symbols = [
     "YHOO"
 ];
 
-var startYear = 2000, endYear = 2011;
-
-var queryString = {
-    
-};
+var startYear = 1999, endYear = 2011;
 
 var basePath = '/v1/public/yql?';
 
+var delay = 10000; // 10 seconds
 
-for (var i=0; i<symbols.length; i++)
+processSymbol(0);
+
+function processSymbol(i)
 {
-    var symbol = symbols[i];
-    for (var year=endYear-1; year>=startYear; year--)
+
+    if (i == symbols.length)
     {
+        return;
+    }
+
+    var symbol = symbols[i];
+    console.warn("processing symbol " + symbol);
+
+    
+    processYear(endYear-1);
+    
+    function processYear(year)
+    {
+        console.warn("processing year " + year);
         var startDate = String(year) + "-01-01";
         var endDate = String(year+1) + "-01-01";
         var queryString = {
@@ -164,6 +175,16 @@ for (var i=0; i<symbols.length; i++)
           console.warn("Got error: " + e.message);
           process.exit(1);
         });
+        
+        if (year == startYear)
+        {
+            // process next symbol
+            setTimeout(function() {processSymbol(i+1);}, delay);
+        }
+        else
+        {
+            setTimeout(function() {processYear(year-1);}, delay);
+        }
     }
 }
 
