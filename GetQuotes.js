@@ -105,6 +105,11 @@ var symbols = [
     "YHOO"
 ];
 
+// just microsoft
+symbols = [
+    "MSFT"
+];
+
 var startYear = 1999, endYear = 2011;
 
 var basePath = '/v1/public/yql?';
@@ -170,21 +175,21 @@ function processSymbol(i)
                 }
                 var quotes = parsed["query"]["results"]["quote"];
                 printCSV(symbol, quotes);
+                
+                if (year == startYear)
+                {
+                    // process next symbol
+                    setTimeout(function() {processSymbol(i+1);}, delay);
+                }
+                else
+                {
+                    setTimeout(function() {processYear(year-1);}, delay);
+                }
             });
         }).on('error', function(e) {
           console.warn("Got error: " + e.message);
           process.exit(1);
         });
-        
-        if (year == startYear)
-        {
-            // process next symbol
-            setTimeout(function() {processSymbol(i+1);}, delay);
-        }
-        else
-        {
-            setTimeout(function() {processYear(year-1);}, delay);
-        }
     }
 }
 

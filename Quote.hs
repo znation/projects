@@ -3,7 +3,8 @@ module Quote where
 import Data.Int
 import qualified Test.QuickCheck as QC
 
-data Quote = Quote {day :: String,
+data Quote = Quote {symbol :: String,
+                    day :: String,
                     index :: Int,
                     volume :: Int64,
                     open, high, low, close :: Double}
@@ -18,16 +19,17 @@ instance QC.Arbitrary Quote where
         e <- QC.arbitrary
         f <- QC.arbitrary
         g <- QC.arbitrary
-        return (Quote a (abs b) (abs c) (abs d) (abs e) (abs f) (abs g))
+        h <- QC.arbitrary
+        return (Quote a b (abs c) (abs d) (abs e) (abs f) (abs g) (abs h))
         
 makeQuote :: Int -> [String] -> Quote
-makeQuote idx (a:b:c:d:e:f:g:[]) =  let ratio = (read g::Double) / (read e::Double)
-                                        adjOpen = (read b::Double) * ratio
-                                        adjHigh = (read c::Double) * ratio
-                                        adjLow = (read d::Double) * ratio
-                                        adjClose = read g::Double -- also e * ratio
-                                        vol = read f::Int64
-                                    in  Quote a idx vol adjOpen adjHigh adjLow adjClose --(read y::Double)
+makeQuote idx (a:b:c:d:e:f:g:h:[]) =    let ratio = (read h::Double) / (read f::Double)
+                                            adjOpen = (read c::Double) * ratio
+                                            adjHigh = (read d::Double) * ratio
+                                            adjLow = (read e::Double) * ratio
+                                            adjClose = read h::Double -- also e * ratio
+                                            vol = read g::Int64
+                                        in  Quote a b idx vol adjOpen adjHigh adjLow adjClose
 makeQuote _ _ = error "Insufficient data to make a quote"
 
 makeQuotes :: [[String]] -> [Quote]
