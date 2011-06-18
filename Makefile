@@ -1,4 +1,4 @@
-GHCOPTS = --make -Wall -auto-all
+GHCOPTS = --make -Wall -auto-all -O2
 
 all: clean Solver.exe
 
