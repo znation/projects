@@ -6,4 +6,4 @@ Solver.exe: Solver.hs
 	ghc $(GHCOPTS) Solver.hs
 
 clean:
-	rm -f Solver Solver.exe *.hi *.o
+	rm -f Solver Solver.exe *.hi *.o *.prof
