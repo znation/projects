@@ -22,7 +22,7 @@ grid = [[08,02,22,97,38,15,00,40,00,75,04,05,07,78,52,12,50,77,91,08],
         [04,42,16,73,38,25,39,11,24,94,72,18,08,46,29,32,40,62,76,36],
         [20,69,36,41,72,30,23,88,34,62,99,69,82,67,59,85,74,04,36,16],
         [20,73,35,29,78,31,90,01,74,31,49,71,48,86,81,16,23,57,05,54],
-        [01,70,54,71,83,51,54,69,16,92,33,48,61,43,52,01,89,19,67,48]]
+        [01,70,54,71,83,51,54,69,16,92,33,48,61,43,52,01,89,19,67,48]]   
 
 answer :: Integer
 answer = maximum (down ++ right ++ upleft ++ upright)
@@ -30,28 +30,31 @@ answer = maximum (down ++ right ++ upleft ++ upright)
 length4 :: [Integer] -> Bool
 length4 l = length l == 4
 
-traverse :: 
+traverse :: [[Integer]] -> [Integer]
+traverse ll =   let subseq = concat (map (filter length4) (map subsequences ll))
+                in  map product subseq
 
 down :: [Integer]
-down =  let ll = down' 0 []
-            subseq = concat (map (filter length4) (map subsequences ll))
-        in  map product subseq
+down = traverse (down' 0)
 
-down' :: Int -> [[Integer]] -> [[Integer]]
-down' idx acc = if      idx == length (grid !! 0)
-                then    acc
-                else    (down'' idx 0 []):(down' (idx+1) acc)
+down' :: Int -> [[Integer]]
+down' idx = if      idx == length (grid !! 0)
+            then    []
+            else    (down'' idx 0):(down' (idx+1))
                 
-down'' :: Int -> Int -> [Integer] -> [Integer]
-down'' x y acc =    if      y == length grid
-                    then    acc
-                    else    ((grid !! y) !! x):(down'' x (y + 1) acc)
+down'' :: Int -> Int -> [Integer]
+down'' x y =    if      y == length grid
+                then    []
+                else    ((grid !! y) !! x):(down'' x (y + 1))
 
 right :: [Integer]
-right = []
+right = traverse grid
 
 upleft :: [Integer]
-upleft = []
+upleft = traverse (upleft' 0)
+
+upleft' :: Int -> [[Integer]]
+upleft' idx =  [[]] 
 
 upright :: [Integer]
 upright = []
