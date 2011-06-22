@@ -1,5 +1,6 @@
 module Utility where
 
+import Data.List
 import Debug.Trace
 
 debug :: Show a => String -> a -> a
@@ -13,11 +14,20 @@ divisors' x n = if      n > x `div` 2
                 then    [x]
                 else    let xs = divisors' x (n+1)
                         in  if      x `mod` n == 0
-                            then    x:xs
+                            then    n:xs
                             else    xs
+                            
+-- Follows http://www.ehow.com/how_5169234_calculate-number-divisors.html
+countDivisors :: Integer -> Int
+countDivisors x =   let primeFactors = factors x
+                        duplicatesRemoved = nub primeFactors
+                        countOccurrences n = length (filter (\m -> m == n) primeFactors)
+                        exponents = map countOccurrences duplicatesRemoved
+                    in  product (map (+1) exponents)
 
 factors :: Integer -> [Integer]
-factors = factors' 2 []
+factors 1 = [1]
+factors n = factors' 2 [] n
 
 factors' :: Integer -> [Integer] -> Integer -> [Integer]
 factors' d acc x =  if      x == d
