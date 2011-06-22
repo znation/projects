@@ -1,4 +1,4 @@
-import Problem003
+import Problem012
 
 -- MAIN
 main :: IO ()
