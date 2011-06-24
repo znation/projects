@@ -42,3 +42,6 @@ factors' d acc x =  if      x == d
                                 
 prime :: Integer -> Bool
 prime x = (length (factors x)) == 1
+
+triangleNumber :: Integer -> Integer
+triangleNumber x = sum [1..x]

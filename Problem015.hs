@@ -4,6 +4,8 @@ answer :: Integer
 answer = routes 20 20
 
 routes :: Integer -> Integer -> Integer
-routes 0 _ = 1
-routes _ 0 = 1
-routes x y = (routes (x-1) y) + (routes x (y-1))
+routes n 1 = 1 + n
+routes 1 n = 1 + n
+routes x y =    if      x == y
+                then    2 * (routes x (x-1))
+                else    (routes y (x-1)) + (routes x (y-1))
