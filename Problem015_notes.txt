@@ -80,3 +80,7 @@ routes 6 4 = routes 4 6
 routes n n = sum ([routes (n-1) 1 .. routes n n-1])
            = sum (map (uncurry routes) (zip (repeat (n-1)) [1..n]))
            
+The whole time, this was the generalization of triangle numbers.
+Ck_n = kT_(n-1) + 1
+
+           
