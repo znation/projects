@@ -1,5 +1,6 @@
 module Utility where
 
+import Data.Char
 import Data.List
 import Debug.Trace
 
@@ -45,3 +46,11 @@ prime x = (length (factors x)) == 1
 
 triangleNumber :: Integer -> Integer
 triangleNumber x = sum [1..x]
+
+digits :: Integer -> [Integer]
+digits x =  let digitStr = show x
+            in  map (toInteger . digitToInt) digitStr
+
+factorial :: Integer -> Integer
+factorial 0 = 1
+factorial n = n * factorial (n-1)
