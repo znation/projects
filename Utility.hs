@@ -7,6 +7,9 @@ import Debug.Trace
 debug :: Show a => String -> a -> a
 debug msg x = trace (msg ++ ": " ++ (show x)) x
 
+properDivisors :: Integer -> [Integer]
+properDivisors = init . divisors -- For proper divisors, remove the last element, which is the input
+
 divisors :: Integer -> [Integer]
 divisors x = divisors' x 1
 

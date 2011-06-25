@@ -1,5 +1,5 @@
 import IO
-import Problem022
+import Problem023
 
 -- MAIN
 main :: IO ()
