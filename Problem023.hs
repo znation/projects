@@ -1,17 +1,21 @@
 module Problem023 where
 
 import Data.List
+import Data.MemoCombinators
 import Utility
 
-answer :: a -> Integer
-answer _ =  let x = [1..3]
+answer :: Integer
+answer =    let x = [1..100]
             in  sum (x \\ (abundantSums x))
 
 abundantSums :: [Integer] -> [Integer]
-abundantSums x =    let pairs = nub (map (take 2) (permutations x))
-                    in  nub (map sum (filter (all abundant) pairs))
+abundantSums x =    let abundants = filter abundant x
+                        pairs = handshake abundants
+                    in  nub (map sumPair pairs)
                     
 abundant :: Integer -> Bool
-abundant x = debug ("Abundant " ++ (show x)) (sum (properDivisors x) > x)
+abundant =  let abundant' x = debug ("Abundant " ++ (show x)) (sum (properDivisors x) > x)
+            in integral abundant'
 
--- TODO -- memoize abundant using the recursive technique
+sumPair :: (Integer,Integer) -> Integer
+sumPair (x,y) = x + y

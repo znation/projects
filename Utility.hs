@@ -57,3 +57,8 @@ digits x =  let digitStr = show x
 factorial :: Integer -> Integer
 factorial 0 = 1
 factorial n = n * factorial (n-1)
+
+handshake :: [Integer] -> [(Integer, Integer)]
+handshake (x:y:[]) = [(x,y)]
+handshake (x:y:xs) = ((x,y):((handshake (x:xs)) ++ (handshake (y:xs))))
+handshake _ = error "Not enough items in handshake list"
