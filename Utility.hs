@@ -8,7 +8,8 @@ debug :: Show a => a -> String -> a
 debug x msg = trace (msg ++ ": " ++ (show x)) x
 
 properDivisors :: (Integral a, Num a) => a -> [a]
-properDivisors = init . divisors -- For proper divisors, remove the last element, which is the input
+properDivisors x =  let fs = filter (\y -> y /= x) (nub (factors x))
+                    in  nub (1:(sort ((map (div x) fs) ++ fs)))
 
 divisors :: (Integral a, Num a) => a -> [a]
 divisors x = divisors' x 1
@@ -19,8 +20,8 @@ divisors' x n = if      n > x `div` 2
                 else    let xs = divisors' x (n+1)
                         in  if      x `mod` n == 0
                             then    n:xs
-                            else    xs
-                            
+                            else    xs   
+                         
 -- Follows http://www.ehow.com/how_5169234_calculate-number-divisors.html
 countDivisors :: Integer -> Int
 countDivisors x =   let primeFactors = factors x
@@ -29,11 +30,11 @@ countDivisors x =   let primeFactors = factors x
                         exponents = map countOccurrences duplicatesRemoved
                     in  product (map (+1) exponents)
 
-factors :: Integer -> [Integer]
+factors :: (Integral a) => a -> [a]
 factors 1 = [1]
 factors n = factors' 2 [] n
 
-factors' :: Integer -> [Integer] -> Integer -> [Integer]
+factors' :: (Integral a) => a -> [a] -> a -> [a]
 factors' d acc x =  if      x == d
                     then    d:acc
                     else    let result = x `div` d
