@@ -4,6 +4,8 @@ import Data.Char
 import Data.List
 import Debug.Trace
 
+import qualified Data.MemoCombinators as Memo
+
 debug :: Show a => a -> String -> a
 debug x msg = trace (msg ++ ": " ++ (show x)) x
 
@@ -12,15 +14,7 @@ properDivisors x =  let fs = filter (\y -> y /= x) (nub (factors x))
                     in  nub (1:(sort ((map (div x) fs) ++ fs)))
 
 divisors :: (Integral a, Num a) => a -> [a]
-divisors x = divisors' x 1
-
-divisors' :: (Integral a, Num a) => a -> a -> [a]
-divisors' x n = if      n > x `div` 2
-                then    [x]
-                else    let xs = divisors' x (n+1)
-                        in  if      x `mod` n == 0
-                            then    n:xs
-                            else    xs   
+divisors x = (properDivisors x) ++ [x]
                          
 -- Follows http://www.ehow.com/how_5169234_calculate-number-divisors.html
 countDivisors :: Integer -> Int
@@ -67,3 +61,15 @@ handshake' xs x = map (handshake'' x) xs
 
 handshake'' :: a -> a -> (a, a)
 handshake'' x y = (x,y)
+
+fibonacci :: [Integer]
+fibonacci = map fibonacci' [0..]
+
+fibonacci' :: Integer -> Integer
+fibonacci' =  Memo.integral fibonacci''
+
+fibonacci'' :: Integer -> Integer
+fibonacci'' 0 = 0
+fibonacci'' 1 = 1
+fibonacci'' 2 = 1
+fibonacci'' x = (fibonacci' (x-1)) + (fibonacci' (x-2))
