@@ -4,16 +4,16 @@ import Data.Char
 import Data.List
 import Debug.Trace
 
-debug :: Show a => String -> a -> a
-debug msg x = trace (msg ++ ": " ++ (show x)) x
+debug :: Show a => a -> String -> a
+debug x msg = trace (msg ++ ": " ++ (show x)) x
 
-properDivisors :: Integer -> [Integer]
+properDivisors :: (Integral a, Num a) => a -> [a]
 properDivisors = init . divisors -- For proper divisors, remove the last element, which is the input
 
-divisors :: Integer -> [Integer]
+divisors :: (Integral a, Num a) => a -> [a]
 divisors x = divisors' x 1
 
-divisors' :: Integer -> Integer -> [Integer]
+divisors' :: (Integral a, Num a) => a -> a -> [a]
 divisors' x n = if      n > x `div` 2
                 then    [x]
                 else    let xs = divisors' x (n+1)
@@ -58,7 +58,11 @@ factorial :: Integer -> Integer
 factorial 0 = 1
 factorial n = n * factorial (n-1)
 
-handshake :: [Integer] -> [(Integer, Integer)]
-handshake (x:y:[]) = [(x,y)]
-handshake (x:y:xs) = ((x,y):((handshake (x:xs)) ++ (handshake (y:xs))))
-handshake _ = error "Not enough items in handshake list"
+handshake :: [a] -> [(a, a)]
+handshake xs = concat (map (handshake' xs) xs)
+
+handshake' :: [a] -> a -> [(a, a)]
+handshake' xs x = map (handshake'' x) xs
+
+handshake'' :: a -> a -> (a, a)
+handshake'' x y = (x,y)
