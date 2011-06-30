@@ -2,9 +2,12 @@ module Problem024 where
 
 import Data.List
 
-answer :: String
-answer = (lexicographicPermutations [0..9]) !! 1000000
+answer :: [Int]
+answer = (permute [0..9]) !! 999999
 
-lexicographicPermutations :: [Int] -> [String]
-lexicographicPermutations xs = map (concat . (map show)) (sort (permutations xs))
-
+permute :: (Eq a) => [a] -> [[a]]
+permute [] = [[]]
+permute str = do
+    x  <- str
+    xs <- permute (delete x str)
+    return (x:xs)
