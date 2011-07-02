@@ -25,6 +25,7 @@ countDivisors x =   let primeFactors = factors x
                     in  product (map (+1) exponents)
 
 factors :: (Integral a) => a -> [a]
+factors 0 = [0]
 factors 1 = [1]
 factors n = factors' 2 [] n
 
@@ -40,7 +41,16 @@ factors' d acc x =  if      x == d
                                 else    factors' (d+1) acc x
                                 
 prime :: Integer -> Bool
-prime x = (length (factors x)) == 1
+prime x = primes !! (fromInteger x)
+
+prime' :: Integer -> Bool
+prime' x = (length (factors x)) == 1
+
+primes :: [Bool]
+primes = map prime' [0..]
+
+circularPrime :: Integer -> Bool
+circularPrime x = and (map prime (rotations x))
 
 triangleNumber :: Integer -> Integer
 triangleNumber x = sum [1..x]
@@ -49,6 +59,12 @@ digits :: Integer -> [Integer]
 digits x =  let digitStr = show x
             in  map (toInteger . digitToInt) digitStr
 
+undigits :: [Integer] -> Integer
+undigits ds =   let undigits' :: Integer -> [Integer] -> Integer
+                    undigits' _ [] = 0
+                    undigits' tens (x:xs) = (x * (10 ^ tens)) + (undigits' (tens+1) xs)
+                in  undigits' 0 (reverse ds)
+            
 factorial :: Integer -> Integer
 factorial 0 = 1
 factorial n = n * factorial (n-1)
@@ -73,3 +89,16 @@ fibonacci'' 0 = 0
 fibonacci'' 1 = 1
 fibonacci'' 2 = 1
 fibonacci'' x = (fibonacci' (x-1)) + (fibonacci' (x-2))
+
+rotate :: [a] -> Int -> [a]
+rotate l 0 = l
+rotate l n = (drop n l) ++ (take n l)
+
+rotations :: Integer -> [Integer]
+rotations x =   let ds :: [Integer]
+                    ds = digits x
+                    l :: Int
+                    l = length ds
+                    rs :: [[Integer]]
+                    rs = map (rotate ds) [0..(l-1)]
+                in  map undigits rs
