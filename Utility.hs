@@ -9,11 +9,11 @@ import qualified Data.MemoCombinators as Memo
 debug :: Show a => a -> String -> a
 debug x msg = trace (msg ++ ": " ++ (show x)) x
 
-properDivisors :: (Integral a, Num a) => a -> [a]
+properDivisors :: Integer -> [Integer]
 properDivisors x =  let fs = filter (\y -> y /= x) (nub (factors x))
                     in  nub (1:(sort ((map (div x) fs) ++ fs)))
 
-divisors :: (Integral a, Num a) => a -> [a]
+divisors :: Integer -> [Integer]
 divisors x = (properDivisors x) ++ [x]
                          
 -- Follows http://www.ehow.com/how_5169234_calculate-number-divisors.html
@@ -24,14 +24,14 @@ countDivisors x =   let primeFactors = factors x
                         exponents = map countOccurrences duplicatesRemoved
                     in  product (map (+1) exponents)
 
-factors :: (Integral a) => a -> [a]
-factors 0 = [0]
-factors 1 = [1]
+factors :: Integer -> [Integer]
 factors n = factors' 2 [] n
 
-factors' :: (Integral a) => a -> [a] -> a -> [a]
-factors' d acc x =  if      x == d
-                    then    d:acc
+factors' :: Integer -> [Integer] -> Integer -> [Integer]
+factors' _ _ 0 = [0]
+factors' _ _ 1 = [1]
+factors' d acc x =  if      d > (isqrt x)
+                    then    x:acc
                     else    let result = x `div` d
                                 remainder = x `mod` d
                             in  if      remainder == 0 -- factor
@@ -39,7 +39,13 @@ factors' d acc x =  if      x == d
                                             b = factors d
                                         in  a ++ b
                                 else    factors' (d+1) acc x
-                                
+                        
+
+isqrt :: Integer -> Integer
+isqrt x =   let f :: Double
+                f = fromInteger x
+            in  floor (sqrt f)
+
 prime :: Integer -> Bool
 prime x = primes !! (fromInteger x)
 
@@ -52,7 +58,7 @@ primes = map prime' [0..]
 circularPrime :: Integer -> Bool
 circularPrime x = and (map prime (rotations x))
 
-triangleNumber :: Integer -> Integer
+triangleNumber :: (Integral a) => a -> a
 triangleNumber x = sum [1..x]
 
 digits :: Integer -> [Integer]
