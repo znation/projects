@@ -49,10 +49,15 @@ prime :: Integer -> Bool
 prime x = primes !! (fromInteger x)
 
 prime' :: Integer -> Bool
-prime' x =  if      x `mod` 2 == 0 ||  -- optimization -- don't bother checking trivially divisible things
-                        x `mod` 3 == 0 -- TODO -- generalize this into a shortcutting refactoring of 'factors'
-            then    False
-            else    (length (factors x)) == 1
+prime' x = prime'' 2 x
+
+prime'' :: Integer -> Integer -> Bool
+prime'' d x =   if      d > (isqrt x)
+                then    True
+                else    let (result,remainder) = x `divMod` d
+                        in  if      remainder == 0 -- factor
+                            then    False
+                            else    prime'' (d+1) x
 
 primes :: [Bool]
 primes = map prime' [0..]
