@@ -58,8 +58,8 @@ isPrime :: Integer -> Bool
 isPrime x = isPrime' 2 x
 
 isPrime' :: Integer -> Integer -> Bool
-isPrime' _ 0 = True
-isPrime' _ 1 = True
+isPrime' _ 0 = False
+isPrime' _ 1 = False
 isPrime' d x =   if      d > (isqrt x)
                 then    True
                 else    let remainder = x `mod` d
