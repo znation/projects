@@ -32,8 +32,7 @@ factors' _ _ 0 = [0]
 factors' _ _ 1 = [1]
 factors' d acc x =  if      d > (isqrt x)
                     then    x:acc
-                    else    let result = x `div` d
-                                remainder = x `mod` d
+                    else    let (result,remainder) = x `divMod` d
                             in  if      remainder == 0 -- factor
                                 then    let a = factors result
                                             b = factors d
@@ -50,7 +49,10 @@ prime :: Integer -> Bool
 prime x = primes !! (fromInteger x)
 
 prime' :: Integer -> Bool
-prime' x = (length (factors x)) == 1
+prime' x =  if      x `mod` 2 == 0 ||  -- optimization -- don't bother checking trivially divisible things
+                        x `mod` 3 == 0 -- TODO -- generalize this into a shortcutting refactoring of 'factors'
+            then    False
+            else    (length (factors x)) == 1
 
 primes :: [Bool]
 primes = map prime' [0..]
