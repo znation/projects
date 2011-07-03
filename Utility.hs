@@ -54,7 +54,7 @@ prime' x = prime'' 2 x
 prime'' :: Integer -> Integer -> Bool
 prime'' d x =   if      d > (isqrt x)
                 then    True
-                else    let (result,remainder) = x `divMod` d
+                else    let remainder = x `mod` d
                         in  if      remainder == 0 -- factor
                             then    False
                             else    prime'' (d+1) x
