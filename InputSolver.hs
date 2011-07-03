@@ -1,4 +1,4 @@
-import Problem022
+import Problem042
 import qualified IO
 
 -- MAIN
@@ -12,8 +12,12 @@ getInput fname = do
     inh <- IO.openFile fname IO.ReadMode
     mylines <- readloop inh []
     IO.hClose inh
-    return mylines
-    
+    -- Transform the first line like "abcde","fgh" into ["abcde","fgh"]
+    let firstLine = head mylines
+    let tokenStr = ('[':firstLine) ++ "]"
+    let tokens = (read tokenStr) :: [String]
+    return tokens
+
 readloop :: IO.Handle -> [String] -> IO [String]
 readloop inh array = 
     do

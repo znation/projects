@@ -65,8 +65,15 @@ primes = map prime' [0..]
 circularPrime :: Integer -> Bool
 circularPrime x = and (map prime (rotations x))
 
-triangleNumber :: (Integral a) => a -> a
-triangleNumber x = sum [1..x]
+triangleNumbers :: (Integral a) => [a]
+triangleNumbers = map makeTriangleNumber [1..]
+
+makeTriangleNumber :: (Integral a) => a -> a
+makeTriangleNumber x = sum [1..x]
+
+triangleNumber :: (Integral a) => a -> Bool
+triangleNumber x =  let subset = takeWhile (\y -> y <= x) triangleNumbers
+                    in  elem x subset
 
 digits :: Integer -> [Integer]
 digits x =  let digitStr = show x
