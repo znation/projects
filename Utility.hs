@@ -44,26 +44,28 @@ isqrt :: Integer -> Integer
 isqrt x =   let f :: Double
                 f = fromInteger x
             in  floor (sqrt f)
+            
+circularPrime :: Integer -> Bool
+circularPrime x = and (map prime (rotations x))
 
 prime :: Integer -> Bool
 prime x = primes !! (fromInteger x)
 
-prime' :: Integer -> Bool
-prime' x = prime'' 2 x
+primes :: [Bool]
+primes = map isPrime [0..]
 
-prime'' :: Integer -> Integer -> Bool
-prime'' d x =   if      d > (isqrt x)
+isPrime :: Integer -> Bool
+isPrime x = isPrime' 2 x
+
+isPrime' :: Integer -> Integer -> Bool
+isPrime' _ 0 = True
+isPrime' _ 1 = True
+isPrime' d x =   if      d > (isqrt x)
                 then    True
                 else    let remainder = x `mod` d
                         in  if      remainder == 0 -- factor
                             then    False
-                            else    prime'' (d+1) x
-
-primes :: [Bool]
-primes = map prime' [0..]
-
-circularPrime :: Integer -> Bool
-circularPrime x = and (map prime (rotations x))
+                            else    isPrime' (d+1) x
 
 triangleNumbers :: (Integral a) => [a]
 triangleNumbers = map makeTriangleNumber [1..]
