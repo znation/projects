@@ -68,16 +68,38 @@ isPrime' d x =   if      d > (isqrt x)
                         in  if      remainder == 0 -- factor
                             then    False
                             else    isPrime' (d+1) x
-
+                           
 triangleNumbers :: (Integral a) => [a]
-triangleNumbers = map makeTriangleNumber [1..]
+triangleNumbers =   let makeTriangleNumber :: (Integral a) => a -> a
+                        makeTriangleNumber x = (x * (x + 1)) `div` 2
+                    in  map makeTriangleNumber [1..]
 
-makeTriangleNumber :: (Integral a) => a -> a
-makeTriangleNumber x = sum [1..x]
+pentagonalNumbers :: (Integral a) => [a]
+pentagonalNumbers = let makePentagonalNumber :: (Integral a) => a -> a
+                        makePentagonalNumber x = (x * ((3 * x) - 1)) `div` 2
+                    in  map makePentagonalNumber [1..]
+
+hexagonalNumbers :: (Integral a) => [a]
+hexagonalNumbers =  let makeHexagonalNumber :: (Integral a) => a -> a
+                        makeHexagonalNumber x = x * ((2 * x) - 1)
+                    in  map makeHexagonalNumber [1..]
 
 triangleNumber :: (Integral a) => a -> Bool
-triangleNumber x =  let subset = takeWhile (\y -> y <= x) triangleNumbers
-                    in  elem x subset
+triangleNumber = numberInSeries triangleNumbers
+
+pentagonalNumber :: (Integral a) => a -> Bool
+pentagonalNumber = numberInSeries pentagonalNumbers
+
+hexagonalNumber :: (Integral a) => a -> Bool
+hexagonalNumber = numberInSeries hexagonalNumbers
+                    
+numberInSeries :: (Integral a) => [a] -> a -> Bool
+numberInSeries [] _ = False
+numberInSeries (x:xs) n =   if      x == n
+                            then    True
+                            else    if      x > n
+                                    then    False
+                                    else    numberInSeries xs n
 
 digits :: Integer -> [Integer]
 digits x =  let digitStr = show x
