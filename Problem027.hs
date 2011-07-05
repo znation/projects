@@ -1,13 +1,12 @@
 module Problem027 where
 
-import Data.List
 import Utility
 
 data CoefficientPair = CoefficientPair Integer Integer
     deriving (Show, Eq)
 
 answer :: Integer
-answer = coefficientProduct (head (sort coefficientPairs))
+answer = coefficientProduct (bestResult coefficientPairs)
 
 coefficientPairs :: [CoefficientPair]
 coefficientPairs =  let tuples :: [(Integer, Integer)]
@@ -19,16 +18,25 @@ coefficientPairs =  let tuples :: [(Integer, Integer)]
 coefficientProduct :: CoefficientPair -> Integer
 coefficientProduct (CoefficientPair a b) = a * b
 
-instance Ord CoefficientPair where
-    (<=) x y = (result x) <= (result y)
-    
+bestResult :: [CoefficientPair] -> CoefficientPair
+bestResult = bestResult' (CoefficientPair 0 0) 0
+
+bestResult' :: CoefficientPair -> Int -> [CoefficientPair] -> CoefficientPair
+bestResult' p _ [] = p
+bestResult' p pr (x:xs) =   let r = result x
+                            in  if      r > pr
+                                then    bestResult' x r xs
+                                else    bestResult' p pr xs
+
 -- Determines the number of consecutive primes produced by the quadric equation with these coefficients
 result :: CoefficientPair -> Int
-result (CoefficientPair a b) =  let eq :: Integer -> Integer
-                                    eq n = (n^2) + (a * n) + b
-                                    l :: [Integer]
-                                    l = map eq [0..]
-                                in  length (takeWhile prime l)
+result p =  let eq :: Integer -> Integer
+                eq = quadraticEquation p
+                l :: [Integer]
+                l = map eq [0..]
+            in  length (takeWhile prime l)
 
+quadraticEquation :: CoefficientPair -> Integer -> Integer
+quadraticEquation (CoefficientPair a b) n = (n^2) + (a * n) + b
 
 

@@ -49,7 +49,9 @@ circularPrime :: Integer -> Bool
 circularPrime x = and (map prime (rotations x))
 
 prime :: Integer -> Bool
-prime x = primes !! (fromInteger x)
+prime x =   if      x < 0
+            then    False
+            else    primes !! (fromInteger x)
 
 primes :: [Bool]
 primes = map isPrime [0..]
