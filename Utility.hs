@@ -116,13 +116,7 @@ factorial 0 = 1
 factorial n = n * factorial (n-1)
 
 handshake :: [a] -> [a] -> [(a, a)]
-handshake xs ys = concat (map (handshake' ys) xs)
-
-handshake' :: [a] -> a -> [(a, a)]
-handshake' xs x = map (handshake'' x) xs
-
-handshake'' :: a -> a -> (a, a)
-handshake'' x y = (x,y)
+handshake xs ys = [(x,y) | x <- xs, y <- ys]
 
 fibonacci :: [Integer]
 fibonacci = map fibonacci' [0..]
