@@ -3,6 +3,7 @@ module Utility where
 import Data.Char
 import Data.List
 import Debug.Trace
+import Numeric
 
 import qualified Data.MemoCombinators as Memo
 
@@ -110,7 +111,10 @@ undigits ds =   let undigits' :: Integer -> [Integer] -> Integer
                     undigits' _ [] = 0
                     undigits' tens (x:xs) = (x * (10 ^ tens)) + (undigits' (tens+1) xs)
                 in  undigits' 0 (reverse ds)
-            
+
+reverseDigits :: Integer -> Integer
+reverseDigits = undigits . reverse . digits
+
 factorial :: Integer -> Integer
 factorial 0 = 1
 factorial n = n * factorial (n-1)
@@ -142,3 +146,17 @@ rotations x =   let ds :: [Integer]
                     rs :: [[Integer]]
                     rs = map (rotate ds) [0..(l-1)]
                 in  map undigits rs
+
+palindromic :: Integer -> Integer -> Bool
+palindromic x base =    let showAtBase :: Integer -> Integer -> String
+                            showAtBase b x' = showIntAtBase b intToDigit x' ""
+                            palindromic' :: [Char] -> Int -> Bool
+                            palindromic' l idx =    if      idx > ((length l) `div` 2)
+                                                    then    True
+                                                    else    if      (l !! ((length l) - idx - 1)) == (l !! idx)
+                                                            then    palindromic' l (idx+1)
+                                                            else    False
+                        in  palindromic' (showAtBase base x) 0
+
+palindromicInBases :: [Integer] -> Integer -> Bool
+palindromicInBases bases x = and (map (palindromic x) bases)
