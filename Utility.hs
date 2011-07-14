@@ -160,3 +160,18 @@ palindromic x base =    let showAtBase :: Integer -> Integer -> String
 
 palindromicInBases :: [Integer] -> Integer -> Bool
 palindromicInBases bases x = and (map (palindromic x) bases)
+
+pandigital :: Integer -> Bool
+pandigital x = elem x pandigitals
+
+-- Pandigitals of length 9
+pandigitals :: [Integer]
+pandigitals = map undigits (permutations [1..9])
+
+split :: String -> Char -> [String]
+split [] _ = []
+split str c =   let cond :: Char -> Bool
+                    cond = (not . (== c))
+                    rest :: String
+                    rest = drop 1 (dropWhile cond str)
+                in  (takeWhile cond str) : (split rest c)
