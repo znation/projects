@@ -1,36 +1,33 @@
 module Problem023 where
 
+import Data.Array
 import Utility
 
-answer :: Integer
-answer =    let upperBound = 28123
-                xs = [1..upperBound]
-            in  (total xs upperBound) - (abundantTotal xs upperBound)
+upperBound :: Int
+upperBound = 28123
 
-abundant :: Integer -> Bool
-abundant x = sum (properDivisors x) > x
+answer :: Int
+answer = sum (filter (not . abundantSum) [1..upperBound])
 
-abundants :: [Bool]
-abundants = map abundant [1..]
+abundant :: Int -> Bool
+abundant x = (sum (properDivisors x) > x) `debug` ("Abundant " ++ (show x))
 
-isAbundant :: Integer -> Bool
-isAbundant x = (abundants !! (fromInteger (x-1))) --`debug` ("Abundant " ++ (show x))
+abundants :: Array Int Bool
+abundants = listArray (0, upperBound) (map abundant [0..])
 
-pairs :: Integer -> [(Integer,Integer)]
-pairs = let pairs' :: Integer -> Integer -> [(Integer,Integer)]
+isAbundant :: Int -> Bool
+isAbundant x = abundants ! x
+
+pairs :: Int -> [(Int,Int)]
+pairs = let pairs' :: Int -> Int -> [(Int,Int)]
             pairs' x tot =  if     x == tot
                             then   []
                             else   (x,(tot-x)):(pairs' (x+1) tot)
         in  pairs' 1
 
-abundantSum :: (Integer,Integer) -> Bool
-abundantSum (x,y) = (isAbundant x) && (isAbundant y)
+abundantPair :: (Int,Int) -> Bool
+abundantPair (x,y) = isAbundant x && isAbundant y
 
-sumPair :: (Integer,Integer) -> Integer
-sumPair (x,y) = x + y
-                    
-abundantTotal :: [Integer] -> Integer -> Integer
-abundantTotal xs upperBound = sum (filter (<upperBound) (map sumPair (handshake (filter isAbundant xs))))
-
-total :: [Integer] -> Integer -> Integer
-total xs upperBound = sum (filter (<upperBound) (map sumPair (handshake xs)))
+abundantSum :: Int -> Bool
+abundantSum x = let p = take 1 (filter abundantPair (pairs x))
+                in  length p > 0

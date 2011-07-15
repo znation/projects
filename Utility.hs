@@ -10,11 +10,17 @@ import qualified Data.MemoCombinators as Memo
 debug :: Show a => a -> String -> a
 debug x msg = trace (msg ++ ": " ++ (show x)) x
 
-properDivisors :: Integer -> [Integer]
-properDivisors x =  let fs = filter (\y -> y /= x) (nub (factors x))
-                    in  nub (1:(sort ((map (div x) fs) ++ fs)))
-
-divisors :: Integer -> [Integer]
+properDivisors :: Integral a => a -> [a]
+properDivisors =    let properDivisors' :: Integral a => a -> a -> [a]
+                        properDivisors' i x =   let rest = properDivisors' (i+1) x
+                                                in  if      i > x `div` 2
+                                                    then    []
+                                                    else    if      x `mod` i == 0
+                                                            then    i:rest
+                                                            else    rest
+                    in  properDivisors' 1
+                    
+divisors :: Integral a => a -> [a]
 divisors x = (properDivisors x) ++ [x]
                          
 -- Follows http://www.ehow.com/how_5169234_calculate-number-divisors.html
@@ -25,10 +31,10 @@ countDivisors x =   let primeFactors = factors x
                         exponents = map countOccurrences duplicatesRemoved
                     in  product (map (+1) exponents)
 
-factors :: Integer -> [Integer]
+factors :: Integral a => a -> [a]
 factors n = factors' 2 [] n
 
-factors' :: Integer -> [Integer] -> Integer -> [Integer]
+factors' :: Integral a => a -> [a] -> a -> [a]
 factors' _ _ 0 = [0]
 factors' _ _ 1 = [1]
 factors' d acc x =  if      d > (isqrt x)
@@ -41,9 +47,9 @@ factors' d acc x =  if      d > (isqrt x)
                                 else    factors' (d+1) acc x
                         
 
-isqrt :: Integer -> Integer
+isqrt :: Integral a => a -> a
 isqrt x =   let f :: Double
-                f = fromInteger x
+                f = fromIntegral x
             in  floor (sqrt f)
             
 circularPrime :: Integer -> Bool
