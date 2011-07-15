@@ -1,37 +1,36 @@
 module Problem031 where
 
--- TODO -- brute force is not working
--- needs a smarter algorithm.
--- are combinations like factors?
+-- TODO -- this is doing permutations, not combinations
 
+import qualified Data.MemoCombinators as Memo
 import Utility
 
-answer :: Int
+answer :: Integer
 answer = combinations
 
-nothing :: Maybe [Int] -> Bool
-nothing x = x == Nothing
-
-result :: Int
+result :: Integer
 result = 200
 
-denominations :: [Int]
+denominations :: [Integer]
 denominations = reverse [1, 2, 5, 10, 20, 50, 100, 200]
 
-combinations :: Int
+combinations :: Integer
 combinations = sum (map firstCombine denominations)
 
-firstCombine :: Int -> Int
+firstCombine :: Integer -> Integer
 firstCombine x =    let y = x `debug` "Starting with"
                     in  combine 0 y
 
+combine :: Integer -> Integer -> Integer
+combine = Memo.memo2 Memo.integral Memo.integral combine'
+                    
 -- returns combinations that add up to 2 pounds
-combine :: Int -> Int -> Int
-combine acc x = let total = acc + x
-                    diff = result - total
-                    ds = filter (<= diff) denominations
-                in  if      diff == 0
-                    then    1
-                    else    if      diff < 0
-                            then    0
-                            else    sum (map (combine total) ds)
+combine' :: Integer -> Integer -> Integer
+combine' acc x =    let total = acc + x
+                        diff = result - total
+                        ds = filter (<= diff) denominations
+                    in  if      diff == 0
+                        then    1
+                        else    if      diff < 0
+                                then    0
+                                else    sum (map (combine total) ds)
