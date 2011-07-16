@@ -181,3 +181,7 @@ split str c =   let cond :: Char -> Bool
                     rest :: String
                     rest = drop 1 (dropWhile cond str)
                 in  (takeWhile cond str) : (split rest c)
+
+                
+square :: (Num a) => a -> a
+square x = x ^ (2 :: Integer)

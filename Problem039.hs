@@ -1,5 +1,6 @@
 module Problem039 where
 
+import Data.List
 import Utility
 
 answer :: Integer
@@ -16,22 +17,23 @@ maximumSolutions m n p =    let s = (length (solutions p) `debug` ("Solutions fo
                                 
                                 
 solutions :: Integer -> [Solution]
-solutions x = filter pythagoreanEquation (makeSolutions x)
+solutions x = unique (filter pythagoreanEquation (makeSolutions x))
 
 pythagoreanEquation :: Solution -> Bool
-pythagoreanEquation (a,b,c) = (a^2) + (b^2) == (c^2)
+pythagoreanEquation (a,b,c) = (square a) + (square b) == (square c)
 
 makeSolutions :: Integer -> [Solution]
-makeSolutions x = filter (validSolution x) (concat (map (makeSolutions' x) [1..x]))
-
-validSolution :: Integer -> Solution -> Bool
-validSolution x (a,b,c) = a + b + c == x
-
-makeSolutions' :: Integer -> Integer -> [Solution]
-makeSolutions' x a = concat (map (makeSolutions'' x a) [1..x])
-
-makeSolutions'' :: Integer -> Integer -> Integer -> [Solution]
-makeSolutions'' x a b = map (makeSolution a b) [1..x]
-
-makeSolution :: Integer -> Integer -> Integer -> Solution
-makeSolution a b c = (a,b,c)
+makeSolutions x = [(a,b,c) | a <- [1..(x-2)], b <- [1..(x-a-1)], c <- [(x-a-b)]]
+                    
+solution :: [Integer] -> Solution
+solution (a:b:c:[]) = (a,b,c)
+solution _ = error "Bad input for solution"
+                    
+sortSolution :: Solution -> Solution
+sortSolution (a,b,c) =  let xs = [a,b,c]
+                            sorted = sort xs
+                        in  solution sorted
+                    
+unique :: [Solution] -> [Solution]
+unique xs = let sorted = map sortSolution xs
+            in  nub sorted
