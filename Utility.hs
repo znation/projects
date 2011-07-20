@@ -192,3 +192,7 @@ arraySlice arr m n
     | m == n = [arr ! m]
     | otherwise = (arr ! m):(arraySlice arr (m+1) n)
 
+consecutive :: Integral a => [a] -> Bool
+consecutive [] = True
+consecutive (_:[]) = True
+consecutive (x:y:xs) = (y == x + 1) && (consecutive (y:xs))
