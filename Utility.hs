@@ -1,5 +1,6 @@
 module Utility where
 
+import Data.Array
 import Data.Char
 import Data.List
 import Debug.Trace
@@ -55,18 +56,18 @@ isqrt x =   let f :: Double
 circularPrime :: Integer -> Bool
 circularPrime x = and (map prime (rotations x))
 
-prime :: Integer -> Bool
+prime :: Integral a => a -> Bool
 prime x =   if      x < 0
             then    False
-            else    primes !! (fromInteger x)
+            else    primes !! (fromIntegral x)
 
 primes :: [Bool]
-primes = map isPrime [0..]
+primes = map isPrime ([0..] :: [Integer])
 
-isPrime :: Integer -> Bool
+isPrime :: Integral a => a -> Bool
 isPrime x = isPrime' 2 x
 
-isPrime' :: Integer -> Integer -> Bool
+isPrime' :: Integral a => a -> a -> Bool
 isPrime' _ 0 = False
 isPrime' _ 1 = False
 isPrime' d x =   if      d > (isqrt x)
@@ -75,7 +76,7 @@ isPrime' d x =   if      d > (isqrt x)
                         in  if      remainder == 0 -- factor
                             then    False
                             else    isPrime' (d+1) x
-                           
+
 triangleNumbers :: (Integral a) => [a]
 triangleNumbers =   let makeTriangleNumber :: (Integral a) => a -> a
                         makeTriangleNumber x = (x * (x + 1)) `div` 2
@@ -185,3 +186,9 @@ split str c =   let cond :: Char -> Bool
                 
 square :: (Num a) => a -> a
 square x = x ^ (2 :: Integer)
+
+arraySlice :: (Ix a, Num a) => Array a b -> a -> a -> [b]
+arraySlice arr m n
+    | m == n = [arr ! m]
+    | otherwise = (arr ! m):(arraySlice arr (m+1) n)
+
