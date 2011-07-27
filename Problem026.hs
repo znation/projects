@@ -1,44 +1,31 @@
 module Problem026 where
 
 answer :: Int
-answer = longestCycle [2..1000]
+answer =    let xs = [2..1000]
+                ls = map cycleLength xs
+                pairs = zip xs ls
+            in  longestCycle (0, 0) pairs
+            
+longestCycle :: (Int, Int) -> [(Int, Int)] -> Int
+longestCycle (i,_) [] = i
+longestCycle (i,l) ((xi,xl):xs) =   if      xl > l
+                                    then    longestCycle (xi,xl) xs
+                                    else    longestCycle (i,l) xs
 
-maxLength :: Int
-maxLength = 30
-
-longestCycle :: [Int] -> Int
-longestCycle =  let longestCycle' :: Int -> Int -> [Int] -> Int
-                    longestCycle' d _ [] = d
-                    longestCycle' d l (x:xs) =  let m = cycleLength x
-                                                in  if      m > l
-                                                    then    longestCycle' x m xs
-                                                    else    longestCycle' d l xs
-                in  longestCycle' 0 0
-
--- What's the cycle length of 1/d?                                                    
 cycleLength :: Int -> Int
-cycleLength d = let xs = (filter (cycleLength' d 0) [1..maxLength])
-                in  if      length xs == 0
-                    then    0
-                    else    head xs
-                    
--- Is there a cycle of length l starting at position p in (1/d)?
-cycleLength' :: Int -> Int -> Int -> Bool
-cycleLength' d p l =    if      p == maxLength
-                        then    False
-                        else    let frac = drop (1 + p) (longDivision 1 d)
-                                    section1 = take l frac
-                                    section2 = take l (drop l frac)
-                                    ls1 = length section1
-                                    ls2 = length section2
-                                in  if      ls1 == l && ls1 == ls2 && section1 == section2
-                                    then    True
-                                    else    cycleLength' d (p+1) l
+cycleLength n = let n' = removePowers 2 n
+                    n'' = removePowers 5 n'
+                in  if      n'' > 1
+                    then    cycleLength' n'' (10 `mod` n'') 1
+                    else    0
 
--- performs long division (x / y)
-longDivision :: Int -> Int -> [Int]
-longDivision 0 _ = []
-longDivision x y =  let (q,r) = x `quotRem` y
-                    in  if      q == 0
-                        then    0:(longDivision (x * 10) y)
-                        else    q:(longDivision (r * 10) y)
+cycleLength' :: Int -> Int -> Int -> Int
+cycleLength' n a l =    if      a == 1
+                        then    l
+                        else    let a' = (a * 10) `mod` n
+                                in  cycleLength' n a' (l+1)
+
+removePowers :: Int -> Int -> Int
+removePowers p n
+    | n `mod` p == 0 = removePowers p (n `div` p)
+    | otherwise = n
