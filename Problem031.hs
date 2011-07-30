@@ -3,25 +3,25 @@ module Problem031 where
 import Data.List
 import Data.Map (Map)
 import qualified Data.Map as Map
-import qualified Data.MemoCombinators as Memo
 import Utility
 
 answer :: Int
-answer = length combinations2
+answer = length combinations
 
 result :: Integer
 result = 200
 
 type Solution = Map Integer Integer
 
-trim :: (Ord a, Num b) => Map a b -> Map a b
+
+insertOrUpdate :: (Ord a, Num b) => Map a b -> a -> b -> Map a b
+insertOrUpdate s k v =  let trim :: (Ord a, Num b) => Map a b -> Map a b
 trim m =    let predicate :: (Num c) => c -> Bool
                 predicate x = x /= 0
                 (r,_) = Map.partition predicate m
             in  r
 
-insertOrUpdate :: (Ord a, Num b) => Map a b -> a -> b -> Map a b
-insertOrUpdate s k v =  let r = if      Map.member k s
+r = if      Map.member k s
                                 then    Map.adjust (+v) k s
                                 else    Map.insert k v s
                         in  trim r
