@@ -16,12 +16,12 @@ type Solution = Map Integer Integer
 
 insertOrUpdate :: (Ord a, Num b) => Map a b -> a -> b -> Map a b
 insertOrUpdate s k v =  let trim :: (Ord a, Num b) => Map a b -> Map a b
-trim m =    let predicate :: (Num c) => c -> Bool
-                predicate x = x /= 0
-                (r,_) = Map.partition predicate m
-            in  r
+                            trim m =    let predicate :: (Num c) => c -> Bool
+                                            predicate x = x /= 0
+                                            (r',_) = Map.partition predicate m
+                                        in  r'
 
-r = if      Map.member k s
+                            r = if      Map.member k s
                                 then    Map.adjust (+v) k s
                                 else    Map.insert k v s
                         in  trim r
