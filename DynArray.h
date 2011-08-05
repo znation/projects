@@ -1,3 +1,4 @@
+#include "stdbool.h"
 
 typedef struct DynArray {
     int *elements;
@@ -9,4 +10,5 @@ DynArray *DynArray_new();
 int DynArray_get(DynArray *da, int idx);
 void DynArray_set(DynArray *da, int idx, int val);
 void DynArray_grow(DynArray *da);
+bool DynArray_contains(DynArray *da, int idx);
 

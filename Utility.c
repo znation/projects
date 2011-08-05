@@ -33,16 +33,25 @@ bool prime(int x)
         primes = DynArray_new();
     }
 
-    int ret = DynArray_get(primes, x);
-    if (ret == -1)
+    bool ret;
+    if (DynArray_contains(primes, x))
     {
-        if ((x < 2) ||
-                (x % 2 == 0))
+        ret = DynArray_get(primes, x);
+    }
+    else
+    {
+        if (x == 2 || x == 3)
+        {
+            ret = true;
+        }
+        else if ((x < 2) ||
+            (x % 2 == 0))
         {
             ret = false;
         }
         else
         {
+            ret = true;
             for (int i=2; i<=isqrt(x); i++)
             {
                 int rem = x % i;
@@ -53,9 +62,12 @@ bool prime(int x)
                 }
             }
         }
+
         DynArray_set(primes, x, ret);
     }
+    
+    //printf("Prime %d? %s\n", x, ret ? "true" : "false");
 
-    return (bool)ret;
+    return ret;
 }
 
