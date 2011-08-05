@@ -1,8 +1,4 @@
-#include "stdlib.h"
-#include "stdio.h"
-#include "assert.h"
-
-#include "Problem031.c"
+#include "Answer.h"
 
 int main(int argc, char** argv)
 {
