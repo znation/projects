@@ -1,12 +1,9 @@
-GHCOPTS = --make -Wall -auto-all -O2 -prof -caf-all
+GCCOPTS = -Werror -Wall -std=c99 -march=pentium4 -O3 -o solver.exe
 
-all: Solver InputSolver
+all: solver.exe
 
-Solver: *.hs
-	ghc $(GHCOPTS) Solver.hs
-
-InputSolver: *.hs
-	ghc $(GHCOPTS) InputSolver.hs
+solver.exe: *.c
+	gcc $(GCCOPTS) Solver.c
     
 clean:
-	rm -f Solver InputSolver *.hi *.o
+	rm -f *.exe *.o
