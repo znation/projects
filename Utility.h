@@ -1,8 +1,10 @@
-#include "stdbool.h"
+#include <stdbool.h>
+#include <glib.h>
 
-int digits(int x, int *buf);
-int undigits(int *buf, int len);
+GList *digits(int x);
+int undigits(GList *digits);
 int ipow(int x, int y);
 int isqrt(int x);
 bool prime(int x);
+bool pandigital9(int x);
 

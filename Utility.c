@@ -1,30 +1,45 @@
-#include "assert.h"
-#include "stdio.h"
-#include "string.h"
-#include "math.h"
-#include "stdlib.h"
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include <stdlib.h>
+#include <glib.h>
 
 #include "Utility.h"
 #include "DynArray.h"
 
-int digits(int x, int *buf)
+GList * digits(int x)
 {
-    char temp[10];
+    char temp[16];
     sprintf(temp, "%d", x);
     int len = strlen(temp);
+    GList *ret = NULL;
     for (int i=0; i<len; i++)
     {
-        buf[i] = (int)temp[i] - 48;
+        int d = (int)temp[i] - 48;
+        ret = g_list_append(ret, GINT_TO_POINTER(d));
     }
-    return len; 
+    return ret;
 }
 
-int undigits(int *buf, int len)
+int undigits(GList *digits)
 {
-    int ret = 0;
-    for (int i=0; i<len; i++)
+    GList *elem = digits;
+    if (elem == NULL)
     {
-        ret += ipow(10, len-i-1) * buf[i];
+        return -1;
+    }
+
+    int ret = 0,
+        i = 0;
+    uint len = g_list_length(digits);
+
+    while (elem != NULL);
+    {
+        int data = GPOINTER_TO_INT(elem->data);
+        ret += ipow(10, len-i-1) * data;
+        elem = g_list_next(elem);
+        i++;
     }
     return ret;
 }
@@ -81,6 +96,37 @@ bool prime(int x)
     }
     
     //printf("Prime %d? %s\n", x, ret ? "true" : "false");
+
+    return ret;
+}
+
+bool pandigital9(int x)
+{
+    bool ret;
+    GList *ds = digits(x);
+    GList *unique = NULL;
+    GList *elem = ds;
+
+    while (elem != NULL)
+    {
+        if (!g_list_find(unique, elem->data))
+        {
+            int data = GPOINTER_TO_INT(elem->data);
+            if (data == 0)
+            {
+                ret = false;
+                goto CLEANUP;
+            }
+
+            unique = g_list_prepend(unique, elem->data);
+        }
+        elem = g_list_next(elem);
+    }
+
+    ret = g_list_length(unique) == 9;
+
+CLEANUP:
+    g_list_free(unique);
 
     return ret;
 }
