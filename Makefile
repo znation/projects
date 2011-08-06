@@ -6,7 +6,7 @@ GCC = gcc $(GCCOPTS)
 PROBLEM = Problem038
 PROBLEMSRC = $(PROBLEM).c
 PROBLEMOBJ = $(PROBLEM).o
-OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o DynArray.o 
+OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o 
 
 all: Solver.exe
 
@@ -18,9 +18,6 @@ Solver.o: Solver.c
 
 Utility.o: Utility.c
 	$(GCC) -c Utility.c
-
-DynArray.o: DynArray.c
-	$(GCC) -c DynArray.c
 
 Solver.exe: $(OBJECTS)
 	$(GCC) -o Solver.exe $(OBJECTS) $(GLIBPATH)

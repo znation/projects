@@ -6,7 +6,11 @@
 #include <glib.h>
 
 #include "Utility.h"
-#include "DynArray.h"
+
+int max(int x, int y)
+{
+    return (x > y) ? x : y;
+}
 
 GList * digits(int x)
 {
@@ -54,18 +58,32 @@ int ipow(int x, int y)
     return (int)pow((double)x, (double)y);
 }
 
-DynArray *primes = NULL;
+GArray *primes = NULL;
+GArray *primesSet = NULL;
+
 bool prime(int x)
 {
     if (primes == NULL)
     {
-        primes = DynArray_new();
+        primes = g_array_new(false, true, sizeof(bool));
+        primesSet = g_array_new(false, true, sizeof(bool));
     }
 
     bool ret;
-    if (DynArray_contains(primes, x))
+    if (primes->len <= x)
     {
-        ret = DynArray_get(primes, x);
+        assert(primesSet->len == primes->len);
+        int len = primes->len;
+        int newlen = max(len * 2, 10);
+        //printf("Setting primes length to %d\n", newlen);
+        g_array_set_size(primes, newlen);
+        g_array_set_size(primesSet, newlen);
+    }
+
+    //printf("Looking up %d in the primesSet array\n", x);
+    if (((bool*)(primesSet->data))[x])
+    {
+        ret = (((bool*)(primes->data))[x]);
     }
     else
     {
@@ -91,8 +109,8 @@ bool prime(int x)
                 }
             }
         }
-
-        DynArray_set(primes, x, ret);
+        ((bool*)(primesSet->data))[x] = true;
+        ((bool*)(primes->data))[x] = ret;
     }
     
     //printf("Prime %d? %s\n", x, ret ? "true" : "false");
