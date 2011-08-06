@@ -14,9 +14,9 @@ int answer()
     GList *answers = NULL;
     int answer = 0;
 
-    for (int i=0; i<1000; i++)
+    for (int i=0; i<10000; i++)
     {
-        int ids[4];
+        int ids[10];
         int idsLength = digits(i, ids);
 
         bool seen[10];
@@ -43,10 +43,10 @@ int answer()
         if (valid)
         {
             // Try 3 digit numbers
-            for (int k=0; k<1000; k++)
+            for (int k=0; k<10000; k++)
             {
                 valid = true;
-                int kds[4];
+                int kds[10];
                 int kdsLength = digits(k, kds);
                 bool seen3[10];
                 memcpy(seen3, seen, sizeof(bool)*10);
