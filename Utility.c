@@ -1,3 +1,4 @@
+#include "assert.h"
 #include "stdio.h"
 #include "string.h"
 #include "math.h"
@@ -6,23 +7,36 @@
 #include "Utility.h"
 #include "DynArray.h"
 
-void digits(int x, char *buf)
+int digits(int x, int *buf)
 {
-    sprintf(buf, "%d", x); 
+    char temp[10];
+    sprintf(temp, "%d", x);
+    int len = strlen(temp);
+    for (int i=0; i<len; i++)
+    {
+        buf[i] = (int)temp[i] - 48;
+    }
+    return len; 
 }
 
-int undigits(char *buf)
+int undigits(int *buf, int len)
 {
-    if (strlen(buf) == 0)
+    int ret = 0;
+    for (int i=0; i<len; i++)
     {
-        return -1;
+        ret += ipow(10, len-i-1) * buf[i];
     }
-    return atoi(buf);
+    return ret;
 }
 
 int isqrt(int x)
 {
     return (int)sqrt((double)x);
+}
+
+int ipow(int x, int y)
+{
+    return (int)pow((double)x, (double)y);
 }
 
 DynArray *primes = NULL;
