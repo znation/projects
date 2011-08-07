@@ -7,5 +7,6 @@ int undigits(GList *digits);
 int ipow(int x, int y);
 int isqrt(int x);
 bool prime(int x);
+GList *listOfPrimes();
 bool pandigital9(int x);
 

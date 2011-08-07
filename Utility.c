@@ -118,6 +118,20 @@ bool prime(int x)
     return ret;
 }
 
+GList *listOfPrimes()
+{
+    GList *ret = NULL;
+    for (int i=2; i<1000000; i++)
+    {
+        if (prime(i))
+        {
+            ret = g_list_prepend(ret, GINT_TO_POINTER(i));
+        }
+    }
+    ret = g_list_reverse(ret);
+    return ret;
+}
+
 bool pandigital9(int x)
 {
     bool ret;
