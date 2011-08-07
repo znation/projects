@@ -2,9 +2,9 @@
 #include <glib.h>
 
 int max(int x, int y);
-GList *digits(int x);
-int undigits(GList *digits);
-int ipow(int x, int y);
+GList *digits(gint64 x);
+gint64 undigits(GList *digits);
+gint64 ipow(gint64 x, gint64 y);
 int isqrt(int x);
 bool prime(int x);
 GList *listOfPrimes();

@@ -12,10 +12,10 @@ int max(int x, int y)
     return (x > y) ? x : y;
 }
 
-GList * digits(int x)
+GList * digits(gint64 x)
 {
-    char temp[16];
-    sprintf(temp, "%d", x);
+    char temp[64];
+    sprintf(temp, "%lld", x);
     int len = strlen(temp);
     GList *ret = NULL;
     for (int i=0; i<len; i++)
@@ -26,25 +26,26 @@ GList * digits(int x)
     return ret;
 }
 
-int undigits(GList *digits)
+gint64 undigits(GList *digits)
 {
     GList *elem = digits;
-    if (elem == NULL)
+    if (g_list_length(elem) == 0)
     {
         return -1;
     }
 
-    int ret = 0,
-        i = 0;
+    gint64 ret = 0;
+    int i = 0;
     uint len = g_list_length(digits);
 
-    while (elem != NULL);
+    while (g_list_length(elem) > 0)
     {
         int data = GPOINTER_TO_INT(elem->data);
-        ret += ipow(10, len-i-1) * data;
+        ret += ipow((gint64)10, (gint64)(len-i-1)) * (gint64)data;
         elem = g_list_next(elem);
         i++;
     }
+
     return ret;
 }
 
@@ -53,9 +54,14 @@ int isqrt(int x)
     return (int)sqrt((double)x);
 }
 
-int ipow(int x, int y)
+gint64 ipow(gint64 x, gint64 y)
 {
-    return (int)pow((double)x, (double)y);
+    gint64 ret = 1;
+    for (int i=0; i<y; i++)
+    {
+        ret *= x;
+    }
+    return ret;
 }
 
 GArray *primes = NULL;

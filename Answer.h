@@ -6,5 +6,5 @@
 #include "Utility.h"
 #include "string.h"
 
-int answer();
+gint64 answer();
 

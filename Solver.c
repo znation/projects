@@ -2,7 +2,7 @@
 
 int main(int argc, char** argv)
 {
-    printf("%d", answer());
+    printf("%lld", answer());
     return 0;
 }
 
