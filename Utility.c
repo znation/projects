@@ -21,8 +21,14 @@ GList * digits(gint64 x)
     for (int i=0; i<len; i++)
     {
         int d = (int)temp[i] - 48;
-        ret = g_list_append(ret, GINT_TO_POINTER(d));
+        assert(d >= 0 && d < 10);
+        assert(g_list_length(ret) == i);
+        ret = g_list_prepend(ret, GINT_TO_POINTER(d));
+        assert(g_list_length(ret) == (i+1));
     }
+
+    ret = g_list_reverse(ret);
+
     return ret;
 }
 
@@ -166,6 +172,48 @@ bool pandigital9(int x)
 CLEANUP:
     g_list_free(unique);
 
+    return ret;
+}
+
+bool isPermutation(gint64 x, gint64 y)
+{
+    GList *xs = digits(x);
+    GList *ys = digits(y);
+    bool ret;
+    
+    int xsl = g_list_length(xs);
+    int ysl = g_list_length(ys);
+    if (xsl != ysl)
+    {
+        ret = false;
+        goto CLEANUP;
+    }
+
+    GList *ds = g_list_copy(xs);
+
+    GList *elemys = ys;
+    for (int i=0; i<ysl; i++)
+    {
+        int elem = GPOINTER_TO_INT(elemys->data);
+        if (!g_list_find(ds, GINT_TO_POINTER(elem)))
+        {
+            ret = false;
+            goto CLEANUP;
+        }
+        else
+        {
+            ds = g_list_remove(ds, GINT_TO_POINTER(elem));
+        }
+
+        elemys = g_list_next(elemys);
+    }
+
+    ret = true;
+
+CLEANUP:
+    g_list_free(xs);
+    g_list_free(ys);
+    g_list_free(ds);
     return ret;
 }
 

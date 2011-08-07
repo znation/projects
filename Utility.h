@@ -9,4 +9,5 @@ int isqrt(int x);
 bool prime(int x);
 GList *listOfPrimes();
 bool pandigital9(int x);
+bool isPermutation(gint64 x, gint64 y);
 
