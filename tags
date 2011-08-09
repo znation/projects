@@ -1,0 +1,58 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Currency	Problem031.c	/^typedef struct Currency {$/;"	s	file:
+Currency	Problem031.c	/^} Currency;$/;"	t	typeref:struct:Currency	file:
+GCC	Makefile	/^GCC = gcc $(GCCOPTS)$/;"	m
+GCCOPTS	Makefile	/^GCCOPTS = -Werror -Wall -std=c99 -march=pentium4 -O2 -g -pg $(GLIBINCLUDES) $/;"	m
+GLIBINCLUDES	Makefile	/^GLIBINCLUDES = -I\/usr\/include\/glib-2.0 -I\/usr\/lib\/glib-2.0\/include$/;"	m
+GLIBPATH	Makefile	/^GLIBPATH = -lglib-2.0 -lintl -liconv$/;"	m
+MAX_PENTAGONAL	Utility.h	4;"	d
+OBJECTS	Makefile	/^OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o $/;"	m
+PROBLEM	Makefile	/^PROBLEM = Problem044$/;"	m
+PROBLEMDEP	Makefile	/^PROBLEMDEP = Answer.h$/;"	m
+PROBLEMOBJ	Makefile	/^PROBLEMOBJ = $(PROBLEM).o$/;"	m
+PROBLEMSRC	Makefile	/^PROBLEMSRC = $(PROBLEM).c$/;"	m
+amounts	Problem031.c	/^    int amounts[8];$/;"	m	struct:Currency	file:
+answer	Problem031.c	/^int answer()$/;"	f
+answer	Problem032.c	/^int answer()$/;"	f
+answer	Problem037.c	/^int answer()$/;"	f
+answer	Problem038.c	/^int answer()$/;"	f
+answer	Problem043.c	/^gint64 answer()$/;"	f
+answer	Problem044.c	/^gint64 answer()$/;"	f
+answer	Problem046.c	/^int answer()$/;"	f
+answer	Problem049.c	/^gint64 answer()$/;"	f
+answer	Problem050.c	/^int answer()$/;"	f
+checkCondition	Problem043.c	/^bool checkCondition(GList *ds, int idx, int mod)$/;"	f
+countCurrency	Problem031.c	/^int countCurrency(Currency curr, int idx)$/;"	f
+digits	Utility.c	/^GList * digits(gint64 x)$/;"	f
+ipow	Utility.c	/^gint64 ipow(gint64 x, gint64 y)$/;"	f
+isPermutation	Utility.c	/^bool isPermutation(gint64 x, gint64 y)$/;"	f
+isqrt	Utility.c	/^int isqrt(int x)$/;"	f
+listOfPentagonals	Utility.c	/^GList * listOfPentagonals()$/;"	f
+listOfPrimes	Utility.c	/^GList *listOfPrimes()$/;"	f
+main	Solver.c	/^int main(int argc, char** argv)$/;"	f
+makePandigital	Problem043.c	/^gint64 makePandigital(GList *ds)$/;"	f
+max	Utility.c	/^int max(int x, int y)$/;"	f
+numberInList	Utility.c	/^bool numberInList(int x, GList *list)$/;"	f
+pandigital9	Utility.c	/^bool pandigital9(int x)$/;"	f
+pentagonal	Utility.c	/^int pentagonal(int x)$/;"	f
+pentagonals	Utility.c	/^int *pentagonals = NULL;$/;"	v
+pentagonals	Utility.h	/^int *pentagonals;$/;"	v
+pentagonalsLength	Utility.c	/^gint64 pentagonalsLength = 0;$/;"	v
+pentagonalsLength	Utility.h	/^gint64 pentagonalsLength;$/;"	v
+prime	Utility.c	/^bool prime(int x)$/;"	f
+primes	Utility.c	/^GArray *primes = NULL;$/;"	v
+primesSet	Utility.c	/^GArray *primesSet = NULL;$/;"	v
+printCurrency	Problem031.c	/^void printCurrency(Currency curr)$/;"	f
+printDigits	Problem043.c	/^void printDigits(GList *ds)$/;"	f
+truncatable	Problem037.c	/^bool truncatable(int x, bool skipFirst, bool left)$/;"	f
+truncateLeft	Problem037.c	/^int truncateLeft(int x)$/;"	f
+truncateRight	Problem037.c	/^int truncateRight(int x)$/;"	f
+undigits	Utility.c	/^gint64 undigits(GList *digits)$/;"	f
+valueCount	Problem031.c	/^int valueCount = 8;$/;"	v
+valueCurrency	Problem031.c	/^int valueCurrency(Currency curr)$/;"	f
+values	Problem031.c	/^int values[] = {200, 100, 50, 20, 10, 5, 2, 1};$/;"	v
