@@ -217,3 +217,73 @@ CLEANUP:
     return ret;
 }
 
+bool numberInList(int x, GList *list)
+{
+    return (bool)g_list_find(list, GINT_TO_POINTER(x));
+}
+
+GList * listOfPentagonals()
+{
+    GList *list = NULL;
+
+    for (int i=1; i<MAX_PENTAGONAL; i++)
+    {
+        gint64 p = (i * ((3 * i) - 1)) / 2;
+        assert(p < INT_MAX);
+        int p2 = (int)p;
+        list = g_list_prepend(list, GINT_TO_POINTER(p2));
+    }
+
+    list = g_list_reverse(list);
+    return list;
+}
+
+int *pentagonals = NULL;
+gint64 pentagonalsLength = 0;
+int pentagonal(int x)
+{
+
+    if (pentagonals == NULL)
+    {
+        GList *listOfP = listOfPentagonals();
+        GList *lastPElem = g_list_last(listOfP);
+        gint64 lastP = GPOINTER_TO_INT(lastPElem->data);
+        GList *curr = listOfP;
+        gint64 currP = GPOINTER_TO_INT(curr->data);
+        gint64 currIdx = 0;
+
+        pentagonalsLength = lastP + 1;
+        printf("DEBUG: Setting pentagonalsLength to %lld\n", pentagonalsLength);
+        size_t len = sizeof(int) * pentagonalsLength;
+        pentagonals = malloc(len);
+        memset(pentagonals, 0, len);
+        for (int i=0; i<pentagonalsLength; i++)
+        {
+            if (i > currP)
+            {
+                curr = g_list_next(curr);
+                assert(curr != NULL);
+                currP = GPOINTER_TO_INT(curr->data);
+                currIdx++;
+            }
+
+            if (i == currP)
+            {
+                pentagonals[i] = currIdx;
+            }
+            else
+            {
+                pentagonals[i] = -1;
+            }
+        }
+
+        g_list_free(listOfP);
+    }
+
+    if (x >= pentagonalsLength)
+    {
+        assert(x < pentagonalsLength);
+    }
+
+    return pentagonals[x];
+}
