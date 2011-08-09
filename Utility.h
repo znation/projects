@@ -14,8 +14,6 @@ bool pandigital9(int x);
 bool isPermutation(gint64 x, gint64 y);
 bool numberInList(int x, GList *list);
 
-int *pentagonals;
-gint64 pentagonalsLength;
 GList *listOfPentagonals();
 int pentagonal(int x);
 

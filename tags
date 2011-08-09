@@ -40,10 +40,6 @@ max	Utility.c	/^int max(int x, int y)$/;"	f
 numberInList	Utility.c	/^bool numberInList(int x, GList *list)$/;"	f
 pandigital9	Utility.c	/^bool pandigital9(int x)$/;"	f
 pentagonal	Utility.c	/^int pentagonal(int x)$/;"	f
-pentagonals	Utility.c	/^int *pentagonals = NULL;$/;"	v
-pentagonals	Utility.h	/^int *pentagonals;$/;"	v
-pentagonalsLength	Utility.c	/^gint64 pentagonalsLength = 0;$/;"	v
-pentagonalsLength	Utility.h	/^gint64 pentagonalsLength;$/;"	v
 prime	Utility.c	/^bool prime(int x)$/;"	f
 primes	Utility.c	/^GArray *primes = NULL;$/;"	v
 primesSet	Utility.c	/^GArray *primesSet = NULL;$/;"	v

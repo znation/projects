@@ -6,16 +6,19 @@
 
 gint64 answer()
 {
-    GList *pentagonals = listOfPentagonals();
-    // force instantiation of pentagonalsLength
-    printf("%d\n", pentagonal(1));
-
+    GList *pentagonals = listOfPentagonals();;
     GList *currElem = pentagonals;
+    gint64 limit = G_MAXINT64 / 10;
 
     for (gint64 i=1;; i++)
     {
+        if (currElem == NULL)
+        {
+            break;
+        }
+
         int current = GPOINTER_TO_INT(currElem->data);
-        if (current >= pentagonalsLength)
+        if (current >= limit)
         {
             break;
         }
@@ -28,14 +31,19 @@ gint64 answer()
 
         for (gint64 j=(i+1);; j++)
         {
+            if (nextElem == NULL)
+            {
+                break;
+            }
+            
             int next = GPOINTER_TO_INT(nextElem->data);
-            if (next >= pentagonalsLength)
+            if (next >= limit)
             {
                 break;
             }
 
             int sum = current + next;
-            if (sum >= pentagonalsLength)
+            if (sum >= limit)
             {
                 break;
             }
@@ -69,12 +77,13 @@ gint64 answer()
                     sum,
                     sumIdx);
 
+            return diff;
+
 nextloop:
-            nextElem = g_list_next(currElem);
-            assert(nextElem != NULL);
-            assert(nextElem != currElem);
-            currElem = nextElem;
+            nextElem = g_list_next(nextElem);
         }
+
+        currElem = g_list_next(currElem);
     }
     return 0;
 }

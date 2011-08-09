@@ -238,52 +238,16 @@ GList * listOfPentagonals()
     return list;
 }
 
-int *pentagonals = NULL;
-gint64 pentagonalsLength = 0;
 int pentagonal(int x)
 {
-
-    if (pentagonals == NULL)
+    double n = (sqrt((24.0 * (double)x)+1.0)+1.0) / 6.0;
+    if (fmod(n, 1.0) == 0.0)
     {
-        GList *listOfP = listOfPentagonals();
-        GList *lastPElem = g_list_last(listOfP);
-        gint64 lastP = GPOINTER_TO_INT(lastPElem->data);
-        GList *curr = listOfP;
-        gint64 currP = GPOINTER_TO_INT(curr->data);
-        gint64 currIdx = 0;
-
-        pentagonalsLength = lastP + 1;
-        printf("DEBUG: Setting pentagonalsLength to %lld\n", pentagonalsLength);
-        size_t len = sizeof(int) * pentagonalsLength;
-        pentagonals = malloc(len);
-        memset(pentagonals, 0, len);
-        for (int i=0; i<pentagonalsLength; i++)
-        {
-            if (i > currP)
-            {
-                curr = g_list_next(curr);
-                assert(curr != NULL);
-                currP = GPOINTER_TO_INT(curr->data);
-                currIdx++;
-            }
-
-            if (i == currP)
-            {
-                pentagonals[i] = currIdx;
-            }
-            else
-            {
-                pentagonals[i] = -1;
-            }
-        }
-
-        g_list_free(listOfP);
+        return floor(n);
     }
-
-    if (x >= pentagonalsLength)
+    else
     {
-        assert(x < pentagonalsLength);
+        return -1;
     }
-
-    return pentagonals[x];
 }
+
