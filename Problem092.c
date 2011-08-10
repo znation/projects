@@ -5,7 +5,7 @@
 
 #include "Utility.h"
 
-#define LIMIT 1000000
+#define LIMIT 10000000
 
 int *squareChainCache = NULL;
 

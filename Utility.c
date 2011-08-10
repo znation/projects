@@ -14,16 +14,15 @@ int max(int x, int y)
 
 GList * digits(gint64 x)
 {
-    char temp[64];
-    sprintf(temp, "%lld", x);
-    int len = strlen(temp);
     GList *ret = NULL;
-    for (int i=0; i<len; i++)
-    {
-        int d = (int)temp[i] - 48;
-        ret = g_list_prepend(ret, GINT_TO_POINTER(d));
-    }
 
+    while (x >= 10)
+    {
+        int d = (int)(x % 10);
+        ret = g_list_prepend(ret, GINT_TO_POINTER(d));
+        x = x / 10;
+    }
+    ret = g_list_prepend(ret, GINT_TO_POINTER((int)x));
     ret = g_list_reverse(ret);
 
     return ret;
