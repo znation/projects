@@ -3,11 +3,11 @@ GLIBPATH = -lglib-2.0 -lintl -liconv
 GCCOPTS = -Werror -Wall -std=c99 -march=pentium4 -O2 -g -pg $(GLIBINCLUDES) 
 GCC = gcc $(GCCOPTS)
 
-PROBLEM = Problem092
+PROBLEM = Problem057
 PROBLEMSRC = $(PROBLEM).c
 PROBLEMDEP = Answer.h
 PROBLEMOBJ = $(PROBLEM).o
-OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o 
+OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o giants.o 
 
 all: tags Solver.exe
 
@@ -19,6 +19,9 @@ Solver.o: Solver.c
 
 Utility.o: Utility.c Utility.h
 	$(GCC) -c Utility.c
+
+giants.o: giants.c giants.h
+	gcc -w -c giants.c
 
 Solver.exe: $(OBJECTS)
 	$(GCC) -o Solver.exe $(OBJECTS) $(GLIBPATH)

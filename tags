@@ -4,19 +4,51 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
+AUTO_MUL	giants.h	29;"	d
+COLUMNWIDTH	giants.h	52;"	d
 Currency	Problem031.c	/^typedef struct Currency {$/;"	s	file:
 Currency	Problem031.c	/^} Currency;$/;"	t	typeref:struct:Currency	file:
+DIVIDEBYZERO	giants.h	25;"	d
+FA	giants.h	50;"	d
+FFT_BREAK	giants.h	69;"	d
+FFT_MUL	giants.h	31;"	d
+FFTmulg	giants.c	/^FFTmulg($/;"	f
+FFTsquareg	giants.c	/^FFTsquareg($/;"	f
 GCC	Makefile	/^GCC = gcc $(GCCOPTS)$/;"	m
 GCCOPTS	Makefile	/^GCCOPTS = -Werror -Wall -std=c99 -march=pentium4 -O2 -g -pg $(GLIBINCLUDES) $/;"	m
+GCDLIMIT	giants.h	79;"	d
 GLIBINCLUDES	Makefile	/^GLIBINCLUDES = -I\/usr\/include\/glib-2.0 -I\/usr\/lib\/glib-2.0\/include$/;"	m
 GLIBPATH	Makefile	/^GLIBPATH = -lglib-2.0 -lintl -liconv$/;"	m
+GRAMMAR_MUL	giants.h	30;"	d
+INFINITY	giants.h	49;"	d
+INTLIMIT	giants.h	82;"	d
+KARAT_BREAK	giants.h	65;"	d
+KARAT_MUL	giants.h	32;"	d
 LIMIT	Problem092.c	8;"	d	file:
+MAX_DIGITS	giants.h	61;"	d
 MAX_PENTAGONAL	Utility.h	4;"	d
-OBJECTS	Makefile	/^OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o $/;"	m
-PROBLEM	Makefile	/^PROBLEM = Problem092$/;"	m
+MAX_SHORTS	giants.h	47;"	d
+OBJECTS	Makefile	/^OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o giants.o $/;"	m
+OVERRANGE	giants.h	28;"	d
+OVFLOW	giants.h	26;"	d
+PROBLEM	Makefile	/^PROBLEM = Problem057$/;"	m
 PROBLEMDEP	Makefile	/^PROBLEMDEP = Answer.h$/;"	m
 PROBLEMOBJ	Makefile	/^PROBLEMOBJ = $(PROBLEM).o$/;"	m
 PROBLEMSRC	Makefile	/^PROBLEMSRC = $(PROBLEM).c$/;"	m
+SIGN	giants.h	27;"	d
+SQRT2	giants.h	55;"	d
+SQRTHALF	giants.h	56;"	d
+STACK_GROW	giants.h	85;"	d
+STEPS	giants.h	76;"	d
+TR	giants.h	51;"	d
+TWO16	giants.h	57;"	d
+TWOM16	giants.h	58;"	d
+TWOPI	giants.h	54;"	d
+_matrix	giants.h	/^typedef struct _matrix$/;"	s
+absg	giants.c	/^absg($/;"	f
+addg	giants.c	/^addg($/;"	f
+addsignal	giants.c	/^addsignal($/;"	f
+allzeros	giants.c	/^allzeros($/;"	f
 amounts	Problem031.c	/^    int amounts[8];$/;"	m	struct:Currency	file:
 answer	Problem031.c	/^int answer()$/;"	f
 answer	Problem032.c	/^int answer()$/;"	f
@@ -27,34 +59,160 @@ answer	Problem044.c	/^gint64 answer()$/;"	f
 answer	Problem046.c	/^int answer()$/;"	f
 answer	Problem049.c	/^gint64 answer()$/;"	f
 answer	Problem050.c	/^int answer()$/;"	f
+answer	Problem057.c	/^gint64 answer()$/;"	f
 answer	Problem059.c	/^gint64 answer()$/;"	f
 answer	Problem063.c	/^gint64 answer()$/;"	f
 answer	Problem092.c	/^gint64 answer()$/;"	f
+auxmulg	giants.c	/^auxmulg($/;"	f
+bdivg	giants.c	/^bdivg($/;"	f
+bgcdg	giants.c	/^bgcdg($/;"	f
+binvaux	giants.c	/^binvaux($/;"	f
+binvg	giants.c	/^binvg($/;"	f
+bitlen	giants.c	/^bitlen($/;"	f
+bitval	giants.c	/^bitval($/;"	f
+cgcdg	giants.c	/^cgcdg($/;"	f
 checkCondition	Problem043.c	/^bool checkCondition(GList *ds, int idx, int mod)$/;"	f
+checkFFTerror	giants.c	/^int				checkFFTerror = 0;$/;"	v
+columnwrite	giants.c	/^columnwrite($/;"	f
+complex	giants.h	/^} complex;$/;"	t	typeref:struct:__anon2
 countCurrency	Problem031.c	/^int countCurrency(Currency curr, int idx)$/;"	f
+cur_den	giants.c	/^giant			cur_den = NULL,$/;"	v
+cur_prec	giants.c	/^int				cur_prec = 0;$/;"	v
+cur_recip	giants.c	/^				cur_recip = NULL;$/;"	v
+cur_run	giants.c	/^				cur_run = 0;$/;"	v
+cur_shift	giants.c	/^int				cur_shift = 0;$/;"	v
+cur_stack_elem	giants.c	/^static int		cur_stack_elem = 0;$/;"	v	file:
+cur_stack_size	giants.c	/^static int		cur_stack_size = 0;$/;"	v	file:
+current_max_size	giants.c	/^int				current_max_size = 0,$/;"	v
 digits	Utility.c	/^GList * digits(gint64 x)$/;"	f
+divg	giants.c	/^divg($/;"	f
+divg_via_recip	giants.c	/^divg_via_recip($/;"	f
+dotproduct	giants.c	/^dotproduct($/;"	f	file:
+error	giants.c	/^int				error = 0;$/;"	v
+extractbits	giants.c	/^extractbits($/;"	f
+fer_mod	giants.c	/^fer_mod ($/;"	f
+fermatmod	giants.c	/^fermatmod ($/;"	f
+fermatnegate	giants.c	/^fermatnegate($/;"	f
+fermatpowermod	giants.c	/^fermatpowermod($/;"	f
+fermatpowermodg	giants.c	/^fermatpowermodg($/;"	f
+fft_real_to_hermitian	giants.c	/^fft_real_to_hermitian($/;"	f
+fftinv_hermitian_to_real	giants.c	/^fftinv_hermitian_to_real($/;"	f
+fix	giants.c	/^fix($/;"	f
+gcdg	giants.c	/^gcdg($/;"	f
+gcompg	giants.c	/^gcompg($/;"	f
+gerr	giants.c	/^gerr(void)$/;"	f
+gfloor	giants.c	/^gfloor($/;"	f
+ggcd	giants.c	/^ggcd($/;"	f
+giant	giants.h	/^typedef giantstruct *giant;$/;"	t
+giant_to_double	giants.c	/^giant_to_double$/;"	f
+giantstruct	giants.h	/^} giantstruct;$/;"	t	typeref:struct:__anon1
+gin	giants.h	87;"	d
+gmatrix	giants.h	/^} *gmatrix;$/;"	t	typeref:struct:_matrix
+gout	giants.h	88;"	d
+grammarmulg	giants.c	/^grammarmulg($/;"	f
+grammarsquareg	giants.c	/^grammarsquareg ($/;"	f
+gread	giants.c	/^gread($/;"	f
+gshiftleft	giants.c	/^gshiftleft($/;"	f
+gshiftright	giants.c	/^gshiftright($/;"	f
+gsign	giants.c	/^gsign($/;"	f
+gswap	giants.c	/^gswap($/;"	f
+gtog	giants.c	/^gtog($/;"	f
+gtoi	giants.c	/^gtoi($/;"	f
+gwrite	giants.c	/^gwrite($/;"	f
+gwriteln	giants.c	/^gwriteln($/;"	f
+hgcd	giants.c	/^hgcd($/;"	f
+iaddg	giants.c	/^iaddg($/;"	f
+idivg	giants.c	/^idivg($/;"	f
+im	giants.h	/^	double				im;$/;"	m	struct:__anon2
+initL	giants.c	/^int 		initL = 0;$/;"	v
+init_sinCos	giants.c	/^init_sinCos($/;"	f
+invaux	giants.c	/^invaux($/;"	f
+invg	giants.c	/^invg($/;"	f
 ipow	Utility.c	/^gint64 ipow(gint64 x, gint64 y)$/;"	f
 isPermutation	Utility.c	/^bool isPermutation(gint64 x, gint64 y)$/;"	f
+isZero	giants.c	/^int isZero($/;"	f
+isone	giants.c	/^isone($/;"	f
 isqrt	Utility.c	/^int isqrt(int x)$/;"	f
+itog	giants.c	/^itog($/;"	f
+justg	giants.c	/^justg(giant x) {$/;"	f
+karatmulg	giants.c	/^karatmulg(giant x, giant y)$/;"	f
+karatsquareg	giants.c	/^karatsquareg(giant x)$/;"	f
 listOfPentagonals	Utility.c	/^GList * listOfPentagonals()$/;"	f
 listOfPrimes	Utility.c	/^GList *listOfPrimes()$/;"	f
+ll	giants.h	/^	 giant				ll;         \/* lower left *\/$/;"	m	struct:_matrix
+lpt	giants.c	/^lpt($/;"	f
+lr	giants.h	/^	 giant				lr;       	\/* lower right *\/$/;"	m	struct:_matrix
 main	Solver.c	/^int main(int argc, char** argv)$/;"	f
 makePandigital	Problem043.c	/^gint64 makePandigital(GList *ds)$/;"	f
+make_recip	giants.c	/^make_recip($/;"	f
 max	Utility.c	/^int max(int x, int y)$/;"	f
+maxFFTerror	giants.c	/^double			maxFFTerror;$/;"	v
+mersenneinvg	giants.c	/^mersenneinvg($/;"	f
+mersennemod	giants.c	/^mersennemod ($/;"	f
+mersennepowermod	giants.c	/^mersennepowermod($/;"	f
+mersennepowermodg	giants.c	/^mersennepowermodg($/;"	f
+modg	giants.c	/^modg($/;"	f
+modg_via_recip	giants.c	/^modg_via_recip($/;"	f
+mul_hermitian	giants.c	/^mul_hermitian($/;"	f
+mulg	giants.c	/^mulg($/;"	f
+mulmM	giants.c	/^mulmM($/;"	f
+mulmode	giants.c	/^int				mulmode = AUTO_MUL;$/;"	v
+mulvM	giants.c	/^mulvM($/;"	f
+n	giants.h	/^	 unsigned short	n[1];       \/* number of shorts = abs(sign) *\/$/;"	m	struct:__anon1
+negg	giants.c	/^negg($/;"	f
+newgiant	giants.c	/^newgiant($/;"	f
+newgmatrix	giants.c	/^newgmatrix($/;"	f
+newmax	giants.h	72;"	d
+newmin	giants.h	71;"	d
+normal_addg	giants.c	/^normal_addg($/;"	f
+normal_subg	giants.c	/^normal_subg($/;"	f
 numberInList	Utility.c	/^bool numberInList(int x, GList *list)$/;"	f
+numtrailzeros	giants.c	/^numtrailzeros($/;"	f
+onestep	giants.c	/^onestep($/;"	f
 pandigital9	Utility.c	/^bool pandigital9(int x)$/;"	f
 pentagonal	Utility.c	/^int pentagonal(int x)$/;"	f
+popg	giants.c	/^popg ($/;"	f
+powerg	giants.c	/^powerg($/;"	f
+powermod	giants.c	/^powermod($/;"	f
+powermodg	giants.c	/^powermodg($/;"	f
 prime	Utility.c	/^bool prime(int x)$/;"	f
 primes	Utility.c	/^GArray *primes = NULL;$/;"	v
 primesSet	Utility.c	/^GArray *primesSet = NULL;$/;"	v
 printCurrency	Problem031.c	/^void printCurrency(Currency curr)$/;"	f
 printDigits	Problem043.c	/^void printDigits(GList *ds)$/;"	f
+punch	giants.c	/^punch($/;"	f
+pushg	giants.c	/^pushg ($/;"	f
+radixdiv	giants.c	/^radixdiv($/;"	f
+re	giants.h	/^	double				re;$/;"	m	struct:__anon2
+reverse_subg	giants.c	/^reverse_subg($/;"	f
+s_cos	giants.c	/^s_cos($/;"	f
+s_sin	giants.c	/^s_sin($/;"	f
+scramble_real	giants.c	/^scramble_real($/;"	f
+setmulmode	giants.c	/^setmulmode($/;"	f
+shgcd	giants.c	/^shgcd($/;"	f
+sign	giants.h	/^	 int 					sign;$/;"	m	struct:__anon1
+sinCos	giants.c	/^double *		sinCos=NULL;$/;"	v
+smulg	giants.c	/^smulg($/;"	f
 squareChain	Problem092.c	/^int squareChain(int x)$/;"	f
 squareChainCache	Problem092.c	/^int *squareChainCache = NULL;$/;"	v
+square_hermitian	giants.c	/^square_hermitian($/;"	f
+squareg	giants.c	/^squareg($/;"	f
+stack	giants.c	/^static giant	*stack;$/;"	v	file:
+stack_glen	giants.c	/^static int		stack_glen = 0;$/;"	v	file:
+subg	giants.c	/^subg($/;"	f
 truncatable	Problem037.c	/^bool truncatable(int x, bool skipFirst, bool left)$/;"	f
 truncateLeft	Problem037.c	/^int truncateLeft(int x)$/;"	f
 truncateRight	Problem037.c	/^int truncateRight(int x)$/;"	f
+u0	giants.c	/^static giant	u0=NULL, u1=NULL, v0=NULL, v1=NULL;$/;"	v	file:
+u1	giants.c	/^static giant	u0=NULL, u1=NULL, v0=NULL, v1=NULL;$/;"	v	file:
+ul	giants.h	/^	 giant 				ul;			\/* upper left *\/$/;"	m	struct:_matrix
 undigits	Utility.c	/^gint64 undigits(GList *digits)$/;"	f
+ur	giants.h	/^	 giant				ur;         \/* upper right *\/$/;"	m	struct:_matrix
+v0	giants.c	/^static giant	u0=NULL, u1=NULL, v0=NULL, v1=NULL;$/;"	v	file:
+v1	giants.c	/^static giant	u0=NULL, u1=NULL, v0=NULL, v1=NULL;$/;"	v	file:
 valueCount	Problem031.c	/^int valueCount = 8;$/;"	v
 valueCurrency	Problem031.c	/^int valueCurrency(Currency curr)$/;"	f
 values	Problem031.c	/^int values[] = {200, 100, 50, 20, 10, 5, 2, 1};$/;"	v
+writeM	giants.c	/^writeM($/;"	f
+z	giants.c	/^static double	*z = NULL,$/;"	v	file:
+z2	giants.c	/^				*z2 = NULL;$/;"	v	file:
