@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <glib.h>
+#include <gmp.h>
 
 #include "Utility.h"
 
