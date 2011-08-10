@@ -21,10 +21,7 @@ GList * digits(gint64 x)
     for (int i=0; i<len; i++)
     {
         int d = (int)temp[i] - 48;
-        assert(d >= 0 && d < 10);
-        assert(g_list_length(ret) == i);
         ret = g_list_prepend(ret, GINT_TO_POINTER(d));
-        assert(g_list_length(ret) == (i+1));
     }
 
     ret = g_list_reverse(ret);

@@ -10,9 +10,10 @@ GCC	Makefile	/^GCC = gcc $(GCCOPTS)$/;"	m
 GCCOPTS	Makefile	/^GCCOPTS = -Werror -Wall -std=c99 -march=pentium4 -O2 -g -pg $(GLIBINCLUDES) $/;"	m
 GLIBINCLUDES	Makefile	/^GLIBINCLUDES = -I\/usr\/include\/glib-2.0 -I\/usr\/lib\/glib-2.0\/include$/;"	m
 GLIBPATH	Makefile	/^GLIBPATH = -lglib-2.0 -lintl -liconv$/;"	m
+LIMIT	Problem092.c	8;"	d	file:
 MAX_PENTAGONAL	Utility.h	4;"	d
 OBJECTS	Makefile	/^OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o $/;"	m
-PROBLEM	Makefile	/^PROBLEM = Problem059$/;"	m
+PROBLEM	Makefile	/^PROBLEM = Problem092$/;"	m
 PROBLEMDEP	Makefile	/^PROBLEMDEP = Answer.h$/;"	m
 PROBLEMOBJ	Makefile	/^PROBLEMOBJ = $(PROBLEM).o$/;"	m
 PROBLEMSRC	Makefile	/^PROBLEMSRC = $(PROBLEM).c$/;"	m
@@ -28,6 +29,7 @@ answer	Problem049.c	/^gint64 answer()$/;"	f
 answer	Problem050.c	/^int answer()$/;"	f
 answer	Problem059.c	/^gint64 answer()$/;"	f
 answer	Problem063.c	/^gint64 answer()$/;"	f
+answer	Problem092.c	/^gint64 answer()$/;"	f
 checkCondition	Problem043.c	/^bool checkCondition(GList *ds, int idx, int mod)$/;"	f
 countCurrency	Problem031.c	/^int countCurrency(Currency curr, int idx)$/;"	f
 digits	Utility.c	/^GList * digits(gint64 x)$/;"	f
@@ -47,6 +49,8 @@ primes	Utility.c	/^GArray *primes = NULL;$/;"	v
 primesSet	Utility.c	/^GArray *primesSet = NULL;$/;"	v
 printCurrency	Problem031.c	/^void printCurrency(Currency curr)$/;"	f
 printDigits	Problem043.c	/^void printDigits(GList *ds)$/;"	f
+squareChain	Problem092.c	/^int squareChain(int x)$/;"	f
+squareChainCache	Problem092.c	/^int *squareChainCache = NULL;$/;"	v
 truncatable	Problem037.c	/^bool truncatable(int x, bool skipFirst, bool left)$/;"	f
 truncateLeft	Problem037.c	/^int truncateLeft(int x)$/;"	f
 truncateRight	Problem037.c	/^int truncateRight(int x)$/;"	f
