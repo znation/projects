@@ -12,7 +12,7 @@ GLIBINCLUDES	Makefile	/^GLIBINCLUDES = -I\/usr\/include\/glib-2.0 -I\/usr\/lib\/
 GLIBPATH	Makefile	/^GLIBPATH = -lglib-2.0 -lintl -liconv$/;"	m
 MAX_PENTAGONAL	Utility.h	4;"	d
 OBJECTS	Makefile	/^OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o $/;"	m
-PROBLEM	Makefile	/^PROBLEM = Problem063$/;"	m
+PROBLEM	Makefile	/^PROBLEM = Problem059$/;"	m
 PROBLEMDEP	Makefile	/^PROBLEMDEP = Answer.h$/;"	m
 PROBLEMOBJ	Makefile	/^PROBLEMOBJ = $(PROBLEM).o$/;"	m
 PROBLEMSRC	Makefile	/^PROBLEMSRC = $(PROBLEM).c$/;"	m
@@ -26,6 +26,7 @@ answer	Problem044.c	/^gint64 answer()$/;"	f
 answer	Problem046.c	/^int answer()$/;"	f
 answer	Problem049.c	/^gint64 answer()$/;"	f
 answer	Problem050.c	/^int answer()$/;"	f
+answer	Problem059.c	/^gint64 answer()$/;"	f
 answer	Problem063.c	/^gint64 answer()$/;"	f
 checkCondition	Problem043.c	/^bool checkCondition(GList *ds, int idx, int mod)$/;"	f
 countCurrency	Problem031.c	/^int countCurrency(Currency curr, int idx)$/;"	f
