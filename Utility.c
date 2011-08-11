@@ -247,3 +247,89 @@ int pentagonal(int x)
     }
 }
 
+GList *factors(int x)
+{
+    GList *ret = NULL;
+    if (x < 2)
+    {
+        ret = g_list_prepend(ret, GINT_TO_POINTER(x));
+        return ret;
+    }
+    
+    int n = x;
+
+    for (int d=2; d<=n; d++)
+    {
+        int rem = n % d;
+        if (rem == 0)
+        {
+            // found a factor
+            if (prime(d))
+            {
+                ret = g_list_prepend(ret, GINT_TO_POINTER(d));
+            }
+
+            int result = n / d;
+            n = result;
+            d = 2;
+        }
+    }
+
+    ret = g_list_remove_duplicates(ret);
+    return ret;
+}
+
+double totient(int x)
+{
+    //printf("DEBUG: totient %d = %d", x, x);
+    double n = (double)x;
+    GList *fs = factors(x);
+    GList *currElem = fs;
+    while (currElem != NULL)
+    {
+        int factor = GPOINTER_TO_INT(currElem->data);
+        double multiplicand = (double)1.0 - ((double)1.0 / (double)factor);
+        //printf(" * %lf", multiplicand);
+        n *= multiplicand;
+        currElem = g_list_next(currElem);
+    }
+
+    g_list_free(fs);
+
+    //printf(" = %lf\n", n);
+
+    return n;
+}
+
+GList *g_list_remove_duplicates(GList *l)
+{
+    gint intSort(gconstpointer a, gconstpointer b)
+    {
+        gint ai = GPOINTER_TO_INT(a);
+        gint bi = GPOINTER_TO_INT(b);
+        return ai - bi;
+    }
+
+    l = g_list_sort(l, intSort);
+
+    GList *currElem = l;
+    while (currElem != NULL)
+    {
+        GList *nextElem = g_list_next(currElem);
+        if (nextElem == NULL)
+        {
+            break;
+        }
+
+        if (currElem->data == nextElem->data)
+        {
+            currElem = g_list_remove_link(currElem, nextElem);
+            g_list_free(nextElem);
+        }
+
+        currElem = g_list_next(currElem);
+    }
+
+    return l;
+}
+

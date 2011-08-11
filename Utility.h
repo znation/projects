@@ -17,3 +17,8 @@ bool numberInList(int x, GList *list);
 GList *listOfPentagonals();
 int pentagonal(int x);
 
+GList *factors(int x);
+double totient(int x);
+
+GList *g_list_remove_duplicates(GList *l);
+
