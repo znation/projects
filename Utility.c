@@ -293,17 +293,14 @@ gint64 totient(gint64 x)
 
 gint64 gcd(gint64 a, gint64 b)
 {
-    gint64 ret;
-    if (b == 0)
+    while (b != 0)
     {
-        ret = a;
-    }
-    else
-    {
-        ret = gcd(b, a % b);
+        gint64 temp = b;
+        b = a % temp;
+        a = temp;
     }
 
-    return ret;
+    return a;
 }
 
 GList *g_list_remove_duplicates(GList *l)
