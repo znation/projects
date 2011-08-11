@@ -68,7 +68,6 @@ gint64 ipow(gint64 x, gint64 y)
 
 GArray *primes = NULL;
 GArray *primesSet = NULL;
-
 bool prime(int x)
 {
     if (primes == NULL)
@@ -100,7 +99,7 @@ bool prime(int x)
             ret = true;
         }
         else if ((x < 2) ||
-            (x % 2 == 0))
+                (x % 2 == 0))
         {
             ret = false;
         }
@@ -120,7 +119,7 @@ bool prime(int x)
         ((bool*)(primesSet->data))[x] = true;
         ((bool*)(primes->data))[x] = ret;
     }
-    
+
     //printf("Prime %d? %s\n", x, ret ? "true" : "false");
 
     return ret;
@@ -176,7 +175,7 @@ bool isPermutation(gint64 x, gint64 y)
     GList *xs = digits(x);
     GList *ys = digits(y);
     bool ret;
-    
+
     int xsl = g_list_length(xs);
     int ysl = g_list_length(ys);
     if (xsl != ysl)
@@ -255,7 +254,7 @@ GList *factors(int x)
         ret = g_list_prepend(ret, GINT_TO_POINTER(x));
         return ret;
     }
-    
+
     int n = x;
 
     for (int d=2; d<=n; d++)
@@ -279,26 +278,59 @@ GList *factors(int x)
     return ret;
 }
 
-double totient(int x)
+gint64 totient(gint64 x)
 {
-    //printf("DEBUG: totient %d = %d", x, x);
-    double n = (double)x;
-    GList *fs = factors(x);
-    GList *currElem = fs;
-    while (currElem != NULL)
+    gint64 ret = 0;
+    for (gint64 i=1; i<x; i++)
     {
-        int factor = GPOINTER_TO_INT(currElem->data);
-        double multiplicand = (double)1.0 - ((double)1.0 / (double)factor);
-        //printf(" * %lf", multiplicand);
-        n *= multiplicand;
-        currElem = g_list_next(currElem);
+        if (gcd(x, i) == 1)
+        {
+            ret++;
+        }
+    }
+    return ret;
+}
+
+gint64 **gcds = NULL;
+
+gint64 gcd(gint64 a, gint64 b)
+{
+    int arrayLen = sizeof(gint64) * MAX_GCD;
+
+    if (a < MAX_GCD && b < MAX_GCD)
+    {
+        if (gcds == NULL)
+        {
+            gcds = malloc(arrayLen);
+            memset(gcds, 0, arrayLen);
+        }
+        if (gcds[a] == NULL)
+        {
+            gcds[a] = malloc(arrayLen);
+            memset(gcds[a], 0, arrayLen);
+        }
+        if (gcds[a][b] != 0)
+        {
+            return gcds[a][b];
+        }
     }
 
-    g_list_free(fs);
+    gint64 ret;
+    if (b == 0)
+    {
+        ret = a;
+    }
+    else
+    {
+        ret = gcd(b, a % b);
+    }
 
-    //printf(" = %lf\n", n);
+    if (a < MAX_GCD && b < MAX_GCD)
+    {
+        gcds[a][b] = ret;
+    }
 
-    return n;
+    return ret;
 }
 
 GList *g_list_remove_duplicates(GList *l)

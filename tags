@@ -7,10 +7,11 @@
 Currency	Problem031.c	/^typedef struct Currency {$/;"	s	file:
 Currency	Problem031.c	/^} Currency;$/;"	t	typeref:struct:Currency	file:
 GCC	Makefile	/^GCC = gcc $(GCCOPTS)$/;"	m
-GCCOPTS	Makefile	/^GCCOPTS = -Werror -Wall -std=c99 -march=pentium4 -O2 -g -pg $(GLIBINCLUDES) $/;"	m
+GCCOPTS	Makefile	/^GCCOPTS = -Werror -Wall -std=c99 -march=pentium4 -O3 -g -pg $(GLIBINCLUDES) $/;"	m
 GLIBINCLUDES	Makefile	/^GLIBINCLUDES = -I\/usr\/include\/glib-2.0 -I\/usr\/lib\/glib-2.0\/include$/;"	m
 GLIBPATH	Makefile	/^GLIBPATH = -lglib-2.0 -lintl -liconv -lgmp$/;"	m
 LIMIT	Problem092.c	8;"	d	file:
+MAX_GCD	Utility.h	5;"	d
 MAX_PENTAGONAL	Utility.h	4;"	d
 OBJECTS	Makefile	/^OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o$/;"	m
 PROBLEM	Makefile	/^PROBLEM = Problem069$/;"	m
@@ -38,6 +39,8 @@ countCurrency	Problem031.c	/^int countCurrency(Currency curr, int idx)$/;"	f
 digits	Utility.c	/^GList * digits(gint64 x)$/;"	f
 factors	Utility.c	/^GList *factors(int x)$/;"	f
 g_list_remove_duplicates	Utility.c	/^GList *g_list_remove_duplicates(GList *l)$/;"	f
+gcd	Utility.c	/^gint64 gcd(gint64 a, gint64 b)$/;"	f
+gcds	Utility.c	/^gint64 **gcds = NULL;$/;"	v
 ipow	Utility.c	/^gint64 ipow(gint64 x, gint64 y)$/;"	f
 isPermutation	Utility.c	/^bool isPermutation(gint64 x, gint64 y)$/;"	f
 isqrt	Utility.c	/^int isqrt(int x)$/;"	f
@@ -56,7 +59,7 @@ printCurrency	Problem031.c	/^void printCurrency(Currency curr)$/;"	f
 printDigits	Problem043.c	/^void printDigits(GList *ds)$/;"	f
 squareChain	Problem092.c	/^int squareChain(int x)$/;"	f
 squareChainCache	Problem092.c	/^int *squareChainCache = NULL;$/;"	v
-totient	Utility.c	/^double totient(int x)$/;"	f
+totient	Utility.c	/^gint64 totient(gint64 x)$/;"	f
 truncatable	Problem037.c	/^bool truncatable(int x, bool skipFirst, bool left)$/;"	f
 truncateLeft	Problem037.c	/^int truncateLeft(int x)$/;"	f
 truncateRight	Problem037.c	/^int truncateRight(int x)$/;"	f
