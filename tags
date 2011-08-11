@@ -12,6 +12,7 @@ GLIBINCLUDES	Makefile	/^GLIBINCLUDES = -I\/usr\/include\/glib-2.0 -I\/usr\/lib\/
 GLIBPATH	Makefile	/^GLIBPATH = -lglib-2.0 -lintl -liconv -lgmp$/;"	m
 LIMIT	Problem092.c	8;"	d	file:
 MAX_GCD	Utility.h	5;"	d
+MAX_MOD	Utility.h	6;"	d
 MAX_PENTAGONAL	Utility.h	4;"	d
 OBJECTS	Makefile	/^OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o$/;"	m
 PROBLEM	Makefile	/^PROBLEM = Problem069$/;"	m
@@ -40,7 +41,6 @@ digits	Utility.c	/^GList * digits(gint64 x)$/;"	f
 factors	Utility.c	/^GList *factors(int x)$/;"	f
 g_list_remove_duplicates	Utility.c	/^GList *g_list_remove_duplicates(GList *l)$/;"	f
 gcd	Utility.c	/^gint64 gcd(gint64 a, gint64 b)$/;"	f
-gcds	Utility.c	/^gint64 **gcds = NULL;$/;"	v
 ipow	Utility.c	/^gint64 ipow(gint64 x, gint64 y)$/;"	f
 isPermutation	Utility.c	/^bool isPermutation(gint64 x, gint64 y)$/;"	f
 isqrt	Utility.c	/^int isqrt(int x)$/;"	f

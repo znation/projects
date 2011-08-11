@@ -291,30 +291,8 @@ gint64 totient(gint64 x)
     return ret;
 }
 
-gint64 **gcds = NULL;
-
 gint64 gcd(gint64 a, gint64 b)
 {
-    int arrayLen = sizeof(gint64) * MAX_GCD;
-
-    if (a < MAX_GCD && b < MAX_GCD)
-    {
-        if (gcds == NULL)
-        {
-            gcds = malloc(arrayLen);
-            memset(gcds, 0, arrayLen);
-        }
-        if (gcds[a] == NULL)
-        {
-            gcds[a] = malloc(arrayLen);
-            memset(gcds[a], 0, arrayLen);
-        }
-        if (gcds[a][b] != 0)
-        {
-            return gcds[a][b];
-        }
-    }
-
     gint64 ret;
     if (b == 0)
     {
@@ -323,11 +301,6 @@ gint64 gcd(gint64 a, gint64 b)
     else
     {
         ret = gcd(b, a % b);
-    }
-
-    if (a < MAX_GCD && b < MAX_GCD)
-    {
-        gcds[a][b] = ret;
     }
 
     return ret;
