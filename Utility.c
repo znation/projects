@@ -77,7 +77,7 @@ bool prime(int x)
     }
 
     bool ret;
-    if (primes->len <= x)
+    if (x < MAX_PRIMES && primes->len <= x)
     {
         assert(primesSet->len == primes->len);
         int len = primes->len;
@@ -88,7 +88,7 @@ bool prime(int x)
     }
 
     //printf("Looking up %d in the primesSet array\n", x);
-    if (((bool*)(primesSet->data))[x])
+    if (x < MAX_PRIMES && ((bool*)(primesSet->data))[x])
     {
         ret = (((bool*)(primes->data))[x]);
     }
@@ -116,8 +116,12 @@ bool prime(int x)
                 }
             }
         }
-        ((bool*)(primesSet->data))[x] = true;
-        ((bool*)(primes->data))[x] = ret;
+
+        if (x < MAX_PRIMES)
+        {
+            ((bool*)(primesSet->data))[x] = true;
+            ((bool*)(primes->data))[x] = ret;
+        }
     }
 
     //printf("Prime %d? %s\n", x, ret ? "true" : "false");

@@ -11,11 +11,10 @@ GCCOPTS	Makefile	/^GCCOPTS = -Werror -Wall -std=c99 -march=pentium4 -O3 -g -pg $
 GLIBINCLUDES	Makefile	/^GLIBINCLUDES = -I\/usr\/include\/glib-2.0 -I\/usr\/lib\/glib-2.0\/include$/;"	m
 GLIBPATH	Makefile	/^GLIBPATH = -lglib-2.0 -lintl -liconv -lgmp$/;"	m
 LIMIT	Problem092.c	8;"	d	file:
-MAX_GCD	Utility.h	5;"	d
-MAX_MOD	Utility.h	6;"	d
 MAX_PENTAGONAL	Utility.h	4;"	d
+MAX_PRIMES	Utility.h	5;"	d
 OBJECTS	Makefile	/^OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o$/;"	m
-PROBLEM	Makefile	/^PROBLEM = Problem069$/;"	m
+PROBLEM	Makefile	/^PROBLEM = Problem058$/;"	m
 PROBLEMDEP	Makefile	/^PROBLEMDEP = Answer.h$/;"	m
 PROBLEMOBJ	Makefile	/^PROBLEMOBJ = $(PROBLEM).o$/;"	m
 PROBLEMSRC	Makefile	/^PROBLEMSRC = $(PROBLEM).c$/;"	m
@@ -30,11 +29,11 @@ answer	Problem046.c	/^int answer()$/;"	f
 answer	Problem049.c	/^gint64 answer()$/;"	f
 answer	Problem050.c	/^int answer()$/;"	f
 answer	Problem057.c	/^gint64 answer()$/;"	f
+answer	Problem058.c	/^gint64 answer()$/;"	f
 answer	Problem059.c	/^gint64 answer()$/;"	f
 answer	Problem063.c	/^gint64 answer()$/;"	f
 answer	Problem069.c	/^gint64 answer()$/;"	f
 answer	Problem092.c	/^gint64 answer()$/;"	f
-answer	Test.c	/^gint64 answer()$/;"	f
 checkCondition	Problem043.c	/^bool checkCondition(GList *ds, int idx, int mod)$/;"	f
 countCurrency	Problem031.c	/^int countCurrency(Currency curr, int idx)$/;"	f
 digits	Utility.c	/^GList * digits(gint64 x)$/;"	f

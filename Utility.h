@@ -2,8 +2,7 @@
 #include <glib.h>
 
 #define MAX_PENTAGONAL 10000
-#define MAX_GCD 10000
-#define MAX_MOD 10000
+#define MAX_PRIMES 100000
 
 int max(int x, int y);
 GList *digits(gint64 x);
