@@ -1,9 +1,9 @@
 GLIBINCLUDES = -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
-GLIBPATH = -lglib-2.0 -lintl -liconv -lgmp
-GCCOPTS = -Werror -Wall -std=c99 -march=pentium4 -O3 -g -pg $(GLIBINCLUDES) 
+GLIBPATH = -lglib-2.0 -lintl -liconv -lgmp -lmpfr
+GCCOPTS = -Werror -Wall -std=c99 -march=pentium4 -g -pg $(GLIBINCLUDES) 
 GCC = gcc $(GCCOPTS)
 
-PROBLEM = Problem058
+PROBLEM = Problem099
 PROBLEMSRC = $(PROBLEM).c
 PROBLEMDEP = Answer.h
 PROBLEMOBJ = $(PROBLEM).o
