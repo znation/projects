@@ -4,21 +4,53 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
+ACE	Problem054.c	/^    ACE,$/;"	e	enum:__anon1	file:
+CLUBS	Problem054.c	/^    CLUBS,$/;"	e	enum:__anon2	file:
+Card	Problem054.c	/^} Card;$/;"	t	typeref:struct:__anon3	file:
 Currency	Problem031.c	/^typedef struct Currency {$/;"	s	file:
 Currency	Problem031.c	/^} Currency;$/;"	t	typeref:struct:Currency	file:
+DIAMONDS	Problem054.c	/^    DIAMONDS,$/;"	e	enum:__anon2	file:
+EIGHT	Problem054.c	/^    EIGHT,$/;"	e	enum:__anon1	file:
+FIVE	Problem054.c	/^    FIVE,$/;"	e	enum:__anon1	file:
+FLUSH	Problem054.c	/^    FLUSH,$/;"	e	enum:__anon4	file:
+FOUR	Problem054.c	/^    FOUR,$/;"	e	enum:__anon1	file:
+FOUROFAKIND	Problem054.c	/^    FOUROFAKIND,$/;"	e	enum:__anon4	file:
+FULLHOUSE	Problem054.c	/^    FULLHOUSE,$/;"	e	enum:__anon4	file:
 GCC	Makefile	/^GCC = gcc $(GCCOPTS)$/;"	m
 GCCOPTS	Makefile	/^GCCOPTS = -Werror -Wall -std=c99 -march=pentium4 -g -pg $(GLIBINCLUDES) $/;"	m
 GLIBINCLUDES	Makefile	/^GLIBINCLUDES = -I\/usr\/include\/glib-2.0 -I\/usr\/lib\/glib-2.0\/include$/;"	m
 GLIBPATH	Makefile	/^GLIBPATH = -lglib-2.0 -lintl -liconv -lgmp -lmpfr$/;"	m
+HEARTS	Problem054.c	/^    HEARTS,$/;"	e	enum:__anon2	file:
+HIGHCARD	Problem054.c	/^    HIGHCARD,$/;"	e	enum:__anon4	file:
+Hand	Problem054.c	/^} Hand;$/;"	t	typeref:struct:__anon5	file:
+JACK	Problem054.c	/^    JACK,$/;"	e	enum:__anon1	file:
+KING	Problem054.c	/^    KING,$/;"	e	enum:__anon1	file:
 LIMIT	Problem092.c	8;"	d	file:
 MAX_PENTAGONAL	Utility.h	4;"	d
 MAX_PRIMES	Utility.h	5;"	d
+NINE	Problem054.c	/^    NINE,$/;"	e	enum:__anon1	file:
 OBJECTS	Makefile	/^OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o$/;"	m
-PROBLEM	Makefile	/^PROBLEM = Problem081$/;"	m
+ONEPAIR	Problem054.c	/^    ONEPAIR,$/;"	e	enum:__anon4	file:
+PROBLEM	Makefile	/^PROBLEM = Problem054$/;"	m
 PROBLEMDEP	Makefile	/^PROBLEMDEP = Answer.h$/;"	m
 PROBLEMOBJ	Makefile	/^PROBLEMOBJ = $(PROBLEM).o$/;"	m
 PROBLEMSRC	Makefile	/^PROBLEMSRC = $(PROBLEM).c$/;"	m
-Path	Problem081.c	/^} Path;$/;"	t	typeref:struct:__anon1	file:
+Path	Problem081.c	/^} Path;$/;"	t	typeref:struct:__anon6	file:
+QUEEN	Problem054.c	/^    QUEEN,$/;"	e	enum:__anon1	file:
+ROYALFLUSH	Problem054.c	/^    ROYALFLUSH,$/;"	e	enum:__anon4	file:
+Rank	Problem054.c	/^} Rank;$/;"	t	typeref:enum:__anon4	file:
+SEVEN	Problem054.c	/^    SEVEN,$/;"	e	enum:__anon1	file:
+SIX	Problem054.c	/^    SIX,$/;"	e	enum:__anon1	file:
+SPADES	Problem054.c	/^    SPADES,$/;"	e	enum:__anon2	file:
+STRAIGHT	Problem054.c	/^    STRAIGHT,$/;"	e	enum:__anon4	file:
+STRAIGHTFLUSH	Problem054.c	/^    STRAIGHTFLUSH,$/;"	e	enum:__anon4	file:
+Suit	Problem054.c	/^} Suit;$/;"	t	typeref:enum:__anon2	file:
+TEN	Problem054.c	/^    TEN,$/;"	e	enum:__anon1	file:
+THREE	Problem054.c	/^    THREE,$/;"	e	enum:__anon1	file:
+THREEOFAKIND	Problem054.c	/^    THREEOFAKIND,$/;"	e	enum:__anon4	file:
+TWO	Problem054.c	/^    TWO,$/;"	e	enum:__anon1	file:
+TWOPAIR	Problem054.c	/^    TWOPAIR,$/;"	e	enum:__anon4	file:
+Value	Problem054.c	/^} Value;$/;"	t	typeref:enum:__anon1	file:
 advance	Problem081.c	/^GList * advance(GList *paths, int matrix[matrixSize][matrixSize])$/;"	f
 amounts	Problem031.c	/^    int amounts[8];$/;"	m	struct:Currency	file:
 answer	Problem031.c	/^int answer()$/;"	f
@@ -30,6 +62,7 @@ answer	Problem044.c	/^gint64 answer()$/;"	f
 answer	Problem046.c	/^int answer()$/;"	f
 answer	Problem049.c	/^gint64 answer()$/;"	f
 answer	Problem050.c	/^int answer()$/;"	f
+answer	Problem054.c	/^gint64 answer()$/;"	f
 answer	Problem057.c	/^gint64 answer()$/;"	f
 answer	Problem058.c	/^gint64 answer()$/;"	f
 answer	Problem059.c	/^gint64 answer()$/;"	f
@@ -38,14 +71,21 @@ answer	Problem069.c	/^gint64 answer()$/;"	f
 answer	Problem081.c	/^gint64 answer()$/;"	f
 answer	Problem092.c	/^gint64 answer()$/;"	f
 answer	Problem099.c	/^gint64 answer()$/;"	f
+cards	Problem054.c	/^    Card cards[5];$/;"	m	struct:__anon5	file:
 checkCondition	Problem043.c	/^bool checkCondition(GList *ds, int idx, int mod)$/;"	f
+compare	Problem054.c	/^int compare(Card a, Card b)$/;"	f
 countCurrency	Problem031.c	/^int countCurrency(Currency curr, int idx)$/;"	f
 cull	Problem081.c	/^GList * cull(GList *paths)$/;"	f
 digits	Utility.c	/^GList * digits(gint64 x)$/;"	f
 factors	Utility.c	/^GList *factors(int x)$/;"	f
 finished	Problem081.c	/^bool finished(GList *paths)$/;"	f
+flush	Problem054.c	/^bool flush(Hand *h)$/;"	f
+fullHouse	Problem054.c	/^bool fullHouse(Hand *h)$/;"	f
 g_list_remove_duplicates	Utility.c	/^GList *g_list_remove_duplicates(GList *l)$/;"	f
 gcd	Utility.c	/^gint64 gcd(gint64 a, gint64 b)$/;"	f
+getSuit	Problem054.c	/^Suit getSuit(char c)$/;"	f
+getValue	Problem054.c	/^Value getValue(char c)$/;"	f
+highcard	Problem054.c	/^    Card highcard;$/;"	m	struct:__anon5	file:
 ipow	Utility.c	/^gint64 ipow(gint64 x, gint64 y)$/;"	f
 isPermutation	Utility.c	/^bool isPermutation(gint64 x, gint64 y)$/;"	f
 isqrt	Utility.c	/^int isqrt(int x)$/;"	f
@@ -56,6 +96,7 @@ makePandigital	Problem043.c	/^gint64 makePandigital(GList *ds)$/;"	f
 matrixSize	Problem081.c	/^const int matrixSize = 80;$/;"	v
 max	Utility.c	/^int max(int x, int y)$/;"	f
 numberInList	Utility.c	/^bool numberInList(int x, GList *list)$/;"	f
+ofAKind	Problem054.c	/^bool ofAKind(Hand *h, int n)$/;"	f
 pandigital9	Utility.c	/^bool pandigital9(int x)$/;"	f
 pathLimit	Problem081.c	/^const int pathLimit = 100;$/;"	v
 pathSort	Problem081.c	/^int pathSort(gconstpointer a, gconstpointer b)$/;"	f
@@ -66,16 +107,24 @@ primesSet	Utility.c	/^GArray *primesSet = NULL;$/;"	v
 printCurrency	Problem031.c	/^void printCurrency(Currency curr)$/;"	f
 printDigits	Problem043.c	/^void printDigits(GList *ds)$/;"	f
 printPaths	Problem081.c	/^void printPaths(GList *paths)$/;"	f
-runningTotal	Problem081.c	/^    gint64 runningTotal;$/;"	m	struct:__anon1	file:
+rank	Problem054.c	/^    Rank rank;$/;"	m	struct:__anon5	file:
+runningTotal	Problem081.c	/^    gint64 runningTotal;$/;"	m	struct:__anon6	file:
+setRank	Problem054.c	/^void setRank(Hand *h)$/;"	f
+sort	Problem054.c	/^void sort(Hand *h)$/;"	f
 squareChain	Problem092.c	/^int squareChain(int x)$/;"	f
 squareChainCache	Problem092.c	/^int *squareChainCache = NULL;$/;"	v
+straight	Problem054.c	/^bool straight(Hand *h)$/;"	f
+suit	Problem054.c	/^    Suit suit;$/;"	m	struct:__anon3	file:
 totient	Utility.c	/^gint64 totient(gint64 x)$/;"	f
 truncatable	Problem037.c	/^bool truncatable(int x, bool skipFirst, bool left)$/;"	f
 truncateLeft	Problem037.c	/^int truncateLeft(int x)$/;"	f
 truncateRight	Problem037.c	/^int truncateRight(int x)$/;"	f
+twoPair	Problem054.c	/^bool twoPair(Hand *h)$/;"	f
 undigits	Utility.c	/^gint64 undigits(GList *digits)$/;"	f
+value	Problem054.c	/^    Value value;$/;"	m	struct:__anon3	file:
 valueCount	Problem031.c	/^int valueCount = 8;$/;"	v
 valueCurrency	Problem031.c	/^int valueCurrency(Currency curr)$/;"	f
 values	Problem031.c	/^int values[] = {200, 100, 50, 20, 10, 5, 2, 1};$/;"	v
-x	Problem081.c	/^    int x,y;$/;"	m	struct:__anon1	file:
-y	Problem081.c	/^    int x,y;$/;"	m	struct:__anon1	file:
+winner	Problem054.c	/^int winner(Hand a, Hand b)$/;"	f
+x	Problem081.c	/^    int x,y;$/;"	m	struct:__anon6	file:
+y	Problem081.c	/^    int x,y;$/;"	m	struct:__anon6	file:
