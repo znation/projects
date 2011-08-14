@@ -14,10 +14,12 @@ LIMIT	Problem092.c	8;"	d	file:
 MAX_PENTAGONAL	Utility.h	4;"	d
 MAX_PRIMES	Utility.h	5;"	d
 OBJECTS	Makefile	/^OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o$/;"	m
-PROBLEM	Makefile	/^PROBLEM = Problem099$/;"	m
+PROBLEM	Makefile	/^PROBLEM = Problem081$/;"	m
 PROBLEMDEP	Makefile	/^PROBLEMDEP = Answer.h$/;"	m
 PROBLEMOBJ	Makefile	/^PROBLEMOBJ = $(PROBLEM).o$/;"	m
 PROBLEMSRC	Makefile	/^PROBLEMSRC = $(PROBLEM).c$/;"	m
+Path	Problem081.c	/^} Path;$/;"	t	typeref:struct:__anon1	file:
+advance	Problem081.c	/^GList * advance(GList *paths, int matrix[matrixSize][matrixSize])$/;"	f
 amounts	Problem031.c	/^    int amounts[8];$/;"	m	struct:Currency	file:
 answer	Problem031.c	/^int answer()$/;"	f
 answer	Problem032.c	/^int answer()$/;"	f
@@ -33,12 +35,15 @@ answer	Problem058.c	/^gint64 answer()$/;"	f
 answer	Problem059.c	/^gint64 answer()$/;"	f
 answer	Problem063.c	/^gint64 answer()$/;"	f
 answer	Problem069.c	/^gint64 answer()$/;"	f
+answer	Problem081.c	/^gint64 answer()$/;"	f
 answer	Problem092.c	/^gint64 answer()$/;"	f
 answer	Problem099.c	/^gint64 answer()$/;"	f
 checkCondition	Problem043.c	/^bool checkCondition(GList *ds, int idx, int mod)$/;"	f
 countCurrency	Problem031.c	/^int countCurrency(Currency curr, int idx)$/;"	f
+cull	Problem081.c	/^GList * cull(GList *paths)$/;"	f
 digits	Utility.c	/^GList * digits(gint64 x)$/;"	f
 factors	Utility.c	/^GList *factors(int x)$/;"	f
+finished	Problem081.c	/^bool finished(GList *paths)$/;"	f
 g_list_remove_duplicates	Utility.c	/^GList *g_list_remove_duplicates(GList *l)$/;"	f
 gcd	Utility.c	/^gint64 gcd(gint64 a, gint64 b)$/;"	f
 ipow	Utility.c	/^gint64 ipow(gint64 x, gint64 y)$/;"	f
@@ -48,15 +53,20 @@ listOfPentagonals	Utility.c	/^GList * listOfPentagonals()$/;"	f
 listOfPrimes	Utility.c	/^GList *listOfPrimes()$/;"	f
 main	Solver.c	/^int main(int argc, char** argv)$/;"	f
 makePandigital	Problem043.c	/^gint64 makePandigital(GList *ds)$/;"	f
+matrixSize	Problem081.c	/^const int matrixSize = 80;$/;"	v
 max	Utility.c	/^int max(int x, int y)$/;"	f
 numberInList	Utility.c	/^bool numberInList(int x, GList *list)$/;"	f
 pandigital9	Utility.c	/^bool pandigital9(int x)$/;"	f
+pathLimit	Problem081.c	/^const int pathLimit = 100;$/;"	v
+pathSort	Problem081.c	/^int pathSort(gconstpointer a, gconstpointer b)$/;"	f
 pentagonal	Utility.c	/^int pentagonal(int x)$/;"	f
 prime	Utility.c	/^bool prime(int x)$/;"	f
 primes	Utility.c	/^GArray *primes = NULL;$/;"	v
 primesSet	Utility.c	/^GArray *primesSet = NULL;$/;"	v
 printCurrency	Problem031.c	/^void printCurrency(Currency curr)$/;"	f
 printDigits	Problem043.c	/^void printDigits(GList *ds)$/;"	f
+printPaths	Problem081.c	/^void printPaths(GList *paths)$/;"	f
+runningTotal	Problem081.c	/^    gint64 runningTotal;$/;"	m	struct:__anon1	file:
 squareChain	Problem092.c	/^int squareChain(int x)$/;"	f
 squareChainCache	Problem092.c	/^int *squareChainCache = NULL;$/;"	v
 totient	Utility.c	/^gint64 totient(gint64 x)$/;"	f
@@ -67,3 +77,5 @@ undigits	Utility.c	/^gint64 undigits(GList *digits)$/;"	f
 valueCount	Problem031.c	/^int valueCount = 8;$/;"	v
 valueCurrency	Problem031.c	/^int valueCurrency(Currency curr)$/;"	f
 values	Problem031.c	/^int values[] = {200, 100, 50, 20, 10, 5, 2, 1};$/;"	v
+x	Problem081.c	/^    int x,y;$/;"	m	struct:__anon1	file:
+y	Problem081.c	/^    int x,y;$/;"	m	struct:__anon1	file:
