@@ -44,12 +44,14 @@ SIX	Problem054.c	/^    SIX,$/;"	e	enum:__anon1	file:
 SPADES	Problem054.c	/^    SPADES,$/;"	e	enum:__anon2	file:
 STRAIGHT	Problem054.c	/^    STRAIGHT,$/;"	e	enum:__anon4	file:
 STRAIGHTFLUSH	Problem054.c	/^    STRAIGHTFLUSH,$/;"	e	enum:__anon4	file:
+SUITCOUNT	Problem054.c	/^    SUITCOUNT$/;"	e	enum:__anon2	file:
 Suit	Problem054.c	/^} Suit;$/;"	t	typeref:enum:__anon2	file:
 TEN	Problem054.c	/^    TEN,$/;"	e	enum:__anon1	file:
 THREE	Problem054.c	/^    THREE,$/;"	e	enum:__anon1	file:
 THREEOFAKIND	Problem054.c	/^    THREEOFAKIND,$/;"	e	enum:__anon4	file:
 TWO	Problem054.c	/^    TWO,$/;"	e	enum:__anon1	file:
 TWOPAIR	Problem054.c	/^    TWOPAIR,$/;"	e	enum:__anon4	file:
+VALUECOUNT	Problem054.c	/^    VALUECOUNT$/;"	e	enum:__anon1	file:
 Value	Problem054.c	/^} Value;$/;"	t	typeref:enum:__anon1	file:
 advance	Problem081.c	/^GList * advance(GList *paths, int matrix[matrixSize][matrixSize])$/;"	f
 amounts	Problem031.c	/^    int amounts[8];$/;"	m	struct:Currency	file:
@@ -106,6 +108,7 @@ primes	Utility.c	/^GArray *primes = NULL;$/;"	v
 primesSet	Utility.c	/^GArray *primesSet = NULL;$/;"	v
 printCurrency	Problem031.c	/^void printCurrency(Currency curr)$/;"	f
 printDigits	Problem043.c	/^void printDigits(GList *ds)$/;"	f
+printHand	Problem054.c	/^void printHand(Hand h, bool printRank)$/;"	f
 printPaths	Problem081.c	/^void printPaths(GList *paths)$/;"	f
 rank	Problem054.c	/^    Rank rank;$/;"	m	struct:__anon5	file:
 runningTotal	Problem081.c	/^    gint64 runningTotal;$/;"	m	struct:__anon6	file:
@@ -115,6 +118,7 @@ squareChain	Problem092.c	/^int squareChain(int x)$/;"	f
 squareChainCache	Problem092.c	/^int *squareChainCache = NULL;$/;"	v
 straight	Problem054.c	/^bool straight(Hand *h)$/;"	f
 suit	Problem054.c	/^    Suit suit;$/;"	m	struct:__anon3	file:
+suitToChar	Problem054.c	/^char suitToChar(Suit s)$/;"	f
 totient	Utility.c	/^gint64 totient(gint64 x)$/;"	f
 truncatable	Problem037.c	/^bool truncatable(int x, bool skipFirst, bool left)$/;"	f
 truncateLeft	Problem037.c	/^int truncateLeft(int x)$/;"	f
@@ -124,6 +128,7 @@ undigits	Utility.c	/^gint64 undigits(GList *digits)$/;"	f
 value	Problem054.c	/^    Value value;$/;"	m	struct:__anon3	file:
 valueCount	Problem031.c	/^int valueCount = 8;$/;"	v
 valueCurrency	Problem031.c	/^int valueCurrency(Currency curr)$/;"	f
+valueToChar	Problem054.c	/^char valueToChar(Value v)$/;"	f
 values	Problem031.c	/^int values[] = {200, 100, 50, 20, 10, 5, 2, 1};$/;"	v
 winner	Problem054.c	/^int winner(Hand a, Hand b)$/;"	f
 x	Problem081.c	/^    int x,y;$/;"	m	struct:__anon6	file:

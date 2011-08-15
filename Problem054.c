@@ -19,6 +19,7 @@ typedef enum {
     QUEEN,
     KING,
     ACE,
+    VALUECOUNT
 } Value;
 
 typedef enum {
@@ -26,6 +27,7 @@ typedef enum {
     DIAMONDS,
     CLUBS,
     SPADES,
+    SUITCOUNT
 } Suit;
 
 typedef struct {
@@ -279,7 +281,7 @@ void setRank(Hand *h)
     sort(h);
 
     if (straight(h) &&
-        flush(h))
+            flush(h))
     {
         if (h->cards[0].value == 'A')
         {
@@ -332,19 +334,26 @@ int winner(Hand a, Hand b)
 
     if (a.rank == b.rank)
     {
-        // compare by high card
-        for (int i=0; i<5; i++)
+        if (a.highcard.value == b.highcard.value)
         {
-            Card cardA = a.cards[i];
-            Card cardB = b.cards[i];
-            if (cardA.value > cardB.value)
+            // compare by cards in the hand
+            for (int i=0; i<5; i++)
             {
-                return 0;
+                Card cardA = a.cards[i];
+                Card cardB = b.cards[i];
+                if (cardA.value > cardB.value)
+                {
+                    return 0;
+                }
+                else if (cardA.value < cardB.value)
+                {
+                    return 1;
+                }
             }
-            else if (cardA.value < cardB.value)
-            {
-                return 1;
-            }
+        }
+        else
+        {
+            return (a.highcard.value > b.highcard.value) ? 0 : 1;
         }
     }
     else
@@ -356,15 +365,144 @@ int winner(Hand a, Hand b)
     return -1; // logic error?
 }
 
+char valueToChar(Value v)
+{
+    switch (v)
+    {
+        case TWO:
+            return '2';
+        case THREE:
+            return '3';
+        case FOUR:
+            return '4';
+        case FIVE:
+            return '5';
+        case SIX:
+            return '6';
+        case SEVEN:
+            return '7';
+        case EIGHT:
+            return '8';
+        case NINE:
+            return '9';
+        case TEN:
+            return 'T';
+        case JACK:
+            return 'J';
+        case QUEEN:
+            return 'Q';
+        case KING:
+            return 'K';
+        case ACE:
+            return 'A';
+        default:
+            assert(false);
+            return 'X';
+    }
+}
+
+char suitToChar(Suit s)
+{
+    switch (s)
+    {
+        case HEARTS:
+            return 'H';
+        case CLUBS:
+            return 'C';
+        case SPADES:
+            return 'S';
+        case DIAMONDS:
+            return 'D';
+        default:
+            assert(false);
+            return 'X';
+    }
+}
+
+void printHand(Hand h, bool printRank)
+{
+    for (int i=0; i<5; i++)
+    {
+        char v = valueToChar(h.cards[i].value);
+        char s = suitToChar(h.cards[i].suit);
+        printf("%c%c ", v, s);
+    }
+
+    if (printRank)
+    {
+        char *buf;
+        char v = valueToChar(h.highcard.value);
+        char s = suitToChar(h.highcard.suit);
+        switch (h.rank)
+        {
+            case ROYALFLUSH:
+                buf = "Royal Flush";
+                break;
+            case STRAIGHTFLUSH:
+                buf = "Straight Flush";
+                break;
+            case FOUROFAKIND:
+                buf = "Four of a kind";
+                break;
+            case FLUSH:
+                buf = "Flush";
+                break;
+            case STRAIGHT:
+                buf = "Straight";
+                break;
+            case FULLHOUSE:
+                buf = "Full House";
+                break;
+            case THREEOFAKIND:
+                buf = "Three of a kind";
+                break;
+            case TWOPAIR:
+                buf = "Two Pair";
+                break;
+            case ONEPAIR:
+                buf = "One Pair";
+                break;
+            case HIGHCARD:
+                buf = "Nothing";
+                break;
+            default:
+                assert(false);
+                break;
+        }
+        printf("(%s with high card %c%c)", buf, v, s);
+    }
+    printf("\n");
+}
+
 gint64 answer()
 {
+    Hand players[2];
+
+    srand(time(0));
+    printf("DEBUG-----------\n");
+    for (int i=0; i<2; i++)
+    {
+        for (int j=0; j<5; j++)
+        {
+            Card c;
+            c.suit = rand() % SUITCOUNT;
+            c.value = rand() % VALUECOUNT;
+            players[i].cards[j] = c;
+        }
+        setRank(&(players[i]));
+        printf("Player %d: ", i == 0 ? 1 : 2);
+        printHand(players[i], true);
+    }
+    printf("Winner, player %d\n", winner(players[0], players[1]));
+    printf("----------------\n");
+
     gint64 ret = 0;
     FILE *fp;
     fp = fopen("Problem054_poker.txt", "r");
     int bufSize = 16384;
     char buf[bufSize];
     memset(buf, 0, sizeof(char)*bufSize);
-    Hand players[2];
+    
     int i = 0;
     while (fgets(buf, bufSize, fp))
     {
