@@ -78,7 +78,7 @@ answer	Problem099.c	/^gint64 answer()$/;"	f
 cards	Problem054.c	/^    Card cards[5];$/;"	m	struct:__anon5	file:
 checkCondition	Problem043.c	/^bool checkCondition(GList *ds, int idx, int mod)$/;"	f
 compare	Problem054.c	/^int compare(Card a, Card b)$/;"	f
-compareFractions	Problem071.c	/^int compareFractions(gconstpointer ptra, gconstpointer ptrb)$/;"	f
+compareFractions	Problem071.c	/^int compareFractions(Fraction *a, Fraction *b)$/;"	f
 countCurrency	Problem031.c	/^int countCurrency(Currency curr, int idx)$/;"	f
 cull	Problem081.c	/^GList * cull(GList *paths)$/;"	f
 dblRepresentation	Problem071.c	/^    double dblRepresentation;$/;"	m	struct:__anon6	file:

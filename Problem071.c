@@ -1,3 +1,5 @@
+#include <math.h>
+#include <stdio.h>
 #include <assert.h>
 #include <glib.h>
 #include <stdlib.h>
@@ -19,11 +21,8 @@ Fraction *fraction(int n, int d)
     return ret;
 }
 
-int compareFractions(gconstpointer ptra, gconstpointer ptrb)
+int compareFractions(Fraction *a, Fraction *b)
 {
-    const Fraction *a = ptra;
-    const Fraction *b = ptrb;
-
     if (a->dblRepresentation > b->dblRepresentation)
     {
         return 1;
@@ -40,52 +39,31 @@ int compareFractions(gconstpointer ptra, gconstpointer ptrb)
 
 gint64 answer()
 {
-    const int limit = 10000;
-    GList *fractions = NULL;
-    Fraction *threeOverSeven = NULL;
-    Fraction *twoOverSeven = NULL;
+    const int limit = 1000000;
+    Fraction *before = fraction(2, 7);
     for (int d=2; d<limit; d++)
     {
-        for (int n=1; n<d; n++)
+        int start = (int) floor((before->dblRepresentation)*(double)d);
+        for (int n=start; n<d; n++)
         {
+            double dblFrac = (double)n/(double)d;
+            if (dblFrac >= (3.0/7.0))
+            {
+                break;
+            }
+
             if (gcd(n, d) == 1)
             {
-                Fraction *frac = fraction(n, d);
-
-                if (threeOverSeven != NULL &&
-                        twoOverSeven != NULL &&
-                        (compareFractions(frac, threeOverSeven) != -1 ||
-                         compareFractions(frac, twoOverSeven) != 1))
+                if (dblFrac > before->dblRepresentation)
                 {
-                    free(frac);
-                }
-                else
-                {
-                    fractions = g_list_prepend(fractions, frac);
-                }
-
-                if (n == 3 && d == 7)
-                {
-                    threeOverSeven = frac;
-                }
-                else if (n == 2 && d == 7)
-                {
-                    twoOverSeven = frac;
+                    assert(dblFrac < (3.0/7.0));
+                    free(before);
+                    Fraction *frac = fraction(n, d);
+                    before = frac;
                 }
             }
         }
     }
-
-    fractions = g_list_sort(fractions, compareFractions);
-
-    assert(threeOverSeven != NULL);
-    GList *elem = g_list_find(fractions, threeOverSeven);
-    assert(elem != NULL);
-    GList *prevElem = g_list_previous(elem);
-    assert(prevElem != NULL);
-
-    Fraction *prev = prevElem->data;
-    return prev->numerator;
-
+    return before->numerator;
 }
 
