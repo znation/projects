@@ -54,6 +54,43 @@ typedef struct {
     Card highcard;
 } Hand;
 
+
+char valueToChar(Value v)
+{
+    switch (v)
+    {
+        case TWO:
+            return '2';
+        case THREE:
+            return '3';
+        case FOUR:
+            return '4';
+        case FIVE:
+            return '5';
+        case SIX:
+            return '6';
+        case SEVEN:
+            return '7';
+        case EIGHT:
+            return '8';
+        case NINE:
+            return '9';
+        case TEN:
+            return 'T';
+        case JACK:
+            return 'J';
+        case QUEEN:
+            return 'Q';
+        case KING:
+            return 'K';
+        case ACE:
+            return 'A';
+        default:
+            assert(false);
+            return 'X';
+    }
+}
+
 Value getValue(char c)
 {
     switch (c)
@@ -201,47 +238,48 @@ bool fullHouse(Hand *h)
 
 bool twoPair(Hand *h)
 {
-    bool set1 = false,
-         set2 = false;
-    Value value1, value2;
-    Card card1, card2;
-    int count1 = 0,
-        count2 = 0;
+    printf("Calculating two pair.\n");
+
+    int set = 0;
+    Value values[5];
+    Card cards[5];
+    int count[5];
     for (int i=0; i<5; i++)
     {
-        if (!set1)
+        printf("Card %d: ", i+1);
+
+        bool found = false;
+        for (int j=0; j<set; j++)
         {
-            value1 = h->cards[i].value;
-            card1 = h->cards[i];
-            set1 = true;
-            count1++;
+            if (values[j] == h->cards[i].value)
+            {
+                found = true;
+                count[j]++;
+                printf(" matched value %d\n", j+1);
+                break;
+            }
         }
-        else if (!set2 && h->cards[i].value != value1)
+        if (!found)
         {
-            value2 = h->cards[i].value;
-            card2 = h->cards[i];
-            set2 = true;
-            count2++;
-        }
-        else if (set1 && h->cards[i].value == value1)
-        {
-            count1++;
-        }
-        else if (set2 && h->cards[i].value == value2)
-        {
-            count2++;
+            values[set] = h->cards[i].value;
+            cards[set] = h->cards[i];
+            count[set] = 1;
+            set++;
+            printf(" set value %d with %c\n", set, valueToChar(h->cards[i].value));
         }
     }
 
-    if (count1 == 2 && count2 == 2)
+    int pairs = 0;
+    for (int i=0; i<set; i++)
     {
-        h->highcard = (value1 > value2) ? card1 : card2;
-        return true;
+        printf("Count %d is %d\n", i, count[i]);
+        if (count[i] == 2)
+        {
+            pairs++;
+        }
     }
-    else
-    {
-        return false;
-    }
+
+    return (pairs == 2);
 }
 
 int compare(Card a, Card b)
@@ -329,9 +367,6 @@ void setRank(Hand *h)
 
 int winner(Hand a, Hand b)
 {
-    setRank(&a);
-    setRank(&b);
-
     if (a.rank == b.rank)
     {
         if (a.highcard.value == b.highcard.value)
@@ -363,42 +398,6 @@ int winner(Hand a, Hand b)
 
     assert(false);
     return -1; // logic error?
-}
-
-char valueToChar(Value v)
-{
-    switch (v)
-    {
-        case TWO:
-            return '2';
-        case THREE:
-            return '3';
-        case FOUR:
-            return '4';
-        case FIVE:
-            return '5';
-        case SIX:
-            return '6';
-        case SEVEN:
-            return '7';
-        case EIGHT:
-            return '8';
-        case NINE:
-            return '9';
-        case TEN:
-            return 'T';
-        case JACK:
-            return 'J';
-        case QUEEN:
-            return 'Q';
-        case KING:
-            return 'K';
-        case ACE:
-            return 'A';
-        default:
-            assert(false);
-            return 'X';
-    }
 }
 
 char suitToChar(Suit s)
@@ -477,25 +476,6 @@ void printHand(Hand h, bool printRank)
 gint64 answer()
 {
     Hand players[2];
-
-    srand(time(0));
-    printf("DEBUG-----------\n");
-    for (int i=0; i<2; i++)
-    {
-        for (int j=0; j<5; j++)
-        {
-            Card c;
-            c.suit = rand() % SUITCOUNT;
-            c.value = rand() % VALUECOUNT;
-            players[i].cards[j] = c;
-        }
-        setRank(&(players[i]));
-        printf("Player %d: ", i == 0 ? 1 : 2);
-        printHand(players[i], true);
-    }
-    printf("Winner, player %d\n", winner(players[0], players[1]));
-    printf("----------------\n");
-
     gint64 ret = 0;
     FILE *fp;
     fp = fopen("Problem054_poker.txt", "r");
@@ -525,7 +505,16 @@ gint64 answer()
         }
 
         // Compare hands
-        if (winner(players[0], players[1]) == 0)
+        setRank(&(players[0]));
+        setRank(&(players[1]));
+        int w = winner(players[0], players[1]);
+        for (int i=0; i<2; i++)
+        {
+            printf("Player %d: ", i == 0 ? 1 : 2);
+            printHand(players[i], true);
+        }
+        printf("Winner: Player %d\n\n", w == 0 ? 1 : 2);
+        if (w == 0)
         {
             ret++;
         }
