@@ -32,7 +32,7 @@ MAX_PRIMES	Utility.h	5;"	d
 NINE	Problem054.c	/^    NINE,$/;"	e	enum:__anon1	file:
 OBJECTS	Makefile	/^OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o$/;"	m
 ONEPAIR	Problem054.c	/^    ONEPAIR,$/;"	e	enum:__anon4	file:
-PROBLEM	Makefile	/^PROBLEM = Problem071$/;"	m
+PROBLEM	Makefile	/^PROBLEM = Problem076$/;"	m
 PROBLEMDEP	Makefile	/^PROBLEMDEP = Answer.h$/;"	m
 PROBLEMOBJ	Makefile	/^PROBLEMOBJ = $(PROBLEM).o$/;"	m
 PROBLEMSRC	Makefile	/^PROBLEMSRC = $(PROBLEM).c$/;"	m
@@ -72,6 +72,7 @@ answer	Problem059.c	/^gint64 answer()$/;"	f
 answer	Problem063.c	/^gint64 answer()$/;"	f
 answer	Problem069.c	/^gint64 answer()$/;"	f
 answer	Problem071.c	/^gint64 answer()$/;"	f
+answer	Problem076.c	/^gint64 answer()$/;"	f
 answer	Problem081.c	/^gint64 answer()$/;"	f
 answer	Problem092.c	/^gint64 answer()$/;"	f
 answer	Problem099.c	/^gint64 answer()$/;"	f
@@ -126,6 +127,7 @@ squareChainCache	Problem092.c	/^int *squareChainCache = NULL;$/;"	v
 straight	Problem054.c	/^bool straight(Hand *h)$/;"	f
 suit	Problem054.c	/^    Suit suit;$/;"	m	struct:__anon3	file:
 suitToChar	Problem054.c	/^char suitToChar(Suit s)$/;"	f
+sums	Problem076.c	/^gint64 sums(int x)$/;"	f
 totient	Utility.c	/^gint64 totient(gint64 x)$/;"	f
 truncatable	Problem037.c	/^bool truncatable(int x, bool skipFirst, bool left)$/;"	f
 truncateLeft	Problem037.c	/^int truncateLeft(int x)$/;"	f

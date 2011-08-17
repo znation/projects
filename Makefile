@@ -3,7 +3,7 @@ GLIBPATH = -lglib-2.0 -lintl -liconv -lgmp -lmpfr
 GCCOPTS = -Werror -Wall -std=c99 -O3 -march=pentium4 -g -pg $(GLIBINCLUDES) 
 GCC = gcc $(GCCOPTS)
 
-PROBLEM = Problem071
+PROBLEM = Problem076
 PROBLEMSRC = $(PROBLEM).c
 PROBLEMDEP = Answer.h
 PROBLEMOBJ = $(PROBLEM).o
