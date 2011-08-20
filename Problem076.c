@@ -7,7 +7,6 @@
 
 gint64 sums(int x)
 {
-    assert(x > 0);
     if (x == 1)
     {
         return 0;
@@ -16,13 +15,11 @@ gint64 sums(int x)
     {
         return 1;
     }
-
-    int ret = 0;
+    int ret = 1;
     for (int i=1; i<x; i++)
     {
-        ret += sums(i) + sums(x-i);
+        ret += sums(i);
     }
-
     return ret;
 }
 
