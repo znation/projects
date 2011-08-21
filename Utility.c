@@ -51,6 +51,17 @@ gint64 undigits(GList *digits)
     return ret;
 }
 
+int undigits_array(int *digits, int length)
+{
+    int ret = 0;
+    for (int i=0; i<length; i++)
+    {
+        ret += ipow(10, (length-i-1)) * digits[i];
+    }
+
+    return ret;
+}
+
 int isqrt(int x)
 {
     return (int)sqrt((double)x);
@@ -307,16 +318,16 @@ gint64 gcd(gint64 a, gint64 b)
     return a;
 }
 
+gint intCompare(gconstpointer a, gconstpointer b)
+{
+    gint ai = GPOINTER_TO_INT(a);
+    gint bi = GPOINTER_TO_INT(b);
+    return ai - bi;
+}
+
 GList *g_list_remove_duplicates(GList *l)
 {
-    gint intSort(gconstpointer a, gconstpointer b)
-    {
-        gint ai = GPOINTER_TO_INT(a);
-        gint bi = GPOINTER_TO_INT(b);
-        return ai - bi;
-    }
-
-    l = g_list_sort(l, intSort);
+    l = g_list_sort(l, intCompare);
 
     GList *currElem = l;
     while (currElem != NULL)
@@ -337,5 +348,76 @@ GList *g_list_remove_duplicates(GList *l)
     }
 
     return l;
+}
+
+GList *integer_permutations(int x)
+{
+    GList *ret = NULL;
+    GList *ds = digits(x);
+    ds = g_list_sort(ds, intCompare);
+    int n = g_list_length(ds);
+
+    // put ds into an array
+    int rgds[n];
+    GList *elem = ds;
+    for (int i=0; i<n; i++)
+    {
+        gint d = GPOINTER_TO_INT(elem->data);
+        rgds[i] = d;
+        elem = g_list_next(elem);
+    }
+
+    g_list_free(ds);
+
+    int firstPermutation = undigits_array(rgds, n);
+    ret = g_list_prepend(ret, GINT_TO_POINTER(firstPermutation));
+
+    while (true)
+    {
+        int i = n - 1;
+        while (rgds[i-1] >= rgds[i])
+        {
+            i--;
+        }
+
+        int j = n;
+        while (rgds[j-1] <= rgds[i-1])
+        {
+            j--;
+        }
+
+        if (i-1 < 0)
+        {
+            // Found the last permutation
+            break;
+        }
+
+        assert(i-1 < n);
+        assert(j-1 < n && j-1 >= 0);
+        int temp = rgds[i-1];
+        rgds[i-1] = rgds[j-1];
+        rgds[j-1] = temp;
+
+        i++;
+        j = n;
+        while (i < j)
+        {
+            assert(i-1 < n && i-1 >= 0);
+            assert(j-1 < n && j-1 >= 0);
+
+            temp = rgds[i-1];
+            rgds[i-1] = rgds[j-1];
+            rgds[j-1] = temp;
+
+            i++;
+            j--;
+        }
+
+        int p = undigits_array(rgds, n);
+        ret = g_list_prepend(ret, GINT_TO_POINTER(p));
+    }
+
+    ret = g_list_reverse(ret);
+    return ret;
 }
 

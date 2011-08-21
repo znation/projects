@@ -7,6 +7,7 @@
 int max(int x, int y);
 GList *digits(gint64 x);
 gint64 undigits(GList *digits);
+int undigits_array(int *digits, int length);
 gint64 ipow(gint64 x, gint64 y);
 int isqrt(int x);
 bool prime(int x);
@@ -23,6 +24,5 @@ gint64 totient(gint64 x);
 gint64 gcd(gint64 a, gint64 b);
 
 GList *g_list_remove_duplicates(GList *l);
-gint64 mod(gint64 a, gint64 b);
-gint64 cachedAnswer2(gint64 a, gint64 b);
+GList *integer_permutations(int x);
 
