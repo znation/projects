@@ -26,3 +26,5 @@ gint64 gcd(gint64 a, gint64 b);
 GList *g_list_remove_duplicates(GList *l);
 GList *integer_permutations(int x);
 
+int binary_search(int x, int *sortedArray, int length);
+

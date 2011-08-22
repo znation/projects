@@ -18,7 +18,7 @@ FOUROFAKIND	Problem054.c	/^    FOUROFAKIND,$/;"	e	enum:__anon4	file:
 FULLHOUSE	Problem054.c	/^    FULLHOUSE,$/;"	e	enum:__anon4	file:
 Fraction	Problem071.c	/^} Fraction;$/;"	t	typeref:struct:__anon6	file:
 GCC	Makefile	/^GCC = gcc $(GCCOPTS)$/;"	m
-GCCOPTS	Makefile	/^GCCOPTS = -Werror -Wall -std=c99 -O3 -march=pentium4 -g -pg $(GLIBINCLUDES) $/;"	m
+GCCOPTS	Makefile	/^GCCOPTS = -Werror -Wall -pedantic -std=c99 -O3 -march=pentium4 -g -pg $(GLIBINCLUDES) $/;"	m
 GLIBINCLUDES	Makefile	/^GLIBINCLUDES = -I\/usr\/include\/glib-2.0 -I\/usr\/lib\/glib-2.0\/include$/;"	m
 GLIBPATH	Makefile	/^GLIBPATH = -lglib-2.0 -lintl -liconv -lgmp -lmpfr$/;"	m
 HEARTS	Problem054.c	/^    HEARTS,$/;"	e	enum:__anon2	file:
@@ -27,12 +27,13 @@ Hand	Problem054.c	/^} Hand;$/;"	t	typeref:struct:__anon5	file:
 JACK	Problem054.c	/^    JACK,$/;"	e	enum:__anon1	file:
 KING	Problem054.c	/^    KING,$/;"	e	enum:__anon1	file:
 LIMIT	Problem092.c	8;"	d	file:
+MAX_CUBE	Problem062.c	6;"	d	file:
 MAX_PENTAGONAL	Utility.h	4;"	d
 MAX_PRIMES	Utility.h	5;"	d
 NINE	Problem054.c	/^    NINE,$/;"	e	enum:__anon1	file:
 OBJECTS	Makefile	/^OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o$/;"	m
 ONEPAIR	Problem054.c	/^    ONEPAIR,$/;"	e	enum:__anon4	file:
-PROBLEM	Makefile	/^PROBLEM = Problem076$/;"	m
+PROBLEM	Makefile	/^PROBLEM = Problem062$/;"	m
 PROBLEMDEP	Makefile	/^PROBLEMDEP = Answer.h$/;"	m
 PROBLEMOBJ	Makefile	/^PROBLEMOBJ = $(PROBLEM).o$/;"	m
 PROBLEMSRC	Makefile	/^PROBLEMSRC = $(PROBLEM).c$/;"	m
@@ -69,6 +70,7 @@ answer	Problem054.c	/^gint64 answer()$/;"	f
 answer	Problem057.c	/^gint64 answer()$/;"	f
 answer	Problem058.c	/^gint64 answer()$/;"	f
 answer	Problem059.c	/^gint64 answer()$/;"	f
+answer	Problem062.c	/^gint64 answer()$/;"	f
 answer	Problem063.c	/^gint64 answer()$/;"	f
 answer	Problem069.c	/^gint64 answer()$/;"	f
 answer	Problem071.c	/^gint64 answer()$/;"	f
@@ -76,6 +78,7 @@ answer	Problem076.c	/^gint64 answer()$/;"	f
 answer	Problem081.c	/^gint64 answer()$/;"	f
 answer	Problem092.c	/^gint64 answer()$/;"	f
 answer	Problem099.c	/^gint64 answer()$/;"	f
+binary_search	Utility.c	/^int binary_search(int x, int *sortedArray, int length)$/;"	f
 cards	Problem054.c	/^    Card cards[5];$/;"	m	struct:__anon5	file:
 checkCondition	Problem043.c	/^bool checkCondition(GList *ds, int idx, int mod)$/;"	f
 compare	Problem054.c	/^int compare(Card a, Card b)$/;"	f
@@ -95,6 +98,8 @@ gcd	Utility.c	/^gint64 gcd(gint64 a, gint64 b)$/;"	f
 getSuit	Problem054.c	/^Suit getSuit(char c)$/;"	f
 getValue	Problem054.c	/^Value getValue(char c)$/;"	f
 highcard	Problem054.c	/^    Card highcard;$/;"	m	struct:__anon5	file:
+intCompare	Utility.c	/^gint intCompare(gconstpointer a, gconstpointer b)$/;"	f
+integer_permutations	Utility.c	/^GList *integer_permutations(int x)$/;"	f
 ipow	Utility.c	/^gint64 ipow(gint64 x, gint64 y)$/;"	f
 isPermutation	Utility.c	/^bool isPermutation(gint64 x, gint64 y)$/;"	f
 isqrt	Utility.c	/^int isqrt(int x)$/;"	f
@@ -134,6 +139,7 @@ truncateLeft	Problem037.c	/^int truncateLeft(int x)$/;"	f
 truncateRight	Problem037.c	/^int truncateRight(int x)$/;"	f
 twoPair	Problem054.c	/^bool twoPair(Hand *h)$/;"	f
 undigits	Utility.c	/^gint64 undigits(GList *digits)$/;"	f
+undigits_array	Utility.c	/^int undigits_array(int *digits, int length)$/;"	f
 value	Problem054.c	/^    Value value;$/;"	m	struct:__anon3	file:
 valueCount	Problem031.c	/^int valueCount = 8;$/;"	v
 valueCurrency	Problem031.c	/^int valueCurrency(Currency curr)$/;"	f

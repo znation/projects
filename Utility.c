@@ -369,8 +369,13 @@ GList *integer_permutations(int x)
 
     g_list_free(ds);
 
-    int firstPermutation = undigits_array(rgds, n);
-    ret = g_list_prepend(ret, GINT_TO_POINTER(firstPermutation));
+    int p = undigits_array(rgds, n);
+    GList *lengthCheckDs = digits(p);
+    if (g_list_length(lengthCheckDs) == n)
+    {
+        ret = g_list_prepend(ret, GINT_TO_POINTER(p));
+    }
+    g_list_free(lengthCheckDs);
 
     while (true)
     {
@@ -413,11 +418,59 @@ GList *integer_permutations(int x)
             j--;
         }
 
-        int p = undigits_array(rgds, n);
-        ret = g_list_prepend(ret, GINT_TO_POINTER(p));
+        p = undigits_array(rgds, n);
+
+        lengthCheckDs = digits(p);
+        if (g_list_length(lengthCheckDs) == n)
+        {
+            ret = g_list_prepend(ret, GINT_TO_POINTER(p));
+        }
+        g_list_free(lengthCheckDs);
     }
 
     ret = g_list_reverse(ret);
     return ret;
+}
+
+int binary_search(int x, int *sortedArray, int length)
+{
+    int high = length-1,
+        low = 0;
+
+    int idx = -1;
+    while (idx == -1)
+    {
+        if (high - low < 10)
+        {
+            break;
+        }
+        int i = ((high - low)/2) + low;
+        if (sortedArray[i] > x)
+        {
+            // go down
+            high = i;
+        }
+        else if (sortedArray[i] < x)
+        {
+            // go up
+            low = i;
+        }
+        else
+        {
+            idx = i;
+        }
+    }
+    if (idx == -1)
+    {
+        for (int i=low; i<=high; i++)
+        {
+            if (sortedArray[i] == x)
+            {
+                idx = i;
+            }
+        }
+    }
+
+    return idx;
 }
 
