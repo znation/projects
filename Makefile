@@ -1,13 +1,13 @@
 GLIBINCLUDES = -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
 GLIBPATH = -lglib-2.0 -lintl -liconv -lgmp -lmpfr
-GCCOPTS = -Werror -Wall -pedantic -std=c99 -O3 -march=pentium4 -g -pg $(GLIBINCLUDES) 
+GCCOPTS = -Werror -Wall -pedantic -std=c99 -O2 -march=pentium4 -ggdb -pg $(GLIBINCLUDES) 
 GCC = gcc $(GCCOPTS)
 
 PROBLEM = Problem062
 PROBLEMSRC = $(PROBLEM).c
 PROBLEMDEP = Answer.h
 PROBLEMOBJ = $(PROBLEM).o
-OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o
+OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o BoundedArray.o
 
 all: tags Solver.exe
 
@@ -19,6 +19,9 @@ Solver.o: Solver.c
 
 Utility.o: Utility.c Utility.h
 	$(GCC) -c Utility.c
+
+BoundedArray.o: BoundedArray.c BoundedArray.h
+	$(GCC) -c BoundedArray.c
 
 Solver.exe: $(OBJECTS)
 	$(GCC) -o Solver.exe $(OBJECTS) $(GLIBPATH)

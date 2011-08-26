@@ -1,43 +1,42 @@
 #include <glib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "Utility.h"
 
-#define MAX_CUBE 1290
+#define MAX_CUBE 1000000
 
 gint64 answer()
 {
-    int cubes[MAX_CUBE];
+    BoundedArrayInt64 cubes = BoundedArrayInt64_new(MAX_CUBE);
     printf("Building cube database... ");
     for (int i=0; i<MAX_CUBE; i++)
     {
-        cubes[i] = ipow(i, 3);
+        cubes.array[i] = ipow(i, 3);
     }
     printf("Done.\n");
 
-    int ret = 0;
-    for (int i=2; i<MAX_CUBE; i++)
+    gint64 ret = 0;
+    for (gint64 i=2; i<MAX_CUBE; i++)
     {
-        int n = cubes[i];
-        printf("Testing cube %d\n", n);
-        GList *ps = integer_permutations(n);
+        gint64 n = cubes.array[i];
+        printf("Testing cube %lld\n", n);
+        BoundedArrayInt64 ps = integer_permutations(n);
         int c = 0;
-        GList *elem = ps;
-        while (elem != NULL)
+        for (int j=0; j<ps.length; j++)
         {
-            int p = GPOINTER_TO_INT(elem->data);
-            int idx = binary_search(p, cubes, MAX_CUBE);
+            gint64 p = ps.array[j];
+            int idx = binary_search(p, cubes);
             if (idx != -1)
             {
-                printf("\t%d^3 = %d\n", idx, p);
+                printf("\t%d^3 = %lld\n", idx, p);
                 c++;
             }
-            elem = g_list_next(elem);
         }
-        g_list_free(ps);
-        if (c == 5)
+        BoundedArrayInt64_free(ps);
+        if (c == 3)
         {
-            printf("DEBUG: found one at %d^3 = %d\n", i, n);
+            printf("DEBUG: found one at %lld^3 = %lld\n", i, n);
             return n;
         }
     }

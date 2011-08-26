@@ -5,6 +5,9 @@
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
 ACE	Problem054.c	/^    ACE,$/;"	e	enum:__anon1	file:
+BOUNDED_ARRAY_DEF	BoundedArray.h	3;"	d
+BOUNDED_ARRAY_IMPL	BoundedArray.c	/^BOUNDED_ARRAY_IMPL(BoundedArrayInt32, gint32)$/;"	f
+BOUNDED_ARRAY_IMPL	BoundedArray.c	5;"	d	file:
 CLUBS	Problem054.c	/^    CLUBS,$/;"	e	enum:__anon2	file:
 Card	Problem054.c	/^} Card;$/;"	t	typeref:struct:__anon3	file:
 Currency	Problem031.c	/^typedef struct Currency {$/;"	s	file:
@@ -18,7 +21,7 @@ FOUROFAKIND	Problem054.c	/^    FOUROFAKIND,$/;"	e	enum:__anon4	file:
 FULLHOUSE	Problem054.c	/^    FULLHOUSE,$/;"	e	enum:__anon4	file:
 Fraction	Problem071.c	/^} Fraction;$/;"	t	typeref:struct:__anon6	file:
 GCC	Makefile	/^GCC = gcc $(GCCOPTS)$/;"	m
-GCCOPTS	Makefile	/^GCCOPTS = -Werror -Wall -pedantic -std=c99 -O3 -march=pentium4 -g -pg $(GLIBINCLUDES) $/;"	m
+GCCOPTS	Makefile	/^GCCOPTS = -Werror -Wall -pedantic -std=c99 -O2 -march=pentium4 -ggdb -pg $(GLIBINCLUDES) $/;"	m
 GLIBINCLUDES	Makefile	/^GLIBINCLUDES = -I\/usr\/include\/glib-2.0 -I\/usr\/lib\/glib-2.0\/include$/;"	m
 GLIBPATH	Makefile	/^GLIBPATH = -lglib-2.0 -lintl -liconv -lgmp -lmpfr$/;"	m
 HEARTS	Problem054.c	/^    HEARTS,$/;"	e	enum:__anon2	file:
@@ -27,11 +30,12 @@ Hand	Problem054.c	/^} Hand;$/;"	t	typeref:struct:__anon5	file:
 JACK	Problem054.c	/^    JACK,$/;"	e	enum:__anon1	file:
 KING	Problem054.c	/^    KING,$/;"	e	enum:__anon1	file:
 LIMIT	Problem092.c	8;"	d	file:
-MAX_CUBE	Problem062.c	6;"	d	file:
-MAX_PENTAGONAL	Utility.h	4;"	d
-MAX_PRIMES	Utility.h	5;"	d
+MAX_CUBE	Problem062.c	7;"	d	file:
+MAX_PENTAGONAL	Utility.h	6;"	d
+MAX_PERMUTATIONS	Utility.c	344;"	d	file:
+MAX_PRIMES	Utility.h	7;"	d
 NINE	Problem054.c	/^    NINE,$/;"	e	enum:__anon1	file:
-OBJECTS	Makefile	/^OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o$/;"	m
+OBJECTS	Makefile	/^OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o BoundedArray.o$/;"	m
 ONEPAIR	Problem054.c	/^    ONEPAIR,$/;"	e	enum:__anon4	file:
 PROBLEM	Makefile	/^PROBLEM = Problem062$/;"	m
 PROBLEMDEP	Makefile	/^PROBLEMDEP = Answer.h$/;"	m
@@ -78,7 +82,7 @@ answer	Problem076.c	/^gint64 answer()$/;"	f
 answer	Problem081.c	/^gint64 answer()$/;"	f
 answer	Problem092.c	/^gint64 answer()$/;"	f
 answer	Problem099.c	/^gint64 answer()$/;"	f
-binary_search	Utility.c	/^int binary_search(int x, int *sortedArray, int length)$/;"	f
+binary_search	Utility.c	/^int binary_search(gint64 x, BoundedArrayInt64 sortedArray)$/;"	f
 cards	Problem054.c	/^    Card cards[5];$/;"	m	struct:__anon5	file:
 checkCondition	Problem043.c	/^bool checkCondition(GList *ds, int idx, int mod)$/;"	f
 compare	Problem054.c	/^int compare(Card a, Card b)$/;"	f
@@ -87,7 +91,7 @@ countCurrency	Problem031.c	/^int countCurrency(Currency curr, int idx)$/;"	f
 cull	Problem081.c	/^GList * cull(GList *paths)$/;"	f
 dblRepresentation	Problem071.c	/^    double dblRepresentation;$/;"	m	struct:__anon6	file:
 denominator	Problem071.c	/^    int denominator;$/;"	m	struct:__anon6	file:
-digits	Utility.c	/^GList * digits(gint64 x)$/;"	f
+digits	Utility.c	/^BoundedArrayInt32 digits(gint64 x)$/;"	f
 factors	Utility.c	/^GList *factors(int x)$/;"	f
 finished	Problem081.c	/^bool finished(GList *paths)$/;"	f
 flush	Problem054.c	/^bool flush(Hand *h)$/;"	f
@@ -99,7 +103,7 @@ getSuit	Problem054.c	/^Suit getSuit(char c)$/;"	f
 getValue	Problem054.c	/^Value getValue(char c)$/;"	f
 highcard	Problem054.c	/^    Card highcard;$/;"	m	struct:__anon5	file:
 intCompare	Utility.c	/^gint intCompare(gconstpointer a, gconstpointer b)$/;"	f
-integer_permutations	Utility.c	/^GList *integer_permutations(int x)$/;"	f
+integer_permutations	Utility.c	/^BoundedArrayInt64 integer_permutations(gint64 x)$/;"	f
 ipow	Utility.c	/^gint64 ipow(gint64 x, gint64 y)$/;"	f
 isPermutation	Utility.c	/^bool isPermutation(gint64 x, gint64 y)$/;"	f
 isqrt	Utility.c	/^int isqrt(int x)$/;"	f
@@ -138,8 +142,7 @@ truncatable	Problem037.c	/^bool truncatable(int x, bool skipFirst, bool left)$/;
 truncateLeft	Problem037.c	/^int truncateLeft(int x)$/;"	f
 truncateRight	Problem037.c	/^int truncateRight(int x)$/;"	f
 twoPair	Problem054.c	/^bool twoPair(Hand *h)$/;"	f
-undigits	Utility.c	/^gint64 undigits(GList *digits)$/;"	f
-undigits_array	Utility.c	/^int undigits_array(int *digits, int length)$/;"	f
+undigits	Utility.c	/^gint64 undigits(BoundedArrayInt32 digits)$/;"	f
 value	Problem054.c	/^    Value value;$/;"	m	struct:__anon3	file:
 valueCount	Problem031.c	/^int valueCount = 8;$/;"	v
 valueCurrency	Problem031.c	/^int valueCurrency(Currency curr)$/;"	f

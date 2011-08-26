@@ -1,13 +1,14 @@
 #include <stdbool.h>
 #include <glib.h>
 
+#include "BoundedArray.h"
+
 #define MAX_PENTAGONAL 10000
 #define MAX_PRIMES 100000
 
 int max(int x, int y);
-GList *digits(gint64 x);
-gint64 undigits(GList *digits);
-int undigits_array(int *digits, int length);
+BoundedArrayInt32 digits(gint64 x);
+gint64 undigits(BoundedArrayInt32 digits);
 gint64 ipow(gint64 x, gint64 y);
 int isqrt(int x);
 bool prime(int x);
@@ -24,7 +25,7 @@ gint64 totient(gint64 x);
 gint64 gcd(gint64 a, gint64 b);
 
 GList *g_list_remove_duplicates(GList *l);
-GList *integer_permutations(int x);
+BoundedArrayInt64 integer_permutations(gint64 x);
 
-int binary_search(int x, int *sortedArray, int length);
+int binary_search(gint64 x, BoundedArrayInt64 sortedArray);
 
