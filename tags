@@ -5,7 +5,7 @@
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
 ACE	Problem054.c	/^    ACE,$/;"	e	enum:__anon1	file:
-BOUNDED_ARRAY_DEF	BoundedArray.h	3;"	d
+BOUNDED_ARRAY_DEF	BoundedArray.h	4;"	d
 BOUNDED_ARRAY_IMPL	BoundedArray.c	/^BOUNDED_ARRAY_IMPL(BoundedArrayInt32, gint32)$/;"	f
 BOUNDED_ARRAY_IMPL	BoundedArray.c	5;"	d	file:
 CLUBS	Problem054.c	/^    CLUBS,$/;"	e	enum:__anon2	file:
@@ -21,7 +21,7 @@ FOUROFAKIND	Problem054.c	/^    FOUROFAKIND,$/;"	e	enum:__anon4	file:
 FULLHOUSE	Problem054.c	/^    FULLHOUSE,$/;"	e	enum:__anon4	file:
 Fraction	Problem071.c	/^} Fraction;$/;"	t	typeref:struct:__anon6	file:
 GCC	Makefile	/^GCC = gcc $(GCCOPTS)$/;"	m
-GCCOPTS	Makefile	/^GCCOPTS = -Werror -Wall -pedantic -std=c99 -O2 -march=pentium4 -ggdb -pg $(GLIBINCLUDES) $/;"	m
+GCCOPTS	Makefile	/^GCCOPTS = -Werror -Wall -pedantic -std=c99 -O2 -march=pentium4 -g -pg $(GLIBINCLUDES) $/;"	m
 GLIBINCLUDES	Makefile	/^GLIBINCLUDES = -I\/usr\/include\/glib-2.0 -I\/usr\/lib\/glib-2.0\/include$/;"	m
 GLIBPATH	Makefile	/^GLIBPATH = -lglib-2.0 -lintl -liconv -lgmp -lmpfr$/;"	m
 HEARTS	Problem054.c	/^    HEARTS,$/;"	e	enum:__anon2	file:
@@ -31,8 +31,9 @@ JACK	Problem054.c	/^    JACK,$/;"	e	enum:__anon1	file:
 KING	Problem054.c	/^    KING,$/;"	e	enum:__anon1	file:
 LIMIT	Problem092.c	8;"	d	file:
 MAX_CUBE	Problem062.c	7;"	d	file:
+MAX_IPOW	Utility.c	47;"	d	file:
 MAX_PENTAGONAL	Utility.h	6;"	d
-MAX_PERMUTATIONS	Utility.c	344;"	d	file:
+MAX_PERMUTATIONS	Utility.c	374;"	d	file:
 MAX_PRIMES	Utility.h	7;"	d
 NINE	Problem054.c	/^    NINE,$/;"	e	enum:__anon1	file:
 OBJECTS	Makefile	/^OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o BoundedArray.o$/;"	m
@@ -105,7 +106,7 @@ getValue	Problem054.c	/^Value getValue(char c)$/;"	f
 highcard	Problem054.c	/^    Card highcard;$/;"	m	struct:__anon5	file:
 intCompare	Utility.c	/^gint intCompare(gconstpointer a, gconstpointer b)$/;"	f
 integer_permutations	Utility.c	/^BoundedArrayInt64 integer_permutations(gint64 x, BoundedArrayInt64 range, bool condition(gint64, BoundedArrayInt64))$/;"	f
-ipow	Utility.c	/^gint64 ipow(gint64 x, gint64 y)$/;"	f
+ipow	Utility.c	/^gint64 ipow(gint64 base, gint64 exp)$/;"	f
 isPermutation	Utility.c	/^bool isPermutation(gint64 x, gint64 y)$/;"	f
 isqrt	Utility.c	/^int isqrt(int x)$/;"	f
 listOfPentagonals	Utility.c	/^GList * listOfPentagonals()$/;"	f

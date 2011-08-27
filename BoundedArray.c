@@ -1,5 +1,5 @@
 #include <stdlib.h>
-
+#include <string.h>
 #include "BoundedArray.h"
 
 #define BOUNDED_ARRAY_IMPL(NAME, TYPE) NAME NAME##_copy(NAME in) \
@@ -14,6 +14,7 @@ NAME NAME##_new(int length) \
     NAME ret; \
     ret.length = length; \
     ret.array = malloc(sizeof(TYPE) * length); \
+    memset(ret.array, 0, (sizeof(TYPE) / sizeof(char)) * length); \
     return ret; \
 } \
 void NAME##_free(NAME in) \
@@ -24,6 +25,7 @@ void NAME##_free(NAME in) \
 
 BOUNDED_ARRAY_IMPL(BoundedArrayInt32, gint32)
 BOUNDED_ARRAY_IMPL(BoundedArrayInt64, gint64)
+BOUNDED_ARRAY_IMPL(BoundedArrayBool, bool)
 
 GList * BoundedArrayInt32_toGList(BoundedArrayInt32 in) 
 { 

@@ -44,15 +44,39 @@ BoundedArrayInt32 digits(gint64 x)
 
 gint64 undigits(BoundedArrayInt32 digits)
 {
-    assert(digits.length > 0); 
+    #define MAX_IPOW 20
+    static BoundedArrayInt64 ipow_cache;
+    static BoundedArrayBool ipow_cache_set;
+    if (ipow_cache.length == 0)
+    {
+        ipow_cache = BoundedArrayInt64_new(MAX_IPOW);
+        ipow_cache_set = BoundedArrayBool_new(MAX_IPOW);
+    }
+
+    assert(digits.length > 0);
 
     gint64 ret = 0;
     uint len = digits.length;
 
     for (int i=0; i<len; i++)
     {
-        int data = digits.array[i];
-        ret += ipow((gint64)10, (gint64)(len-i-1)) * (gint64)data;
+        gint64 data = digits.array[i];
+        gint64 exp = len-i-1;
+        assert(exp < MAX_IPOW);
+        gint64 mult;
+        
+        if (ipow_cache_set.array[exp])
+        {
+            mult = ipow_cache.array[exp];
+        }
+        else
+        {
+            mult = ipow(10, exp);
+            ipow_cache.array[exp] = mult;
+            ipow_cache_set.array[exp] = true;
+        }
+
+        ret += mult * data;
     }
 
     return ret;
@@ -63,14 +87,20 @@ int isqrt(int x)
     return (int)sqrt((double)x);
 }
 
-gint64 ipow(gint64 x, gint64 y)
+
+
+gint64 ipow(gint64 base, gint64 exp)
 {
-    gint64 ret = 1;
-    for (int i=0; i<y; i++)
+    gint64 result = 1;
+    while (exp)
     {
-        ret *= x;
+        if (exp & 1)
+            result *= base;
+        exp >>= 1;
+        base *= base;
     }
-    return ret;
+
+    return result;    
 }
 
 GArray *primes = NULL;
