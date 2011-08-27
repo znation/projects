@@ -21,7 +21,7 @@ FOUROFAKIND	Problem054.c	/^    FOUROFAKIND,$/;"	e	enum:__anon4	file:
 FULLHOUSE	Problem054.c	/^    FULLHOUSE,$/;"	e	enum:__anon4	file:
 Fraction	Problem071.c	/^} Fraction;$/;"	t	typeref:struct:__anon6	file:
 GCC	Makefile	/^GCC = gcc $(GCCOPTS)$/;"	m
-GCCOPTS	Makefile	/^GCCOPTS = -Werror -Wall -pedantic -std=c99 -O2 -march=pentium4 -g -pg $(GLIBINCLUDES) $/;"	m
+GCCOPTS	Makefile	/^GCCOPTS = -Werror -Wall -pedantic -std=c99 -O3 -ffast-math -march=pentium4 -g -pg $(GLIBINCLUDES) $/;"	m
 GLIBINCLUDES	Makefile	/^GLIBINCLUDES = -I\/usr\/include\/glib-2.0 -I\/usr\/lib\/glib-2.0\/include$/;"	m
 GLIBPATH	Makefile	/^GLIBPATH = -lglib-2.0 -lintl -liconv -lgmp -lmpfr$/;"	m
 HEARTS	Problem054.c	/^    HEARTS,$/;"	e	enum:__anon2	file:

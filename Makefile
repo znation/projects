@@ -1,6 +1,6 @@
 GLIBINCLUDES = -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
 GLIBPATH = -lglib-2.0 -lintl -liconv -lgmp -lmpfr
-GCCOPTS = -Werror -Wall -pedantic -std=c99 -O2 -march=pentium4 -g -pg $(GLIBINCLUDES) 
+GCCOPTS = -Werror -Wall -pedantic -std=c99 -O3 -ffast-math -march=pentium4 -g -pg $(GLIBINCLUDES) 
 GCC = gcc $(GCCOPTS)
 
 PROBLEM = Problem062
