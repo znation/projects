@@ -25,7 +25,8 @@ gint64 totient(gint64 x);
 gint64 gcd(gint64 a, gint64 b);
 
 GList *g_list_remove_duplicates(GList *l);
-BoundedArrayInt64 integer_permutations(gint64 x);
+BoundedArrayInt64 integer_permutations(gint64 x, BoundedArrayInt64 range, bool condition(gint64, BoundedArrayInt64));
 
 int binary_search(gint64 x, BoundedArrayInt64 sortedArray);
+
 

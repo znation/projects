@@ -87,6 +87,7 @@ cards	Problem054.c	/^    Card cards[5];$/;"	m	struct:__anon5	file:
 checkCondition	Problem043.c	/^bool checkCondition(GList *ds, int idx, int mod)$/;"	f
 compare	Problem054.c	/^int compare(Card a, Card b)$/;"	f
 compareFractions	Problem071.c	/^int compareFractions(Fraction *a, Fraction *b)$/;"	f
+condition	Problem062.c	/^bool condition(gint64 p, BoundedArrayInt64 cubes)$/;"	f
 countCurrency	Problem031.c	/^int countCurrency(Currency curr, int idx)$/;"	f
 cull	Problem081.c	/^GList * cull(GList *paths)$/;"	f
 dblRepresentation	Problem071.c	/^    double dblRepresentation;$/;"	m	struct:__anon6	file:
@@ -103,7 +104,7 @@ getSuit	Problem054.c	/^Suit getSuit(char c)$/;"	f
 getValue	Problem054.c	/^Value getValue(char c)$/;"	f
 highcard	Problem054.c	/^    Card highcard;$/;"	m	struct:__anon5	file:
 intCompare	Utility.c	/^gint intCompare(gconstpointer a, gconstpointer b)$/;"	f
-integer_permutations	Utility.c	/^BoundedArrayInt64 integer_permutations(gint64 x)$/;"	f
+integer_permutations	Utility.c	/^BoundedArrayInt64 integer_permutations(gint64 x, BoundedArrayInt64 range, bool condition(gint64, BoundedArrayInt64))$/;"	f
 ipow	Utility.c	/^gint64 ipow(gint64 x, gint64 y)$/;"	f
 isPermutation	Utility.c	/^bool isPermutation(gint64 x, gint64 y)$/;"	f
 isqrt	Utility.c	/^int isqrt(int x)$/;"	f

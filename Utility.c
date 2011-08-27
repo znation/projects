@@ -339,7 +339,7 @@ GList *g_list_remove_duplicates(GList *l)
     return l;
 }
 
-BoundedArrayInt64 integer_permutations(gint64 x)
+BoundedArrayInt64 integer_permutations(gint64 x, BoundedArrayInt64 range, bool condition(gint64, BoundedArrayInt64))
 {
 #define MAX_PERMUTATIONS 10000000
     static gint64 rettemp[MAX_PERMUTATIONS];
@@ -366,8 +366,11 @@ BoundedArrayInt64 integer_permutations(gint64 x)
     BoundedArrayInt32 lengthCheckDs = digits(p);
     if (lengthCheckDs.length == n)
     {
-        assert(count < MAX_PERMUTATIONS);
-        rettemp[count++] = p;
+        if (condition(p, range))
+        {
+            assert(count < MAX_PERMUTATIONS);
+            rettemp[count++] = p;
+        }
     }
     BoundedArrayInt32_free(lengthCheckDs);
 
@@ -417,8 +420,11 @@ BoundedArrayInt64 integer_permutations(gint64 x)
         lengthCheckDs = digits(p);
         if (lengthCheckDs.length == n)
         {
-            assert(count < MAX_PERMUTATIONS);
-            rettemp[count++] = p;
+            if (condition(p, range))
+            {
+                assert(count < MAX_PERMUTATIONS);
+                rettemp[count++] = p;
+            }
         }
         BoundedArrayInt32_free(lengthCheckDs);
     }

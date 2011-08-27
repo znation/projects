@@ -6,6 +6,12 @@
 
 #define MAX_CUBE 1000000
 
+bool condition(gint64 p, BoundedArrayInt64 cubes)
+{
+    int idx = binary_search(p, cubes);
+    return (idx != -1) ? true : false;
+}
+
 gint64 answer()
 {
     BoundedArrayInt64 cubes = BoundedArrayInt64_new(MAX_CUBE);
@@ -20,19 +26,9 @@ gint64 answer()
     for (gint64 i=2; i<MAX_CUBE; i++)
     {
         gint64 n = cubes.array[i];
-        printf("Testing cube %lld\n", n);
-        BoundedArrayInt64 ps = integer_permutations(n);
-        int c = 0;
-        for (int j=0; j<ps.length; j++)
-        {
-            gint64 p = ps.array[j];
-            int idx = binary_search(p, cubes);
-            if (idx != -1)
-            {
-                printf("\t%d^3 = %lld\n", idx, p);
-                c++;
-            }
-        }
+        printf("Testing cube %lld^3 = %lld\n", i, n);
+        BoundedArrayInt64 ps = integer_permutations(n, cubes, condition);
+        int c = ps.length;
         BoundedArrayInt64_free(ps);
         if (c == 3)
         {
