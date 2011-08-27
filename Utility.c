@@ -341,7 +341,7 @@ GList *g_list_remove_duplicates(GList *l)
 
 BoundedArrayInt64 integer_permutations(gint64 x)
 {
-#define MAX_PERMUTATIONS 1000000
+#define MAX_PERMUTATIONS 10000000
     static gint64 rettemp[MAX_PERMUTATIONS];
     int count = 0;
 
