@@ -9,7 +9,7 @@
     ret.length = in.length; \
     return ret; \
 } \
-NAME NAME##_new(int length) \
+NAME NAME##_new(size_t length) \
 { \
     NAME ret; \
     ret.length = length; \
@@ -25,12 +25,14 @@ void NAME##_free(NAME in) \
 
 BOUNDED_ARRAY_IMPL(BoundedArrayInt32, gint32)
 BOUNDED_ARRAY_IMPL(BoundedArrayInt64, gint64)
-BOUNDED_ARRAY_IMPL(BoundedArrayBool, bool)
+BOUNDED_ARRAY_IMPL(BoundedArrayBool, gboolean)
 
 GList * BoundedArrayInt32_toGList(BoundedArrayInt32 in) 
 { 
-    GList *ret = NULL; 
-    for (int i=0; i<in.length; i++) 
+    GList *ret = NULL;
+    int i;
+
+    for (i=0; i<in.length; i++) 
     { 
         ret = g_list_prepend(ret, GINT_TO_POINTER(in.array[i])); 
     } 

@@ -1,33 +1,45 @@
-GLIBINCLUDES = -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
-GLIBPATH = -lglib-2.0 -lintl -liconv -lgmp -lmpfr
-GCCOPTS = -Werror -Wall -pedantic -std=c99 -O3 -ffast-math -march=pentium4 -g -pg $(GLIBINCLUDES) 
+GCCLIBINCLUDES = -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
+GCCLIBPATH = -lglib-2.0 -lintl -liconv -lgmp -lmpfr
+GCCOPTS = -Werror -Wall -pedantic -std=c99 -O3 -ffast-math -march=pentium4 -g -pg $(GCCLIBINCLUDES)
 GCC = gcc $(GCCOPTS)
+GCCLINKER = $(GCC) -o $@
+
+CLLIBINCLUDES = -Ic:/gtkbundle/include/glib-2.0 -Ic:/gtkbundle/lib/glib-2.0/include
+CLLIBPATH = /LIBPATH:"c:/gtkbundle/lib" glib-2.0.lib intl.lib
+CLOPTS = -O2 $(CLLIBINCLUDES)
+CL = cl.exe $(CLOPTS)
+LINK = link.exe $(CCLIBPATH) /out:$@
+
+RM = del /F
+OBJEXT = obj
+OUT = /out:
+LIBPATH = $(CLLIBPATH)
+CC = $(CL)
+LINKER = $(LINK)
 
 PROBLEM = Problem062
 PROBLEMSRC = $(PROBLEM).c
 PROBLEMDEP = Answer.h
-PROBLEMOBJ = $(PROBLEM).o
-OBJECTS = $(PROBLEMOBJ) Solver.o Utility.o BoundedArray.o
+PROBLEMOBJ = $(PROBLEM).$(OBJEXT)
+OBJECTS = $(PROBLEMOBJ) Solver.$(OBJEXT) Utility.$(OBJEXT) BoundedArray.$(OBJEXT)
 
-all: tags Solver.exe
+all: Solver.exe
 
 $(PROBLEMOBJ): $(PROBLEMSRC) $(PROBLEMDEP)
-	$(GCC) -c $(PROBLEMSRC)
+	$(CL) -c $(PROBLEMSRC)
 
-Solver.o: Solver.c
-	$(GCC) -c Solver.c
+Solver.$(OBJEXT): Solver.c
+	$(CL) -c Solver.c
 
-Utility.o: Utility.c Utility.h
-	$(GCC) -c Utility.c
+Utility.$(OBJEXT): Utility.c Utility.h
+	$(CL) -c Utility.c
 
-BoundedArray.o: BoundedArray.c BoundedArray.h
-	$(GCC) -c BoundedArray.c
+BoundedArray.$(OBJEXT): BoundedArray.c BoundedArray.h
+	$(CL) -c BoundedArray.c
 
 Solver.exe: $(OBJECTS)
-	$(GCC) -o Solver.exe $(OBJECTS) $(GLIBPATH)
+	$(LINK) $(OBJECTS) $(LIBPATH)
 
-tags: *.c *.h
-	ctags -R
-    
 clean:
-	rm -f tags *.exe *.o
+	$(RM) tags *.exe *.$(OBJEXT)
+

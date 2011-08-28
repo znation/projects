@@ -7,22 +7,26 @@
 
 #include "Utility.h"
 
+/*
 int max(int x, int y)
 {
     return (x > y) ? x : y;
 }
+*/
 
 BoundedArrayInt32 digits(gint64 x)
 {
-    const int tempLimit = 15;
-    int temp[tempLimit];
-    int length = 0;
-    
-    while (true)
+#define TEMP_LIMIT 15
+    int temp[TEMP_LIMIT];
+    int length = 0,
+        i;
+    BoundedArrayInt32 ret;
+ 
+    while (TRUE)
     {
         int d = (int)(x % 10);
         temp[length++] = d;
-        assert(length < tempLimit);
+        assert(length < TEMP_LIMIT);
         if (x < 10)
         {
             break;
@@ -33,8 +37,8 @@ BoundedArrayInt32 digits(gint64 x)
         }
     }
 
-    BoundedArrayInt32 ret = BoundedArrayInt32_new(length);
-    for (int i=0; i<length; i++)
+    ret = BoundedArrayInt32_new(length);
+    for (i=0; i<length; i++)
     {
         ret.array[length-i-1] = temp[i];
     }
@@ -47,6 +51,10 @@ gint64 undigits(BoundedArrayInt32 digits)
     #define MAX_IPOW 20
     static BoundedArrayInt64 ipow_cache;
     static BoundedArrayBool ipow_cache_set;
+    gint64 ret, mult, data, exp;
+    guint len;
+    gint i;
+
     if (ipow_cache.length == 0)
     {
         ipow_cache = BoundedArrayInt64_new(MAX_IPOW);
@@ -55,15 +63,14 @@ gint64 undigits(BoundedArrayInt32 digits)
 
     assert(digits.length > 0);
 
-    gint64 ret = 0;
-    uint len = digits.length;
+    ret = 0;
+    len = digits.length;
 
-    for (int i=0; i<len; i++)
+    for (i=0; i<len; i++)
     {
-        gint64 data = digits.array[i];
-        gint64 exp = len-i-1;
+        data = digits.array[i];
+        exp = len-i-1;
         assert(exp < MAX_IPOW);
-        gint64 mult;
         
         if (ipow_cache_set.array[exp])
         {
@@ -73,7 +80,7 @@ gint64 undigits(BoundedArrayInt32 digits)
         {
             mult = ipow(10, exp);
             ipow_cache.array[exp] = mult;
-            ipow_cache_set.array[exp] = true;
+            ipow_cache_set.array[exp] = TRUE;
         }
 
         ret += mult * data;
@@ -105,50 +112,52 @@ gint64 ipow(gint64 base, gint64 exp)
 
 GArray *primes = NULL;
 GArray *primesSet = NULL;
-bool prime(int x)
+gboolean prime(int x)
 {
+    gboolean ret;
+    int len, newlen, i;
+
     if (primes == NULL)
     {
-        primes = g_array_new(false, true, sizeof(bool));
-        primesSet = g_array_new(false, true, sizeof(bool));
+        primes = g_array_new(FALSE, TRUE, sizeof(gboolean));
+        primesSet = g_array_new(FALSE, TRUE, sizeof(gboolean));
     }
 
-    bool ret;
     if (x < MAX_PRIMES && primes->len <= x)
     {
         assert(primesSet->len == primes->len);
-        int len = primes->len;
-        int newlen = max(len * 2, 10);
+        len = primes->len;
+        newlen = max(len * 2, 10);
         //printf("Setting primes length to %d\n", newlen);
         g_array_set_size(primes, newlen);
         g_array_set_size(primesSet, newlen);
     }
 
     //printf("Looking up %d in the primesSet array\n", x);
-    if (x < MAX_PRIMES && ((bool*)(primesSet->data))[x])
+    if (x < MAX_PRIMES && ((gboolean*)(primesSet->data))[x])
     {
-        ret = (((bool*)(primes->data))[x]);
+        ret = (((gboolean*)(primes->data))[x]);
     }
     else
     {
         if (x == 2 || x == 3)
         {
-            ret = true;
+            ret = TRUE;
         }
         else if ((x < 2) ||
                 (x % 2 == 0))
         {
-            ret = false;
+            ret = FALSE;
         }
         else
         {
-            ret = true;
-            for (int i=2; i<=isqrt(x); i++)
+            ret = TRUE;
+            for (i=2; i<=isqrt(x); i++)
             {
                 int rem = x % i;
                 if (rem == 0)
                 {
-                    ret = false;
+                    ret = FALSE;
                     break;
                 }
             }
@@ -156,8 +165,8 @@ bool prime(int x)
 
         if (x < MAX_PRIMES)
         {
-            ((bool*)(primesSet->data))[x] = true;
-            ((bool*)(primes->data))[x] = ret;
+            ((gboolean*)(primesSet->data))[x] = TRUE;
+            ((gboolean*)(primes->data))[x] = ret;
         }
     }
 
@@ -169,7 +178,9 @@ bool prime(int x)
 GList *listOfPrimes()
 {
     GList *ret = NULL;
-    for (int i=2; i<1000000; i++)
+    int i;
+
+    for (i=2; i<1000000; i++)
     {
         if (prime(i))
         {
@@ -180,20 +191,23 @@ GList *listOfPrimes()
     return ret;
 }
 
-bool pandigital9(int x)
+gboolean pandigital9(int x)
 {
-    bool ret;
-    BoundedArrayInt32 ds = digits(x);
+    gboolean ret;
+    int data, i;
     GList *unique = NULL;
+    BoundedArrayInt32 ds;
+   
+    ds = digits(x);
 
-    for (int i=0; i<ds.length; i++)
+    for (i=0; i<ds.length; i++)
     {
-        int data = ds.array[i];
+        data = ds.array[i];
         if (!g_list_find(unique, GINT_TO_POINTER(data)))
         {
             if (data == 0)
             {
-                ret = false;
+                ret = FALSE;
                 goto CLEANUP;
             }
 
@@ -209,28 +223,33 @@ CLEANUP:
     return ret;
 }
 
-bool isPermutation(gint64 x, gint64 y)
+gboolean isPermutation(gint64 x, gint64 y)
 {
-    BoundedArrayInt32 xs = digits(x);
-    BoundedArrayInt32 ys = digits(y);
-    bool ret;
+    BoundedArrayInt32 xs;
+    BoundedArrayInt32 ys;
+    gboolean ret;
+    GList *ds;
+    int i, xsl, ysl, elem;
 
-    int xsl = xs.length;
-    int ysl = ys.length;
+    xs = digits(x);
+    ys = digits(y);
+
+    xsl = xs.length;
+    ysl = ys.length;
     if (xsl != ysl)
     {
-        ret = false;
+        ret = FALSE;
         goto CLEANUP;
     }
 
-    GList *ds = BoundedArrayInt32_toGList(xs);
+    ds = BoundedArrayInt32_toGList(xs);
 
-    for (int i=0; i<ysl; i++)
+    for (i=0; i<ysl; i++)
     {
-        int elem = ys.array[i];
+        elem = ys.array[i];
         if (!g_list_find(ds, GINT_TO_POINTER(elem)))
         {
-            ret = false;
+            ret = FALSE;
             goto CLEANUP;
         }
         else
@@ -239,27 +258,29 @@ bool isPermutation(gint64 x, gint64 y)
         }
     }
 
-    ret = true;
+    ret = TRUE;
 
 CLEANUP:
     g_list_free(ds);
     return ret;
 }
 
-bool numberInList(int x, GList *list)
+gboolean numberInList(int x, GList *list)
 {
-    return (bool)g_list_find(list, GINT_TO_POINTER(x));
+    return (gboolean)g_list_find(list, GINT_TO_POINTER(x));
 }
 
 GList * listOfPentagonals()
 {
     GList *list = NULL;
+    int i, p2;
+    gint64 p;
 
-    for (int i=1; i<MAX_PENTAGONAL; i++)
+    for (i=1; i<MAX_PENTAGONAL; i++)
     {
-        gint64 p = (i * ((3 * i) - 1)) / 2;
+        p = (i * ((3 * i) - 1)) / 2;
         assert(p < INT_MAX);
-        int p2 = (int)p;
+        p2 = (int)p;
         list = g_list_prepend(list, GINT_TO_POINTER(p2));
     }
 
@@ -283,17 +304,19 @@ int pentagonal(int x)
 GList *factors(int x)
 {
     GList *ret = NULL;
+    int n, d, rem, result;
+
     if (x < 2)
     {
         ret = g_list_prepend(ret, GINT_TO_POINTER(x));
         return ret;
     }
 
-    int n = x;
+    n = x;
 
-    for (int d=2; d<=n; d++)
+    for (d=2; d<=n; d++)
     {
-        int rem = n % d;
+        rem = n % d;
         if (rem == 0)
         {
             // found a factor
@@ -302,7 +325,7 @@ GList *factors(int x)
                 ret = g_list_prepend(ret, GINT_TO_POINTER(d));
             }
 
-            int result = n / d;
+            result = n / d;
             n = result;
             d = 2;
         }
@@ -314,8 +337,10 @@ GList *factors(int x)
 
 gint64 totient(gint64 x)
 {
-    gint64 ret = 0;
-    for (gint64 i=1; i<x; i++)
+    gint64 ret = 0,
+           i;
+
+    for (i=1; i<x; i++)
     {
         if (gcd(x, i) == 1)
         {
@@ -346,12 +371,13 @@ gint intCompare(gconstpointer a, gconstpointer b)
 
 GList *g_list_remove_duplicates(GList *l)
 {
+    GList *currElem, *nextElem;
     l = g_list_sort(l, intCompare);
 
-    GList *currElem = l;
+    currElem = l;
     while (currElem != NULL)
     {
-        GList *nextElem = g_list_next(currElem);
+        nextElem = g_list_next(currElem);
         if (nextElem == NULL)
         {
             break;
@@ -369,31 +395,36 @@ GList *g_list_remove_duplicates(GList *l)
     return l;
 }
 
-BoundedArrayInt64 integer_permutations(gint64 x, BoundedArrayInt64 range, bool condition(gint64, BoundedArrayInt64))
+BoundedArrayInt64 integer_permutations(gint64 x, BoundedArrayInt64 range, gboolean condition(gint64, BoundedArrayInt64))
 {
 #define MAX_PERMUTATIONS 10000000
     static gint64 rettemp[MAX_PERMUTATIONS];
     int count = 0;
+    GList *ds, *elem;
+    BoundedArrayInt32 dsa, rgds, lengthCheckDs;
+    int n, d, i;
+    gint64 p;
+    BoundedArrayInt64 ret;
 
-    BoundedArrayInt32 dsa = digits(x);
-    GList *ds = BoundedArrayInt32_toGList(dsa);
+    dsa = digits(x);
+    ds = BoundedArrayInt32_toGList(dsa);
     BoundedArrayInt32_free(dsa);
     ds = g_list_sort(ds, intCompare);
-    int n = g_list_length(ds);
+    n = g_list_length(ds);
 
     // put ds into an array
-    BoundedArrayInt32 rgds = BoundedArrayInt32_new(n);
-    GList *elem = ds;
-    for (int i=0; i<n; i++)
+    rgds = BoundedArrayInt32_new(n);
+    elem = ds;
+    for (i=0; i<n; i++)
     {
-        gint d = GPOINTER_TO_INT(elem->data);
+        d = GPOINTER_TO_INT(elem->data);
         rgds.array[i] = d;
         elem = g_list_next(elem);
     }
     g_list_free(ds);
 
-    gint64 p = undigits(rgds);
-    BoundedArrayInt32 lengthCheckDs = digits(p);
+    p = undigits(rgds);
+    lengthCheckDs = digits(p);
     if (lengthCheckDs.length == n)
     {
         if (condition(p, range))
@@ -404,15 +435,18 @@ BoundedArrayInt64 integer_permutations(gint64 x, BoundedArrayInt64 range, bool c
     }
     BoundedArrayInt32_free(lengthCheckDs);
 
-    while (true)
+    while (TRUE)
     {
-        int i = n - 1;
+        int i,j;
+        gint64 temp;
+
+        i = n - 1;
         while (rgds.array[i-1] >= rgds.array[i])
         {
             i--;
         }
 
-        int j = n;
+        j = n;
         while (rgds.array[j-1] <= rgds.array[i-1])
         {
             j--;
@@ -426,7 +460,7 @@ BoundedArrayInt64 integer_permutations(gint64 x, BoundedArrayInt64 range, bool c
 
         assert(i-1 < n);
         assert(j-1 < n && j-1 >= 0);
-        gint64 temp = rgds.array[i-1];
+        temp = rgds.array[i-1];
         rgds.array[i-1] = rgds.array[j-1];
         rgds.array[j-1] = temp;
 
@@ -459,8 +493,8 @@ BoundedArrayInt64 integer_permutations(gint64 x, BoundedArrayInt64 range, bool c
         BoundedArrayInt32_free(lengthCheckDs);
     }
 
-    BoundedArrayInt64 ret = BoundedArrayInt64_new(count);
-    for (int i=0; i<count; i++)
+    ret = BoundedArrayInt64_new(count);
+    for (i=0; i<count; i++)
     {
         ret.array[i] = rettemp[count-i-1];
     }
@@ -476,11 +510,13 @@ int binary_search(gint64 x, BoundedArrayInt64 sortedArray)
     int idx = -1;
     while (idx == -1)
     {
+        int i;
+
         if (high - low < 10)
         {
             break;
         }
-        int i = ((high - low)/2) + low;
+        i = ((high - low)/2) + low;
         if (sortedArray.array[i] > x)
         {
             // go down
@@ -498,7 +534,8 @@ int binary_search(gint64 x, BoundedArrayInt64 sortedArray)
     }
     if (idx == -1)
     {
-        for (int i=low; i<=high; i++)
+        int i;
+        for (i=low; i<=high; i++)
         {
             if (sortedArray.array[i] == x)
             {
