@@ -7,12 +7,12 @@
 
 #include "Utility.h"
 
-/*
+#ifdef GCC
 int max(int x, int y)
 {
     return (x > y) ? x : y;
 }
-*/
+#endif
 
 BoundedArrayInt32 digits(gint64 x)
 {
@@ -228,7 +228,7 @@ gboolean isPermutation(gint64 x, gint64 y)
     BoundedArrayInt32 xs;
     BoundedArrayInt32 ys;
     gboolean ret;
-    GList *ds;
+    GList *ds = NULL;
     int i, xsl, ysl, elem;
 
     xs = digits(x);

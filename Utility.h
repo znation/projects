@@ -6,7 +6,10 @@
 #define MAX_PENTAGONAL 10000
 #define MAX_PRIMES 100000
 
-//gint max(gint, gint);
+#ifdef GCC
+gint max(gint, gint);
+#endif
+
 BoundedArrayInt32 digits(gint64 x);
 gint64 undigits(BoundedArrayInt32 digits);
 gint64 ipow(gint64 x, gint64 y);
