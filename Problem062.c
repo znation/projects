@@ -34,7 +34,7 @@ gint64 answer()
         ps = integer_permutations(n, cubes, condition);
         c = ps.length;
         BoundedArrayInt64_free(ps);
-        if (c == 3)
+        if (c == 5)
         {
             printf("DEBUG: found one at %lld^3 = %lld\n", i, n);
             return n;
