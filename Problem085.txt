@@ -1,0 +1,11 @@
+By counting carefully it can be seen that a rectangular grid measuring 3 by 2 contains eighteen rectangles:
+
+6 (one square)
+4 (two squares horizontal)
+2 (three squares horizontal)
+3 (two squares vertical)
+2 (four squares square)
+1 (the whole thing)
+
+Although there exists no rectangular grid that contains exactly two million rectangles, find the area of the grid with the nearest solution.
+
