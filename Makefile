@@ -56,7 +56,7 @@ Prime.$(OBJEXT): Prime.c Prime.h PrecomputedPrimes.h
 Solver.exe: $(OBJECTS) Prime.$(OBJEXT) $(PROBLEMOBJ) Solver.$(OBJEXT)
 	$(LINKER) $(PROBLEMOBJ) Solver.$(OBJEXT) $(OBJECTS) Prime.$(OBJEXT) $(LIBPATH)
 
-Precompute.o: Precompute.c
+Precompute.$(OBJEXT): Precompute.c
 	$(CC) -c Precompute.c
 
 Precompute.exe: Precompute.$(OBJEXT) Utility.$(OBJEXT)
