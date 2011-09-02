@@ -6,7 +6,7 @@
 
 BoundedArrayInt32 substitute(int p, BoundedArrayInt32 r)
 {
-    //printf("DEBUG: testing prime %d\n", p);
+    printf("DEBUG: testing prime %d\n", p);
     int i, j,
         count = 0;
     gint64 rettemp[10];
@@ -19,6 +19,7 @@ BoundedArrayInt32 substitute(int p, BoundedArrayInt32 r)
         assert(r.length < ds.length);
         for (j=0; j<r.length; j++)
         {
+            assert(r.initialized);
             int k = r.array[j];
             ds.array[k] = i;
         }
@@ -30,7 +31,7 @@ BoundedArrayInt32 substitute(int p, BoundedArrayInt32 r)
             BoundedArrayInt32 ppds = digits(pp);
             if (ppds.length == ds.length)
             {
-                //printf("\tDEBUG: found family prime %lld\n", pp);
+                printf("\tDEBUG: found family prime %lld\n", pp);
                 rettemp[count++] = pp;
             }
             BoundedArrayInt32_free(ppds);
@@ -54,6 +55,7 @@ int substituteAll(int prime, int numSubstitutions)
     BoundedArrayInt32 range = BoundedArrayInt32_new(numSubstitutions);
     for (k=0; k<numSubstitutions; k++)
     {
+        assert(range.initialized);
         range.array[k] = k;
     }
     r = undigits(range);
@@ -62,6 +64,7 @@ int substituteAll(int prime, int numSubstitutions)
     ps = integer_permutations(r);
     for (k=0; k<ps.length; k++)
     {
+        assert(ps.initialized);
         BoundedArrayInt32 pm = digits(ps.array[k]);
         s = substitute(prime, pm);
         if (s.length > ret)
@@ -72,6 +75,7 @@ int substituteAll(int prime, int numSubstitutions)
             printf("Found new family of length %d:\n", ret);
             for (i=0; i<ret; i++)
             {
+                assert(s.initialized);
                 printf("\t%d\n", s.array[i]);
             }
         }

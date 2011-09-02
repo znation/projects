@@ -19,6 +19,7 @@ void NAME##_free(NAME in) \
 { \
     assert(in.initialized); \
     free(in.array); \
+    in.initialized = FALSE; \
 } \
 
 

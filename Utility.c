@@ -166,6 +166,7 @@ gboolean pandigital9(int x)
 
 CLEANUP:
     g_list_free(unique);
+    BoundedArrayInt32_free(ds);
 
     return ret;
 }
