@@ -17,19 +17,21 @@ OUT = /out:
 LIBPATH = $(CLLIBPATH)
 CC = $(CL)
 LINKER = $(LINK)
+PRECOMPUTE = Precompute.exe
 else
 RM = rm -f
 OBJEXT = o
 LIBPATH = $(GCCLIBPATH)
 CC = $(GCC)
 LINKER = $(GCCLINKER)
+PRECOMPUTE = ./Precompute.exe
 endif
 
 PROBLEM = Problem051
 PROBLEMSRC = $(PROBLEM).c
 PROBLEMDEP = Answer.h
 PROBLEMOBJ = $(PROBLEM).$(OBJEXT)
-OBJECTS = $(PROBLEMOBJ) Solver.$(OBJEXT) Utility.$(OBJEXT) BoundedArray.$(OBJEXT)
+OBJECTS = Utility.$(OBJEXT) BoundedArray.$(OBJEXT)
 
 all: Solver.exe
 
@@ -39,14 +41,26 @@ $(PROBLEMOBJ): $(PROBLEMSRC) $(PROBLEMDEP)
 Solver.$(OBJEXT): Solver.c
 	$(CC) -c Solver.c
 
-Utility.$(OBJEXT): Utility.c Utility.h
+Utility.$(OBJEXT): Utility.c Utility.h 
 	$(CC) -c Utility.c
 
 BoundedArray.$(OBJEXT): BoundedArray.c BoundedArray.h
 	$(CC) -c BoundedArray.c
 
-Solver.exe: $(OBJECTS)
-	$(LINKER) $(OBJECTS) $(LIBPATH)
+PrecomputedPrimes.h: Precompute.exe
+	$(PRECOMPUTE) > PrecomputedPrimes.h
+
+Prime.$(OBJEXT): Prime.c Prime.h PrecomputedPrimes.h
+	$(CC) -c Prime.c
+
+Solver.exe: $(OBJECTS) Prime.$(OBJEXT) $(PROBLEMOBJ) Solver.$(OBJEXT)
+	$(LINKER) $(PROBLEMOBJ) Solver.$(OBJEXT) $(OBJECTS) Prime.$(OBJEXT) $(LIBPATH)
+
+Precompute.o: Precompute.c
+	$(CC) -c Precompute.c
+
+Precompute.exe: Precompute.$(OBJEXT) Utility.$(OBJEXT)
+	$(LINKER) Precompute.$(OBJEXT) $(OBJECTS) $(LIBPATH)
 
 clean:
 	$(RM) tags *.exe *.$(OBJEXT)

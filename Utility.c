@@ -94,7 +94,35 @@ int isqrt(int x)
     return (int)sqrt((double)x);
 }
 
+gboolean uncachedPrime(int x)
+{
+    gboolean ret;
+    int i;
 
+    if (x == 2 || x == 3)
+    {
+        ret = TRUE;
+    }
+    else if ((x < 2) ||
+            (x % 2 == 0))
+    {
+        ret = FALSE;
+    }
+    else
+    {
+        ret = TRUE;
+        for (i=2; i<=isqrt(x); i++)
+        {
+            int rem = x % i;
+            if (rem == 0)
+            {
+                ret = FALSE;
+                break;
+            }
+        }
+    }
+    return ret;
+}
 
 gint64 ipow(gint64 base, gint64 exp)
 {
@@ -108,87 +136,6 @@ gint64 ipow(gint64 base, gint64 exp)
     }
 
     return result;    
-}
-
-GArray *primes = NULL;
-GArray *primesSet = NULL;
-gboolean prime(int x)
-{
-    gboolean ret;
-    int len, newlen, i;
-
-    if (primes == NULL)
-    {
-        primes = g_array_new(FALSE, TRUE, sizeof(gboolean));
-        primesSet = g_array_new(FALSE, TRUE, sizeof(gboolean));
-    }
-
-    if (x < MAX_PRIMES && primes->len <= x)
-    {
-        assert(primesSet->len == primes->len);
-        len = primes->len;
-        newlen = max(len * 2, 10);
-        //printf("Setting primes length to %d\n", newlen);
-        g_array_set_size(primes, newlen);
-        g_array_set_size(primesSet, newlen);
-    }
-
-    //printf("Looking up %d in the primesSet array\n", x);
-    if (x < MAX_PRIMES && ((gboolean*)(primesSet->data))[x])
-    {
-        ret = (((gboolean*)(primes->data))[x]);
-    }
-    else
-    {
-        if (x == 2 || x == 3)
-        {
-            ret = TRUE;
-        }
-        else if ((x < 2) ||
-                (x % 2 == 0))
-        {
-            ret = FALSE;
-        }
-        else
-        {
-            ret = TRUE;
-            for (i=2; i<=isqrt(x); i++)
-            {
-                int rem = x % i;
-                if (rem == 0)
-                {
-                    ret = FALSE;
-                    break;
-                }
-            }
-        }
-
-        if (x < MAX_PRIMES)
-        {
-            ((gboolean*)(primesSet->data))[x] = TRUE;
-            ((gboolean*)(primes->data))[x] = ret;
-        }
-    }
-
-    //printf("Prime %d? %s\n", x, ret ? "true" : "false");
-
-    return ret;
-}
-
-GList *listOfPrimes()
-{
-    GList *ret = NULL;
-    int i;
-
-    for (i=2; i<MAX_PRIMES; i++)
-    {
-        if (prime(i))
-        {
-            ret = g_list_prepend(ret, GINT_TO_POINTER(i));
-        }
-    }
-    ret = g_list_reverse(ret);
-    return ret;
 }
 
 gboolean pandigital9(int x)
@@ -299,40 +246,6 @@ int pentagonal(int x)
     {
         return -1;
     }
-}
-
-GList *factors(int x)
-{
-    GList *ret = NULL;
-    int n, d, rem, result;
-
-    if (x < 2)
-    {
-        ret = g_list_prepend(ret, GINT_TO_POINTER(x));
-        return ret;
-    }
-
-    n = x;
-
-    for (d=2; d<=n; d++)
-    {
-        rem = n % d;
-        if (rem == 0)
-        {
-            // found a factor
-            if (prime(d))
-            {
-                ret = g_list_prepend(ret, GINT_TO_POINTER(d));
-            }
-
-            result = n / d;
-            n = result;
-            d = 2;
-        }
-    }
-
-    ret = g_list_remove_duplicates(ret);
-    return ret;
 }
 
 gint64 totient(gint64 x)

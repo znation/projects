@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <glib.h>
 #include "Utility.h"
+#include "Prime.h"
 
 BoundedArrayInt32 substitute(int p, BoundedArrayInt32 r)
 {

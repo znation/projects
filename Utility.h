@@ -4,7 +4,6 @@
 #include "BoundedArray.h"
 
 #define MAX_PENTAGONAL 10000
-#define MAX_PRIMES 1000000
 
 #ifdef GCC
 gint max(gint, gint);
@@ -13,9 +12,7 @@ gint max(gint, gint);
 BoundedArrayInt32 digits(gint64 x);
 gint64 undigits(BoundedArrayInt32 digits);
 gint64 ipow(gint64 x, gint64 y);
-gint isqrt(gint x);
-gboolean prime(gint x);
-GList *listOfPrimes(void);
+gboolean uncachedPrime(gint x);
 gboolean pandigital9(gint x);
 gboolean isPermutation(gint64 x, gint64 y);
 gboolean numberInList(gint x, GList *list);
@@ -23,7 +20,6 @@ gboolean numberInList(gint x, GList *list);
 GList *listOfPentagonals(void);
 gint pentagonal(gint x);
 
-GList *factors(gint x);
 gint64 totient(gint64 x);
 gint64 gcd(gint64 a, gint64 b);
 
