@@ -44,10 +44,49 @@ BoundedArrayInt32 substitute(int p, BoundedArrayInt32 r)
     return ret;
 }
 
+int substituteAll(int prime, int numSubstitutions)
+{
+    int k, ret = 0;
+    gint64 r;
+    BoundedArrayInt32 s;
+    BoundedArrayInt64 ps;
+    BoundedArrayInt32 range = BoundedArrayInt32_new(numSubstitutions);
+    for (k=0; k<numSubstitutions; k++)
+    {
+        range.array[k] = k;
+    }
+    r = undigits(range);
+    BoundedArrayInt32_free(range);
+
+    ps = integer_permutations(r);
+    for (k=0; k<ps.length; k++)
+    {
+        BoundedArrayInt32 pm = digits(ps.array[k]);
+        s = substitute(prime, pm);
+        if (s.length > ret)
+        {
+            int i;
+
+            ret = s.length;
+            printf("Found new family of length %d:\n", ret);
+            for (i=0; i<ret; i++)
+            {
+                printf("\t%d\n", s.array[i]);
+            }
+        }
+        BoundedArrayInt32_free(s);
+        BoundedArrayInt32_free(pm);
+    }
+
+    BoundedArrayInt64_free(ps);
+
+    return ret;
+}
+
 gint64 answer()
 {
     int ret = 0;
-
+/*
     GList *primes = listOfPrimes();
     GList *elem = primes;
     while (elem != NULL)
@@ -62,46 +101,15 @@ gint64 answer()
         assert(ds.length < 10);
         for (j=1; j<ds.length; j++)
         {
-            int k;
-            gint64 r;
-            BoundedArrayInt32 s;
-            BoundedArrayInt64 ps;
-            BoundedArrayInt32 range = BoundedArrayInt32_new(j);
-            for (k=0; k<j; k++)
-            {
-                range.array[k] = k;
-            }
-            r = undigits(range);
-            BoundedArrayInt32_free(range);
-
-            ps = integer_permutations(r);
-            for (k=0; k<ps.length; k++)
-            {
-                BoundedArrayInt32 pm = digits(ps.array[k]);
-                s = substitute(prime, pm);
-                if (s.length > ret)
-                {
-                    int i;
-
-                    ret = s.length;
-                    printf("Found new family of length %d:\n", ret);
-                    for (i=0; i<ret; i++)
-                    {
-                        printf("\t%d\n", s.array[i]);
-                    }
-                }
-                BoundedArrayInt32_free(s);
-                BoundedArrayInt32_free(pm);
-            }
-
-            BoundedArrayInt64_free(ps);
-
-
-
+            ret = max(ret, substituteAll(prime, j));
         }
 
         elem = g_list_next(elem);
     }
+    */
+
+    // DEBUG
+    substituteAll(56003, 2);
 
     return ret;
 }
