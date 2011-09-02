@@ -1,6 +1,6 @@
 GCCLIBINCLUDES = -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
 GCCLIBPATH = -lglib-2.0 -lintl -liconv -lgmp -lmpfr
-GCCOPTS = -Werror -Wall -pedantic -std=c99 -O2 -ffast-math -march=pentium4 -g -pg -DGCC $(GCCLIBINCLUDES)
+GCCOPTS = -Werror -Wall -pedantic -std=c99 -march=pentium4 -g -pg -DGCC $(GCCLIBINCLUDES)
 GCC = gcc $(GCCOPTS)
 GCCLINKER = $(GCC) -o $@
 

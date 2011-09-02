@@ -3,6 +3,7 @@
 #define BOUNDED_ARRAY_DEF(NAME, TYPE) typedef struct { \
     TYPE *array; \
     size_t length; \
+    gboolean initialized; \
 } NAME; \
 NAME NAME##_new(size_t length); \
 NAME NAME##_copy(NAME in); \

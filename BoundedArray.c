@@ -1,24 +1,23 @@
 #include <stdlib.h>
 #include <string.h>
+#include <glib.h>
+#include <assert.h>
 #include "BoundedArray.h"
 
-#define BOUNDED_ARRAY_IMPL(NAME, TYPE) NAME NAME##_copy(NAME in) \
+#define BOUNDED_ARRAY_IMPL(NAME, TYPE) NAME NAME##_new(size_t length) \
 { \
+    int bytes; \
     NAME ret; \
-    ret.array = in.array; \
-    ret.length = in.length; \
-    return ret; \
-} \
-NAME NAME##_new(size_t length) \
-{ \
-    NAME ret; \
+    bytes = sizeof(TYPE) * length; \
+    ret.initialized = TRUE; \
     ret.length = length; \
-    ret.array = malloc(sizeof(TYPE) * length); \
-    memset(ret.array, 0, (sizeof(TYPE) / sizeof(char)) * length); \
+    ret.array = malloc(bytes); \
+    memset(ret.array, 0, bytes); \
     return ret; \
 } \
 void NAME##_free(NAME in) \
 { \
+    assert(in.initialized); \
     free(in.array); \
 } \
 
