@@ -180,7 +180,7 @@ GList *listOfPrimes()
     GList *ret = NULL;
     int i;
 
-    for (i=2; i<1000000; i++)
+    for (i=2; i<MAX_PRIMES; i++)
     {
         if (prime(i))
         {
@@ -395,7 +395,12 @@ GList *g_list_remove_duplicates(GList *l)
     return l;
 }
 
-BoundedArrayInt64 integer_permutations(gint64 x, BoundedArrayInt64 range, gboolean condition(gint64, BoundedArrayInt64))
+BoundedArrayInt64 integer_permutations(gint64 x)
+{
+    return integer_permutations_condition(x, NULL, NULL);
+}
+
+BoundedArrayInt64 integer_permutations_condition(gint64 x, BoundedArrayInt64 *range, gboolean *condition(gint64, BoundedArrayInt64))
 {
 #define MAX_PERMUTATIONS 10000000
     static gint64 rettemp[MAX_PERMUTATIONS];
@@ -427,7 +432,7 @@ BoundedArrayInt64 integer_permutations(gint64 x, BoundedArrayInt64 range, gboole
     lengthCheckDs = digits(p);
     if (lengthCheckDs.length == n)
     {
-        if (condition(p, range))
+        if (condition == NULL || (*condition)(p, *range))
         {
             assert(count < MAX_PERMUTATIONS);
             rettemp[count++] = p;
@@ -484,7 +489,7 @@ BoundedArrayInt64 integer_permutations(gint64 x, BoundedArrayInt64 range, gboole
         lengthCheckDs = digits(p);
         if (lengthCheckDs.length == n)
         {
-            if (condition(p, range))
+            if (condition == NULL || (*condition)(p, *range))
             {
                 assert(count < MAX_PERMUTATIONS);
                 rettemp[count++] = p;
