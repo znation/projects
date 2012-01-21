@@ -26,10 +26,10 @@ Output T lines, one for each test case. For each case, output "Case #t: a b", wh
 Constraints
 1 ≤ T ≤ 20
 1 ≤ N ≤ 10^18
-1 ≤ M, K ≤ 107
+1 ≤ M, K ≤ 10^7
 1 ≤ P1 ≤ M
 1 ≤ W_1 ≤ K
-0 ≤ A,B,C,D ≤ 109
+0 ≤ A,B,C,D ≤ 10^9
      */
 
     class Auction
@@ -51,37 +51,25 @@ Constraints
                         (A.W < B.W && A.P <= B.P));
             }
 
-            public bool IsTerribleDealFn(List<Product> products)
+            public bool IsBargain(List<Product> bargains)
             {
-                foreach (Product D in products)
+                foreach (Product p in bargains)
                 {
-                    if (Preferred(this, D))
+                    if (Preferred(p, this))
                     {
                         return false;
                     }
                 }
+
                 return true;
             }
 
-            public bool IsBargainFn(List<Product> products)
-            {
-                foreach (Product B in products)
-                {
-                    if (Preferred(B, this))
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            public static void TrimResults(List<Product> products)
+            public static void TrimBargains(List<Product> bargains)
             {
                 List<Product> toRemove = new List<Product>();
-
-                foreach (Product p in products)
+                foreach (Product p in bargains)
                 {
-                    if (!p.IsBargainFn(products) && !p.IsTerribleDealFn(products))
+                    if (!p.IsBargain(bargains))
                     {
                         toRemove.Add(p);
                     }
@@ -89,7 +77,36 @@ Constraints
 
                 foreach (Product p in toRemove)
                 {
-                    products.Remove(p);
+                    bargains.Remove(p);
+                }
+            }
+
+            public bool IsTerribleDeal(List<Product> terribleDeals)
+            {
+                foreach (Product p in terribleDeals)
+                {
+                    if (Preferred(this, p))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            public static void TrimTerribleDeals(List<Product> terribleDeals)
+            {
+                List<Product> toRemove = new List<Product>();
+                foreach (Product p in terribleDeals)
+                {
+                    if (!p.IsTerribleDeal(terribleDeals))
+                    {
+                        toRemove.Add(p);
+                    }
+                }
+                foreach (Product p in toRemove)
+                {
+                    terribleDeals.Remove(p);
                 }
             }
         }
@@ -112,8 +129,12 @@ Constraints
                 int C = Int32.Parse(parts[7]);
                 int D = Int32.Parse(parts[8]);
 
-                List<Product> products = new List<Product>();
-                products.Add(new Product(P1, W1));
+                List<Product> bargains = new List<Product>();
+                List<Product> terribleDeals = new List<Product>();
+
+                Product prod1 = new Product(P1, W1);
+                bargains.Add(prod1);
+                terribleDeals.Add(prod1);
 
                 int prevP = P1;
                 int prevW = W1;
@@ -124,32 +145,23 @@ Constraints
                     int W = ((C * prevW + D) % K) + 1;
 
                     Product prodNext = new Product(P, W);
-                    if (prodNext.IsBargainFn(products) || prodNext.IsTerribleDealFn(products))
+                    if (prodNext.IsBargain(bargains))
                     {
-                        products.Add(new Product(P, W));
-                        Product.TrimResults(products);
+                        bargains.Add(prodNext);
+                        Product.TrimBargains(bargains);
+                    }
+
+                    if (prodNext.IsTerribleDeal(terribleDeals))
+                    {
+                        terribleDeals.Add(prodNext);
+                        Product.TrimTerribleDeals(terribleDeals);
                     }
 
                     prevP = P;
                     prevW = W;
                 }
 
-                int bargains = 0;
-                int terribleDeals = 0;
-                foreach (Product p in products)
-                {
-                    if (p.IsBargainFn(products))
-                    {
-                        bargains++;
-                    }
-
-                    if (p.IsTerribleDealFn(products))
-                    {
-                        terribleDeals++;
-                    }
-                }
-
-                Console.WriteLine("Case #{0}: {1} {2}", i + 1, terribleDeals, bargains);
+                Console.WriteLine("Case #{0}: {1} {2}", i + 1, terribleDeals.Count, bargains.Count);
             }
         }
     }
