@@ -34,6 +34,13 @@ Constraints
 
     class Auction
     {
+        enum BargainState
+        {
+            First,
+            Second,
+            Equal
+        }
+
         class Product
         {
             public Product(int p, int w)
@@ -51,63 +58,43 @@ Constraints
                         (A.W < B.W && A.P <= B.P));
             }
 
-            public bool IsBargain(List<Product> bargains)
+            public BargainState IsBargain(List<Product> bargains)
             {
                 foreach (Product p in bargains)
                 {
                     if (Preferred(p, this))
                     {
-                        return false;
+                        return BargainState.Second;
                     }
-                }
-
-                return true;
-            }
-
-            public static void TrimBargains(List<Product> bargains)
-            {
-                List<Product> toRemove = new List<Product>();
-                foreach (Product p in bargains)
-                {
-                    if (!p.IsBargain(bargains))
+                    else if (Preferred(this, p))
                     {
-                        toRemove.Add(p);
+                        return BargainState.First;
                     }
                 }
 
-                foreach (Product p in toRemove)
-                {
-                    bargains.Remove(p);
-                }
+                return BargainState.Equal;
             }
 
-            public bool IsTerribleDeal(List<Product> terribleDeals)
+            public BargainState IsTerribleDeal(List<Product> terribleDeals)
             {
                 foreach (Product p in terribleDeals)
                 {
                     if (Preferred(this, p))
                     {
-                        return false;
+                        return BargainState.Second;
+                    }
+                    else if (Preferred(p, this))
+                    {
+                        return BargainState.First;
                     }
                 }
 
-                return true;
+                return BargainState.Equal;
             }
 
-            public static void TrimTerribleDeals(List<Product> terribleDeals)
+            public override string ToString()
             {
-                List<Product> toRemove = new List<Product>();
-                foreach (Product p in terribleDeals)
-                {
-                    if (!p.IsTerribleDeal(terribleDeals))
-                    {
-                        toRemove.Add(p);
-                    }
-                }
-                foreach (Product p in toRemove)
-                {
-                    terribleDeals.Remove(p);
-                }
+                return String.Format("W: {0}, P: {1}", W, P);
             }
         }
 
@@ -133,6 +120,8 @@ Constraints
                 List<Product> terribleDeals = new List<Product>();
 
                 Product prod1 = new Product(P1, W1);
+                Console.WriteLine("Initial product is {0}", prod1);
+
                 bargains.Add(prod1);
                 terribleDeals.Add(prod1);
 
@@ -145,16 +134,29 @@ Constraints
                     int W = ((C * prevW + D) % K) + 1;
 
                     Product prodNext = new Product(P, W);
-                    if (prodNext.IsBargain(bargains))
+
+                    Console.WriteLine("Product {0} is {1}", j + 1, prodNext);
+
+                    BargainState bargainState = prodNext.IsBargain(bargains);
+                    if (bargainState != BargainState.Second)
                     {
+                        if (bargainState == BargainState.First)
+                        {
+                            bargains.Clear();
+                        }
+
                         bargains.Add(prodNext);
-                        Product.TrimBargains(bargains);
                     }
 
-                    if (prodNext.IsTerribleDeal(terribleDeals))
+                    BargainState terribleDealState = prodNext.IsTerribleDeal(terribleDeals);
+                    if (terribleDealState != BargainState.Second)
                     {
+                        if (terribleDealState == BargainState.First)
+                        {
+                            terribleDeals.Clear();
+                        }
+
                         terribleDeals.Add(prodNext);
-                        Product.TrimTerribleDeals(terribleDeals);
                     }
 
                     prevP = P;
@@ -162,6 +164,17 @@ Constraints
                 }
 
                 Console.WriteLine("Case #{0}: {1} {2}", i + 1, terribleDeals.Count, bargains.Count);
+                Console.WriteLine("Bargains are:");
+                foreach (Product bargain in bargains)
+                {
+                    Console.WriteLine(bargain);
+                }
+                Console.WriteLine("Terrible deals are:");
+                foreach (Product terribleDeal in terribleDeals)
+                {
+                    Console.WriteLine(terribleDeal);
+                }
+                Console.WriteLine();
             }
         }
     }
