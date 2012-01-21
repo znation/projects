@@ -57,35 +57,45 @@ Case #5: 7
                 int fs = 1;
                 while (true)
                 {
-                    List<int> widths = new List<int>();
-                    foreach (string word in words)
-                    {
-                        widths.Add(word.Length * fs);
-                    }
-
-                    bool verticalRoom = true,
-                        done = false;
+                    bool verticalRoom = true;
                     int l = 0,
                         c = 0,
                         j = 0,
                         roomForSpace = 0;
-                    while (verticalRoom || done)
+                    while (verticalRoom)
                     {
-                        if (c + widths[j] + roomForSpace <= W)
+                        int width = (words[j].Length + roomForSpace) * fs;
+                        if (c + width <= W)
                         {
                             // put it on the existing line
-                            c += widths[j] + roomForSpace;
+                            c += width;
                             roomForSpace = 1;
+                        }
+                        else if (width > W)
+                        {
+                            // this word can't even fit by itself
+                            verticalRoom = false;
+                            break;
                         }
                         else
                         {
                             // go down a line
                             roomForSpace = 0;
-                            c = 0;
+                            c = width;
+                            roomForSpace = 1;
                             l++;
                         }
+
+                        verticalRoom = (l + 1) * fs <= H;
+
+                        if (j == words.Count - 1)
+                        {
+                            // we're done!
+                            break;
+                        }
+
                         j++;
-                        verticalRoom = l * fs <= H;
+                        
                     }
 
                     if (!verticalRoom)
