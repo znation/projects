@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlphabetSoup.cs" />
     <Compile Include="Auction.cs" />
     <Compile Include="Billboard.cs" />
     <Compile Include="Program.cs" />

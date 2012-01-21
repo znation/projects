@@ -9,7 +9,7 @@ namespace HackerCup2012
     {
         static void Main(string[] args)
         {
-            Auction.Run();
+            AlphabetSoup.Run();
         }
     }
 }
