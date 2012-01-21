@@ -44,8 +44,6 @@ Constraints
 
             public int P { get; set; }
             public int W { get; set; }
-            public bool? IsBargain { get; set; }
-            public bool? IsTerribleDeal { get; set; }
 
             public static bool Preferred(Product A, Product B)
             {
@@ -65,25 +63,6 @@ Constraints
                 return true;
             }
 
-            public void SetTerribleDeal(List<Product> products)
-            {
-                Product C = this;
-
-                foreach (Product D in products)
-                {
-                    if (C != D && Preferred(C, D))
-                    {
-                        C.IsTerribleDeal = false;
-                        D.IsBargain = false;
-                    }
-                }
-
-                if (C.IsTerribleDeal == null)
-                {
-                    C.IsTerribleDeal = true;
-                }
-            }
-
             public bool IsBargainFn(List<Product> products)
             {
                 foreach (Product B in products)
@@ -96,22 +75,21 @@ Constraints
                 return true;
             }
 
-            public void SetBargain(List<Product> products)
+            public static void TrimResults(List<Product> products)
             {
-                Product A = this;
+                List<Product> toRemove = new List<Product>();
 
-                foreach (Product B in products)
+                foreach (Product p in products)
                 {
-                    if (A != B && Preferred(B, A))
+                    if (!p.IsBargainFn(products) && !p.IsTerribleDealFn(products))
                     {
-                        A.IsBargain = false;
-                        B.IsTerribleDeal = false;
+                        toRemove.Add(p);
                     }
                 }
 
-                if (A.IsBargain == null)
+                foreach (Product p in toRemove)
                 {
-                    A.IsBargain = true;
+                    products.Remove(p);
                 }
             }
         }
@@ -140,7 +118,6 @@ Constraints
                 int prevP = P1;
                 int prevW = W1;
 
-                // Add to sorted list
                 for (Int64 j = 1; j < N; j++)
                 {
                     int P = ((A * prevP + B) % M) + 1;
@@ -150,35 +127,23 @@ Constraints
                     if (prodNext.IsBargainFn(products) || prodNext.IsTerribleDealFn(products))
                     {
                         products.Add(new Product(P, W));
+                        Product.TrimResults(products);
                     }
 
                     prevP = P;
                     prevW = W;
                 }
 
-                foreach (Product p in products)
-                {
-                    if (p.IsBargain == null)
-                    {
-                        p.SetBargain(products);
-                    }
-
-                    if (p.IsTerribleDeal == null)
-                    {
-                        p.SetTerribleDeal(products);
-                    }
-                }
-
                 int bargains = 0;
                 int terribleDeals = 0;
                 foreach (Product p in products)
                 {
-                    if (p.IsBargain.Value)
+                    if (p.IsBargainFn(products))
                     {
                         bargains++;
                     }
 
-                    if (p.IsTerribleDeal.Value)
+                    if (p.IsTerribleDealFn(products))
                     {
                         terribleDeals++;
                     }
