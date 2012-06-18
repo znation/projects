@@ -1,5 +1,5 @@
 
-import Problem031
+import Problem076
 
 -- MAIN
 main :: IO ()

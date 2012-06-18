@@ -1,6 +1,6 @@
 import Problem067
 
-import qualified IO
+import qualified System.IO as IO
 
 -- MAIN
 main :: IO ()
