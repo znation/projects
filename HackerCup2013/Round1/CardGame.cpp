@@ -42,7 +42,7 @@ bool nextCombination(
 
 int main(int argc, char **argv)
 {
-	ifstream input("CardGame_example_input.txt", ifstream::in);
+	ifstream input("CardGame_input.txt", ifstream::in);
 	
 	// get input line count
 	ulong lineCount;
