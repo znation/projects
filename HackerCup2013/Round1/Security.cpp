@@ -56,7 +56,7 @@ bool strSort(string x, string y)
 
 int main(int argc, char **argv)
 {
-	ifstream input("Security_example_input.txt", ifstream::in);
+	ifstream input("Security_input.txt", ifstream::in);
 	
 	const int BUF_SIZE = 101;
 	char buf[BUF_SIZE];
