@@ -137,7 +137,7 @@ public:
 
 int main(int argc, char **argv)
 {
-	ifstream input("DeadPixels_my_input.txt", ifstream::in);
+	ifstream input("DeadPixels_input.txt", ifstream::in);
 	
 	string line;
 
@@ -151,7 +151,7 @@ int main(int argc, char **argv)
 	for (int i=0; i<T; i++)
 	{
 		getline(input, line);
-	 	iss = istringstream(line);
+	 	istringstream iss(line);
 
 		long W, H, P, Q, N, X, Y, a, b, c, d;
 
