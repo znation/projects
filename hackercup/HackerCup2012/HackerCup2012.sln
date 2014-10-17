@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HackerCup2012", "HackerCup2012.csproj", "{751E1B79-7BA4-4645-A6DA-AB8354983DEA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{751E1B79-7BA4-4645-A6DA-AB8354983DEA}.Debug|x86.ActiveCfg = Debug|x86
+		{751E1B79-7BA4-4645-A6DA-AB8354983DEA}.Debug|x86.Build.0 = Debug|x86
+		{751E1B79-7BA4-4645-A6DA-AB8354983DEA}.Release|x86.ActiveCfg = Release|x86
+		{751E1B79-7BA4-4645-A6DA-AB8354983DEA}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
